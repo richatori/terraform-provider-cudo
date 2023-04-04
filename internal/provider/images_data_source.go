@@ -2,9 +2,9 @@ package provider
 
 import (
 	"context"
+	"cudo.org/v1/terraform-provider-cudo/internal/client"
+	"cudo.org/v1/terraform-provider-cudo/internal/client/search"
 	"fmt"
-	"github.com/CudoVentures/cudo-terraform-provider-pf/internal/client"
-	"github.com/CudoVentures/cudo-terraform-provider-pf/internal/client/search"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -32,12 +32,12 @@ type imagesModel struct {
 
 // ImagesDataSourceModel describes the data source data model.
 type ImagesDataSourceModel struct {
-	Images []imagesModel
-	ID     types.String `tfsdk:"id"`
+	Images []imagesModel `tfsdk:"images"`
+	ID     types.String  `tfsdk:"id"`
 }
 
 func (d *ImagesDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_Images"
+	resp.TypeName = "cudo_images" //req.ProviderTypeName + "cudo_images"
 }
 
 func (d *ImagesDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
@@ -110,6 +110,8 @@ func (d *ImagesDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 		return
 	}
 
+	//tflog.Debug(ctx, fmt.Sprintf("length of images %d", len(res.Payload.Images)))
+
 	for _, image := range res.Payload.Images {
 		imageState := imagesModel{
 			Id:          types.StringValue(image.ID),
@@ -119,16 +121,10 @@ func (d *ImagesDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 		}
 
 		state.Images = append(state.Images, imageState)
+		//tflog.Debug(ctx, image.Name)
 	}
 
 	state.ID = types.StringValue("placeholder")
-
-	// Read Terraform configuration data into the model
-	resp.Diagnostics.Append(req.Config.Get(ctx, &state)...)
-
-	if resp.Diagnostics.HasError() {
-		return
-	}
 
 	// Write logs using the tflog package
 	// Documentation: https://terraform.io/plugin/log

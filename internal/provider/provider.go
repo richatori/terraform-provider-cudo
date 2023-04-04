@@ -2,7 +2,9 @@ package provider
 
 import (
 	"context"
-	"github.com/CudoVentures/cudo-terraform-provider-pf/internal/client"
+	"cudo.org/v1/terraform-provider-cudo/internal/client"
+	"github.com/hashicorp/terraform-plugin-framework/path"
+
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 	"os"
@@ -41,7 +43,15 @@ func (p *CudoProvider) Schema(ctx context.Context, req provider.SchemaRequest, r
 	resp.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
 			"endpoint": schema.StringAttribute{
-				MarkdownDescription: "Example provider attribute",
+				MarkdownDescription: "API endpoint",
+				Optional:            true,
+			},
+			"api_key": schema.StringAttribute{
+				MarkdownDescription: "Your API key",
+				Optional:            true,
+			},
+			"disable_tls": schema.BoolAttribute{
+				MarkdownDescription: "Whether to connect using TLS",
 				Optional:            true,
 			},
 		},
@@ -49,22 +59,45 @@ func (p *CudoProvider) Schema(ctx context.Context, req provider.SchemaRequest, r
 }
 
 func (p *CudoProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
-	var data CudoProviderModel
+	var config CudoProviderModel
 
-	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
+	resp.Diagnostics.Append(req.Config.Get(ctx, &config)...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	// Configuration values are now available.
-	// if data.Endpoint.IsNull() { /* ... */ }
-	transport := httptransport.New("rest.staging.compute.cudo.org", "", []string{"https"})
-	transport.DefaultAuthentication = httptransport.BearerToken("545fb7f3fa7841b72861cc0e1eeaf2a200d927a19dd663a8c6512081c81f4f9f")
-	transport.Debug = true
+	if config.APIKey.IsUnknown() {
+		resp.Diagnostics.AddAttributeError(
+			path.Root("api_key"),
+			"Unknown Cudo API Key",
+			"The provider cannot create the client without an API KEY please pass it or set the CUDO_API_KEY environment variable.",
+		)
+	}
+
+	api_key := os.Getenv("CUDO_API_KEY")
+
+	if !config.APIKey.IsNull() {
+		api_key = config.APIKey.ValueString()
+	}
+
+	if api_key == "" {
+		resp.Diagnostics.AddAttributeError(
+			path.Root("api_key"),
+			"Missing Cudo API Key",
+			"The provider cannot create the client without an API KEY please pass it or set the CUDO_API_KEY environment variable.",
+		)
+	}
+
+	// TODO check endpoint
+	// set default for production
+
+	//transport := httptransport.New("rest.staging.compute.cudo.org", "", []string{"https"})
+	//transport.DefaultAuthentication = httptransport.BearerToken(api_key)
+	//transport.Debug = true
 
 	tx := httptransport.New("rest.staging.compute.cudo.org", client.DefaultBasePath, client.DefaultSchemes)
-	tx.DefaultAuthentication = httptransport.BearerToken(os.Getenv("API_ACCESS_TOKEN"))
+	tx.DefaultAuthentication = httptransport.BearerToken(api_key)
 	clientx := client.New(tx, strfmt.Default)
 
 	resp.DataSourceData = clientx
@@ -79,7 +112,7 @@ func (p *CudoProvider) Resources(ctx context.Context) []func() resource.Resource
 
 func (p *CudoProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
-		NewExampleDataSource,
+		NewImagesDataSource,
 	}
 }
 

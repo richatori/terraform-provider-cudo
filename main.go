@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
+	"cudo.org/v1/terraform-provider-cudo/internal/provider"
 	"flag"
-	"github.com/CudoVentures/cudo-terraform-provider-pf/internal/provider"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"log"
 )
