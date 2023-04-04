@@ -2,7 +2,10 @@ package provider
 
 import (
 	"context"
-	"net/http"
+	"github.com/CudoVentures/cudo-terraform-provider-pf/internal/client"
+	httptransport "github.com/go-openapi/runtime/client"
+	"github.com/go-openapi/strfmt"
+	"os"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
@@ -11,28 +14,30 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-// Ensure ScaffoldingProvider satisfies various provider interfaces.
-var _ provider.Provider = &ScaffoldingProvider{}
+// Ensure CudoProvider satisfies various provider interfaces.
+var _ provider.Provider = &CudoProvider{}
 
-// ScaffoldingProvider defines the provider implementation.
-type ScaffoldingProvider struct {
+// CudoProvider defines the provider implementation.
+type CudoProvider struct {
 	// version is set to the provider version on release, "dev" when the
 	// provider is built and ran locally, and "test" when running acceptance
 	// testing.
 	version string
 }
 
-// ScaffoldingProviderModel describes the provider data model.
-type ScaffoldingProviderModel struct {
-	Endpoint types.String `tfsdk:"endpoint"`
+// CudoProviderModel describes the provider data model.
+type CudoProviderModel struct {
+	Endpoint   types.String `tfsdk:"endpoint"`
+	APIKey     types.String `tfsdk:"api_key"`
+	DisableTLS types.Bool   `tfsdk:"disable_tls"`
 }
 
-func (p *ScaffoldingProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
+func (p *CudoProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
 	resp.TypeName = "scaffolding"
 	resp.Version = p.version
 }
 
-func (p *ScaffoldingProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
+func (p *CudoProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
 			"endpoint": schema.StringAttribute{
@@ -43,8 +48,8 @@ func (p *ScaffoldingProvider) Schema(ctx context.Context, req provider.SchemaReq
 	}
 }
 
-func (p *ScaffoldingProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
-	var data ScaffoldingProviderModel
+func (p *CudoProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
+	var data CudoProviderModel
 
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
 
@@ -54,20 +59,25 @@ func (p *ScaffoldingProvider) Configure(ctx context.Context, req provider.Config
 
 	// Configuration values are now available.
 	// if data.Endpoint.IsNull() { /* ... */ }
+	transport := httptransport.New("rest.staging.compute.cudo.org", "", []string{"https"})
+	transport.DefaultAuthentication = httptransport.BearerToken("545fb7f3fa7841b72861cc0e1eeaf2a200d927a19dd663a8c6512081c81f4f9f")
+	transport.Debug = true
 
-	// Example client configuration for data sources and resources
-	client := http.DefaultClient
-	resp.DataSourceData = client
-	resp.ResourceData = client
+	tx := httptransport.New("rest.staging.compute.cudo.org", client.DefaultBasePath, client.DefaultSchemes)
+	tx.DefaultAuthentication = httptransport.BearerToken(os.Getenv("API_ACCESS_TOKEN"))
+	clientx := client.New(tx, strfmt.Default)
+
+	resp.DataSourceData = clientx
+	resp.ResourceData = clientx
 }
 
-func (p *ScaffoldingProvider) Resources(ctx context.Context) []func() resource.Resource {
+func (p *CudoProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewExampleResource,
 	}
 }
 
-func (p *ScaffoldingProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
+func (p *CudoProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		NewExampleDataSource,
 	}
@@ -75,7 +85,7 @@ func (p *ScaffoldingProvider) DataSources(ctx context.Context) []func() datasour
 
 func New(version string) func() provider.Provider {
 	return func() provider.Provider {
-		return &ScaffoldingProvider{
+		return &CudoProvider{
 			version: version,
 		}
 	}

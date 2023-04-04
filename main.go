@@ -3,10 +3,9 @@ package main
 import (
 	"context"
 	"flag"
-	"log"
-
+	"github.com/CudoVentures/cudo-terraform-provider-pf/internal/provider"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
-	"github.com/hashicorp/terraform-provider-scaffolding-framework/internal/provider"
+	"log"
 )
 
 // Run "go generate" to format example terraform files and generate the docs for the registry/website
@@ -29,6 +28,7 @@ var (
 )
 
 func main() {
+
 	var debug bool
 
 	flag.BoolVar(&debug, "debug", false, "set to true to run the provider with support for debuggers like delve")

@@ -1,0 +1,2362 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "title": "Cudo Compute service",
+    "version": "1.0.0"
+  },
+  "host": "rest.compute.cudo.org",
+  "paths": {
+    "/v1/api-keys": {
+      "get": {
+        "description": "List the details of all API keys created by the requesting user. This does not include the API key itself which is only visible once when the API key is created.",
+        "tags": [
+          "API keys"
+        ],
+        "summary": "List",
+        "operationId": "ListApiKeys",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "pageNumber",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "pageSize",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListApiKeysResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Creates a new API key for the requesting user. The API key is returned in the response, and this is the only time it can be viewed.",
+        "tags": [
+          "API keys"
+        ],
+        "summary": "Generate",
+        "operationId": "GenerateApiKey",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GenerateApiKeyRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ApiKey"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/api-keys/{name}": {
+      "delete": {
+        "description": "Deletes an API key, revoking all access for requests that use the key.",
+        "tags": [
+          "API keys"
+        ],
+        "summary": "Delete",
+        "operationId": "DeleteApiKey",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "name",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth": {
+      "get": {
+        "description": "Responds with details of the user when suitable authentication material is sent with the request.",
+        "tags": [
+          "User"
+        ],
+        "summary": "Get",
+        "operationId": "Get",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/Profile"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Deletes your user, deleting all records of your user, and revoking access to every resource.",
+        "tags": [
+          "User"
+        ],
+        "summary": "Delete",
+        "operationId": "DeleteUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/create-identity-verification-session": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Get identity verification session",
+        "operationId": "CreateIdentityVerificationSession",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/IdentityVerificationSession"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/permissions": {
+      "get": {
+        "tags": [
+          "Permissions"
+        ],
+        "summary": "List",
+        "operationId": "ListUserPermissions",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "dataCenterId",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "billingAccountId",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListUserPermissionsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/billing-accounts/{billingAccountId}/add-user-permission": {
+      "post": {
+        "tags": [
+          "Permissions"
+        ],
+        "summary": "Add billing account user",
+        "operationId": "AddBillingAccountUserPermission",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "billingAccountId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "dataCenterId": {
+                  "type": "string"
+                },
+                "projectId": {
+                  "type": "string"
+                },
+                "role": {
+                  "$ref": "#/definitions/Role"
+                },
+                "userEmail": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/billing-accounts/{billingAccountId}/remove-user-permission": {
+      "post": {
+        "tags": [
+          "Permissions"
+        ],
+        "summary": "Remove billing account user",
+        "operationId": "RemoveBillingAccountUserPermission",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "billingAccountId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "dataCenterId": {
+                  "type": "string"
+                },
+                "projectId": {
+                  "type": "string"
+                },
+                "role": {
+                  "$ref": "#/definitions/Role"
+                },
+                "userId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/compute/images": {
+      "get": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "List OS images",
+        "operationId": "ListOSImages",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListOSImagesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/compute/search": {
+      "get": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Search machines",
+        "operationId": "SearchCompute",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "cpuModel",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "gpu",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "gpuModel",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "memoryGib",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "orderBy",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "pageNumber",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "pageSize",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "regionId",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "storageGib",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "vcpu",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "dataCenterId",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/SearchComputeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/data-centers/{dataCenterId}/add-user-permission": {
+      "post": {
+        "tags": [
+          "Permissions"
+        ],
+        "summary": "Add data center user",
+        "operationId": "AddDataCenterUserPermission",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "dataCenterId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "billingAccountId": {
+                  "type": "string"
+                },
+                "projectId": {
+                  "type": "string"
+                },
+                "role": {
+                  "$ref": "#/definitions/Role"
+                },
+                "userEmail": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/project/{projectId}/ssh-keys": {
+      "get": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "List SSH keys",
+        "operationId": "ListProjectSshKeys",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListProjectSshKeysResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects": {
+      "get": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "List",
+        "operationId": "ListProjects",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "pageToken",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "pageSize",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListProjectsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Create",
+        "operationId": "CreateProject",
+        "parameters": [
+          {
+            "name": "project",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Project"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/Project"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{id}": {
+      "get": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Get",
+        "operationId": "GetProject",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/Project"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Delete",
+        "operationId": "DeleteProject",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{id}/spend": {
+      "get": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Spend history",
+        "operationId": "GetProjectSpendHistory",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/GetProjectSpendHistoryResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{id}/spend/current": {
+      "get": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Spend",
+        "operationId": "GetProjectCurrentSpend",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ProjectSpend"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{project.id}": {
+      "patch": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Update",
+        "operationId": "UpdateProject",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "project.id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "project",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "billingAccountId": {
+                  "type": "string"
+                },
+                "createBy": {
+                  "type": "string",
+                  "readOnly": true
+                },
+                "resourceCount": {
+                  "type": "integer",
+                  "format": "int32",
+                  "readOnly": true
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/Project"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/add-user-permission": {
+      "post": {
+        "tags": [
+          "Permissions"
+        ],
+        "summary": "Add project user",
+        "operationId": "AddProjectUserPermission",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "billingAccountId": {
+                  "type": "string"
+                },
+                "dataCenterId": {
+                  "type": "string"
+                },
+                "role": {
+                  "$ref": "#/definitions/Role"
+                },
+                "userEmail": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/compute/{id}": {
+      "post": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Create virtual machine",
+        "operationId": "BuyCompute",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "bootDisk": {
+                  "$ref": "#/definitions/Disk"
+                },
+                "customSshKeys": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "gpuQuantity": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "memoryGib": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "osId": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "quantity": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "sshKeySource": {
+                  "$ref": "#/definitions/SshKeySource"
+                },
+                "startScript": {
+                  "type": "string"
+                },
+                "vcpu": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "vmId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/BuyComputeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/instance-count": {
+      "get": {
+        "tags": [
+          "Virtual machines"
+        ],
+        "summary": "Count",
+        "operationId": "CountInstances",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CountInstancesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/instances": {
+      "get": {
+        "tags": [
+          "Virtual machines"
+        ],
+        "summary": "List",
+        "operationId": "ListInstances",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "status",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListInstancesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/instances/{instanceId}": {
+      "get": {
+        "tags": [
+          "Virtual machines"
+        ],
+        "summary": "Get",
+        "operationId": "GetInstance",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/GetInstanceResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/instances/{instanceId}/monitor": {
+      "get": {
+        "tags": [
+          "Virtual machines"
+        ],
+        "summary": "Monitor",
+        "operationId": "MonitorInstance",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/MonitorInstanceResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/instances/{instanceId}/reboot": {
+      "put": {
+        "tags": [
+          "Virtual machines"
+        ],
+        "summary": "Reboot",
+        "operationId": "RebootInstance",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/RebootInstanceResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/instances/{instanceId}/start": {
+      "post": {
+        "tags": [
+          "Virtual machines"
+        ],
+        "summary": "Start",
+        "operationId": "StartInstance",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/StartInstanceResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/instances/{instanceId}/stop": {
+      "post": {
+        "tags": [
+          "Virtual machines"
+        ],
+        "summary": "Stop",
+        "operationId": "StopInstance",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/StopInstanceResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/instances/{instanceId}/terminate": {
+      "post": {
+        "tags": [
+          "Virtual machines"
+        ],
+        "summary": "Terminate",
+        "operationId": "TerminateInstance",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/TerminateInstanceResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/instances/{instanceId}/vnc": {
+      "get": {
+        "tags": [
+          "Virtual machines"
+        ],
+        "summary": "VNC",
+        "operationId": "GetVncConnectUrl",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "connectionId",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/GetVncConnectUrlResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/remove-user-permission": {
+      "post": {
+        "tags": [
+          "Permissions"
+        ],
+        "summary": "Remove project user",
+        "operationId": "RemoveProjectUserPermission",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "billingAccountId": {
+                  "type": "string"
+                },
+                "dataCenterId": {
+                  "type": "string"
+                },
+                "role": {
+                  "$ref": "#/definitions/Role"
+                },
+                "userId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/spend/{spendId}/details": {
+      "get": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Spend details",
+        "operationId": "GetProjectSpendDetails",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "spendId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/GetProjectSpendDetailsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/regions": {
+      "get": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Regions",
+        "operationId": "ListRegions",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListRegionsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/ssh-keys": {
+      "get": {
+        "tags": [
+          "SSH keys"
+        ],
+        "summary": "List",
+        "operationId": "ListSshKeys",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "pageNumber",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "pageSize",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListSshKeysResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "SSH keys"
+        ],
+        "summary": "Create",
+        "operationId": "CreateSshKey",
+        "parameters": [
+          {
+            "name": "sshKey",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SshKey"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/SshKey"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/ssh-keys/{id}": {
+      "get": {
+        "tags": [
+          "SSH keys"
+        ],
+        "summary": "Get",
+        "operationId": "GetSshKey",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/SshKey"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "SSH keys"
+        ],
+        "summary": "Delete",
+        "operationId": "DeleteSshKey",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Any": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiKey": {
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "id": {
+          "type": "string",
+          "readOnly": true
+        },
+        "key": {
+          "type": "string",
+          "readOnly": true
+        }
+      }
+    },
+    "BuyComputeResponse": {
+      "type": "object"
+    },
+    "ComputeInstance": {
+      "type": "object",
+      "properties": {
+        "instance": {
+          "$ref": "#/definitions/Instance"
+        },
+        "lease": {
+          "$ref": "#/definitions/Lease"
+        }
+      }
+    },
+    "CountInstancesResponse": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "CpuModelCategory": {
+      "type": "object",
+      "properties": {
+        "countVmAvailable": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "minPriceHr": {
+          "$ref": "#/definitions/Decimal"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "DataCenterCategory": {
+      "type": "object",
+      "properties": {
+        "countVmAvailable": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "id": {
+          "type": "string"
+        },
+        "minPriceHr": {
+          "$ref": "#/definitions/Decimal"
+        }
+      }
+    },
+    "Decimal": {
+      "description": "A representation of a decimal value, such as 2.5. Clients may convert values\ninto language-native decimal formats, such as Java's [BigDecimal][] or\nPython's [decimal.Decimal][].\n\n[BigDecimal]:\nhttps://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/math/BigDecimal.html\n[decimal.Decimal]: https://docs.python.org/3/library/decimal.html",
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "The decimal value, as a string.\n\nThe string representation consists of an optional sign, `+` (`U+002B`)\nor `-` (`U+002D`), followed by a sequence of zero or more decimal digits\n(\"the integer\"), optionally followed by a fraction, optionally followed\nby an exponent.\n\nThe fraction consists of a decimal point followed by zero or more decimal\ndigits. The string must contain at least one digit in either the integer\nor the fraction. The number formed by the sign, the integer and the\nfraction is referred to as the significand.\n\nThe exponent consists of the character `e` (`U+0065`) or `E` (`U+0045`)\nfollowed by one or more decimal digits.\n\nServices **should** normalize decimal values before storing them by:\n\n  - Removing an explicitly-provided `+` sign (`+2.5` -\u003e `2.5`).\n  - Replacing a zero-length integer value with `0` (`.5` -\u003e `0.5`).\n  - Coercing the exponent character to lower-case (`2.5E8` -\u003e `2.5e8`).\n  - Removing an explicitly-provided zero exponent (`2.5e0` -\u003e `2.5`).\n\nServices **may** perform additional normalization based on its own needs\nand the internal decimal implementation selected, such as shifting the\ndecimal point and exponent value together (example: `2.5e-1` \u003c-\u003e `0.25`).\nAdditionally, services **may** preserve trailing zeroes in the fraction\nto indicate increased precision, but are not required to do so.\n\nNote that only the `.` character is supported to divide the integer\nand the fraction; `,` **should not** be supported regardless of locale.\nAdditionally, thousand separators **should not** be supported. If a\nservice does support them, values **must** be normalized.\n\nThe ENBF grammar is:\n\n    DecimalString =\n      [Sign] Significand [Exponent];\n\n    Sign = '+' | '-';\n\n    Significand =\n      Digits ['.'] [Digits] | [Digits] '.' Digits;\n\n    Exponent = ('e' | 'E') [Sign] Digits;\n\n    Digits = { '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' };\n\nServices **should** clearly document the range of supported values, the\nmaximum supported precision (total number of digits), and, if applicable,\nthe scale (number of digits after the decimal point), as well as how it\nbehaves when receiving out-of-bounds values.\n\nServices **may** choose to accept values passed as input even when the\nvalue has a higher precision or scale than the service supports, and\n**should** round the value to fit the supported scale. Alternatively, the\nservice **may** error with `400 Bad Request` (`INVALID_ARGUMENT` in gRPC)\nif precision would be lost.\n\nServices **should** error with `400 Bad Request` (`INVALID_ARGUMENT` in\ngRPC) if the service receives a value outside of the supported range.",
+          "type": "string"
+        }
+      }
+    },
+    "Disk": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "sizeGib": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "storageClass": {
+          "$ref": "#/definitions/StorageClass"
+        }
+      }
+    },
+    "GenerateApiKeyRequest": {
+      "type": "object",
+      "required": [
+        "apikeyId"
+      ],
+      "properties": {
+        "apikeyId": {
+          "description": "The identifier to use for the api key, which will become the final component of\nthe api key's resource name.\nThis value should be 4-63 characters, and valid characters\nare /[a-z][0-9]-/.",
+          "type": "string"
+        }
+      }
+    },
+    "GetInstanceResponse": {
+      "type": "object",
+      "properties": {
+        "compute": {
+          "$ref": "#/definitions/ComputeInstance"
+        }
+      }
+    },
+    "GetProjectSpendDetailsResponse": {
+      "type": "object",
+      "properties": {
+        "orders": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Order"
+          }
+        },
+        "spend": {
+          "$ref": "#/definitions/ProjectSpend"
+        }
+      }
+    },
+    "GetProjectSpendHistoryResponse": {
+      "type": "object",
+      "properties": {
+        "projectSpendHistory": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/ProjectSpend"
+          }
+        }
+      }
+    },
+    "GetVncConnectUrlResponse": {
+      "type": "object",
+      "properties": {
+        "connectUrl": {
+          "type": "string"
+        },
+        "token": {
+          "type": "string"
+        }
+      }
+    },
+    "GpuModelCategory": {
+      "type": "object",
+      "properties": {
+        "countVmAvailable": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "minPriceHr": {
+          "$ref": "#/definitions/Decimal"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "HostConfigCategory": {
+      "type": "object",
+      "properties": {
+        "countVmAvailable": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "cpuModel": {
+          "type": "string"
+        },
+        "dataCenterId": {
+          "type": "string"
+        },
+        "gpuMemoryGib": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "gpuModel": {
+          "type": "string"
+        },
+        "gpuPriceHr": {
+          "$ref": "#/definitions/Decimal"
+        },
+        "id": {
+          "type": "string"
+        },
+        "memoryGibPriceHr": {
+          "$ref": "#/definitions/Decimal"
+        },
+        "storageGibPriceHr": {
+          "$ref": "#/definitions/Decimal"
+        },
+        "totalGpuPriceHr": {
+          "$ref": "#/definitions/Decimal"
+        },
+        "totalMemoryPriceHr": {
+          "$ref": "#/definitions/Decimal"
+        },
+        "totalPriceHr": {
+          "$ref": "#/definitions/Decimal"
+        },
+        "totalStoragePriceHr": {
+          "$ref": "#/definitions/Decimal"
+        },
+        "totalVcpuPriceHr": {
+          "$ref": "#/definitions/Decimal"
+        },
+        "vcpuPriceHr": {
+          "$ref": "#/definitions/Decimal"
+        }
+      }
+    },
+    "IdentityVerificationSession": {
+      "type": "object",
+      "properties": {
+        "clientSecret": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "Image": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "size": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Instance": {
+      "type": "object",
+      "properties": {
+        "bootDiskSizeGib": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "cpuClass": {
+          "type": "string"
+        },
+        "cpuModel": {
+          "type": "string"
+        },
+        "createBy": {
+          "type": "string",
+          "readOnly": true
+        },
+        "datacenterId": {
+          "type": "string",
+          "readOnly": true
+        },
+        "gpuMem": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "gpuModel": {
+          "type": "string"
+        },
+        "gpuQuantity": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "id": {
+          "type": "string"
+        },
+        "imageDesc": {
+          "type": "string"
+        },
+        "imageId": {
+          "type": "string"
+        },
+        "imageName": {
+          "type": "string"
+        },
+        "lcmState": {
+          "type": "string"
+        },
+        "localIpAddress": {
+          "type": "string"
+        },
+        "memory": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "oneState": {
+          "type": "string"
+        },
+        "priceHr": {
+          "type": "number",
+          "format": "float"
+        },
+        "publicIpAddress": {
+          "type": "string"
+        },
+        "regionId": {
+          "type": "string",
+          "readOnly": true
+        },
+        "regionName": {
+          "type": "string",
+          "readOnly": true
+        },
+        "renewableEnergy": {
+          "type": "boolean"
+        },
+        "vcpus": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "InstanceMonitoringItem": {
+      "type": "object",
+      "properties": {
+        "cpu": {
+          "type": "number",
+          "format": "float"
+        },
+        "diskRdBytes": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "diskRdIops": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "diskWrBytes": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "diskWrIops": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "memory": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "netRx": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "netTx": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "timestamp": {
+          "type": "string"
+        }
+      }
+    },
+    "Lease": {
+      "type": "object",
+      "properties": {
+        "createBy": {
+          "type": "string",
+          "readOnly": true
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "endTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "id": {
+          "type": "string"
+        },
+        "infrastructureType": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "ListApiKeysResponse": {
+      "type": "object",
+      "properties": {
+        "apiKeys": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/ApiKey"
+          }
+        },
+        "pageNumber": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ListInstancesResponse": {
+      "type": "object",
+      "properties": {
+        "instances": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/ComputeInstance"
+          }
+        }
+      }
+    },
+    "ListOSImagesResponse": {
+      "type": "object",
+      "properties": {
+        "images": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Image"
+          }
+        }
+      }
+    },
+    "ListProjectSshKeysResponse": {
+      "type": "object",
+      "properties": {
+        "sshKeys": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/SshKey"
+          }
+        }
+      }
+    },
+    "ListProjectsResponse": {
+      "type": "object",
+      "properties": {
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageToken": {
+          "type": "string"
+        },
+        "projects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Project"
+          }
+        }
+      }
+    },
+    "ListRegionsResponse": {
+      "type": "object",
+      "properties": {
+        "regions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Region"
+          }
+        }
+      }
+    },
+    "ListSshKeysResponse": {
+      "type": "object",
+      "properties": {
+        "pageNumber": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "sshKeys": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/SshKey"
+          }
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ListUserPermissionsResponse": {
+      "type": "object",
+      "properties": {
+        "billingAccountPermissions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/UserPermission"
+          }
+        },
+        "dataCenterPermissions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/UserPermission"
+          }
+        },
+        "projectPermissions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/UserPermission"
+          }
+        }
+      }
+    },
+    "MonitorInstanceResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/InstanceMonitoringItem"
+          }
+        }
+      }
+    },
+    "Order": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "endTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "orderId": {
+          "type": "string"
+        },
+        "priceHr": {
+          "type": "number",
+          "format": "float"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "spend": {
+          "$ref": "#/definitions/Decimal"
+        },
+        "startTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "uid": {
+          "type": "string"
+        }
+      }
+    },
+    "Profile": {
+      "type": "object",
+      "properties": {
+        "emailAddress": {
+          "type": "string"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "picture": {
+          "type": "string"
+        }
+      }
+    },
+    "Project": {
+      "type": "object",
+      "properties": {
+        "billingAccountId": {
+          "type": "string"
+        },
+        "createBy": {
+          "type": "string",
+          "readOnly": true
+        },
+        "id": {
+          "type": "string"
+        },
+        "resourceCount": {
+          "type": "integer",
+          "format": "int32",
+          "readOnly": true
+        }
+      }
+    },
+    "ProjectSpend": {
+      "type": "object",
+      "properties": {
+        "endTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "projectId": {
+          "type": "string"
+        },
+        "spend": {
+          "$ref": "#/definitions/Decimal"
+        },
+        "startTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "uid": {
+          "type": "string"
+        }
+      }
+    },
+    "RebootInstanceResponse": {
+      "type": "object",
+      "properties": {
+        "compute": {
+          "$ref": "#/definitions/ComputeInstance"
+        }
+      }
+    },
+    "Region": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "Role": {
+      "type": "string",
+      "default": "UNKNOWN",
+      "enum": [
+        "UNKNOWN",
+        "OWNER",
+        "VIEWER",
+        "EDITOR"
+      ]
+    },
+    "SearchComputeRequest": {
+      "type": "object",
+      "properties": {
+        "cpuModel": {
+          "type": "string"
+        },
+        "dataCenterId": {
+          "type": "string"
+        },
+        "gpu": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "gpuModel": {
+          "type": "string"
+        },
+        "memoryGib": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "orderBy": {
+          "type": "string"
+        },
+        "pageNumber": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "regionId": {
+          "type": "string"
+        },
+        "storageGib": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "vcpu": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "SearchComputeResponse": {
+      "type": "object",
+      "properties": {
+        "countVmAvailable": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "cpuModels": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/CpuModelCategory"
+          }
+        },
+        "dataCenters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/DataCenterCategory"
+          }
+        },
+        "gpuModels": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/GpuModelCategory"
+          }
+        },
+        "hostConfigs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/HostConfigCategory"
+          }
+        },
+        "maxGpu": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxMemoryGib": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxVcpu": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "request": {
+          "$ref": "#/definitions/SearchComputeRequest"
+        }
+      }
+    },
+    "SshKey": {
+      "type": "object",
+      "properties": {
+        "comment": {
+          "type": "string",
+          "readOnly": true
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "fingerprint": {
+          "type": "string",
+          "readOnly": true
+        },
+        "id": {
+          "type": "string",
+          "readOnly": true
+        },
+        "publicKey": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "readOnly": true
+        }
+      }
+    },
+    "SshKeySource": {
+      "type": "string",
+      "default": "SSH_KEY_SOURCE_UNKNOWN",
+      "enum": [
+        "SSH_KEY_SOURCE_UNKNOWN",
+        "SSH_KEY_SOURCE_PROJECT",
+        "SSH_KEY_SOURCE_USER",
+        "SSH_KEY_SOURCE_NONE"
+      ]
+    },
+    "StartInstanceResponse": {
+      "type": "object"
+    },
+    "Status": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Any"
+          }
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "StopInstanceResponse": {
+      "type": "object"
+    },
+    "StorageClass": {
+      "type": "string",
+      "default": "STORAGE_CLASS_UNKNOWN",
+      "enum": [
+        "STORAGE_CLASS_UNKNOWN",
+        "STORAGE_CLASS_LOCAL",
+        "STORAGE_CLASS_NETWORK"
+      ]
+    },
+    "TerminateInstanceResponse": {
+      "type": "object"
+    },
+    "UserPermission": {
+      "type": "object",
+      "properties": {
+        "role": {
+          "type": "string"
+        },
+        "userEmail": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "userPicture": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
