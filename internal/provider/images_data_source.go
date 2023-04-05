@@ -37,7 +37,7 @@ type ImagesDataSourceModel struct {
 }
 
 func (d *ImagesDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = "cudo_images" //req.ProviderTypeName + "cudo_images"
+	resp.TypeName = "cudo_images"
 }
 
 func (d *ImagesDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
