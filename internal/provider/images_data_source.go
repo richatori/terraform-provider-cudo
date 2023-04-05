@@ -27,7 +27,7 @@ type imagesModel struct {
 	Id          types.String `tfsdk:"id"`
 	Name        types.String `tfsdk:"name"`
 	Description types.String `tfsdk:"description"`
-	Size        types.String `tfsdk:"string"`
+	Size        types.String `tfsdk:"size"`
 }
 
 // ImagesDataSourceModel describes the data source data model.
@@ -122,6 +122,7 @@ func (d *ImagesDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 
 		state.Images = append(state.Images, imageState)
 		//tflog.Debug(ctx, image.Name)
+
 	}
 
 	state.ID = types.StringValue("placeholder")
