@@ -114,6 +114,8 @@ func (p *CudoProvider) DataSources(ctx context.Context) []func() datasource.Data
 	return []func() datasource.DataSource{
 		NewImagesDataSource,
 		NewRegionsDataSource,
+		NewComputeConfigsDataSource,
+		NewSshKeysDataSource,
 	}
 }
 
