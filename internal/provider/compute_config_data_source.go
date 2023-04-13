@@ -8,7 +8,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -147,10 +146,6 @@ func (d *ComputeConfigsDataSource) Schema(ctx context.Context, req datasource.Sc
 							MarkdownDescription: "CPU model name",
 							Computed:            true,
 						},
-						//"cpu_model_category": schema.StringAttribute{
-						//	MarkdownDescription: "CPU model category",
-						//	Computed:            true,
-						//},
 						"data_center_id": schema.StringAttribute{
 							MarkdownDescription: "ID of the data center where the VM is located",
 							Computed:            true,
@@ -163,10 +158,6 @@ func (d *ComputeConfigsDataSource) Schema(ctx context.Context, req datasource.Sc
 							MarkdownDescription: "GPU model name",
 							Computed:            true,
 						},
-						//"gpu_model_category": schema.StringAttribute{
-						//	MarkdownDescription: "GPU model category",
-						//	Computed:            true,
-						//},
 						"gpu_price_hr": schema.StringAttribute{
 							MarkdownDescription: "Price per GPU per hour",
 							Computed:            true,
@@ -245,21 +236,49 @@ func (d *ComputeConfigsDataSource) Read(ctx context.Context, req datasource.Read
 
 	params := search.NewSearchComputeParams()
 
-	var v int32
-	v = 2
+	if state.SearchParams == nil {
+		state.SearchParams = &SearchParamsModel{}
+	}
 
-	var m int32
-	m = 4
+	cpuModel := state.SearchParams.CpuModel.ValueString()
+	params.CPUModel = &cpuModel
 
-	var gp int32
-	gp = 0
-	var st int32
-	st = 10
+	dataCenterID := state.SearchParams.DataCenterID.ValueString()
+	params.DataCenterID = &dataCenterID
 
-	params.MemoryGib = &m
-	params.Vcpu = &v
-	params.Gpu = &gp
-	params.StorageGib = &st
+	var gpu int32
+	gpu = int32(state.SearchParams.GpuCount.ValueInt64())
+	if gpu < 0 {
+		gpu = 0
+	}
+	params.Gpu = &gpu
+
+	gpuModel := state.SearchParams.GpuModel.ValueString()
+	params.GpuModel = &gpuModel
+
+	var memoryGiB int32
+	memoryGiB = int32(state.SearchParams.MemoryGiB.ValueInt64())
+	if memoryGiB < 2 {
+		memoryGiB = 2
+	}
+	params.MemoryGib = &memoryGiB
+
+	regionID := state.SearchParams.RegionID.ValueString()
+	params.RegionID = &regionID
+
+	var storageGiB int32
+	storageGiB = int32(state.SearchParams.StorageGiB.ValueInt64())
+	if storageGiB < 10 {
+		storageGiB = 10
+	}
+	params.StorageGib = &storageGiB
+
+	var vcpus int32
+	vcpus = int32(state.SearchParams.VCPU.ValueInt64())
+	if vcpus < 1 {
+		vcpus = 1
+	}
+	params.Vcpu = &vcpus
 
 	res, err := d.client.Search.SearchCompute(params)
 	if err != nil {
@@ -270,9 +289,7 @@ func (d *ComputeConfigsDataSource) Read(ctx context.Context, req datasource.Read
 		return
 	}
 
-	tflog.Debug(ctx, "Host config size: "+res.String()+fmt.Sprintf("%d", len(res.Payload.HostConfigs)))
 	for _, cfg := range res.Payload.HostConfigs {
-		tflog.Debug(ctx, "Host config: "+cfg.ID)
 		computeConfigState := ComputeConfigsModel{
 			Id:                  types.StringValue(cfg.ID),
 			CpuModel:            types.StringValue(cfg.CPUModel),
@@ -295,22 +312,20 @@ func (d *ComputeConfigsDataSource) Read(ctx context.Context, req datasource.Read
 	}
 
 	state.SearchParams = &SearchParamsModel{
-		CpuModel:     types.StringValue(""),
-		DataCenterID: types.StringValue(""),
-		GpuCount:     types.Int64Value(0),
-		GpuModel:     types.StringValue(""),
-		MemoryGiB:    types.Int64Value(0),
-		OrderBy:      types.StringValue(""),
-		PageNumber:   types.Int64Value(0),
-		PageSize:     types.Int64Value(0),
-		RegionID:     types.StringValue(""),
-		StorageGiB:   types.Int64Value(0),
-		VCPU:         types.Int64Value(0),
+		CpuModel:     types.StringValue(res.Payload.Request.CPUModel),
+		DataCenterID: types.StringValue(res.Payload.Request.DataCenterID),
+		GpuCount:     types.Int64Value(int64(res.Payload.Request.Gpu)),
+		GpuModel:     types.StringValue(res.Payload.Request.GpuModel),
+		MemoryGiB:    types.Int64Value(int64(res.Payload.Request.MemoryGib)),
+		OrderBy:      types.StringValue(res.Payload.Request.OrderBy),
+		PageNumber:   types.Int64Value(int64(res.Payload.Request.PageNumber)),
+		PageSize:     types.Int64Value(int64(res.Payload.Request.PageSize)),
+		RegionID:     types.StringValue(res.Payload.Request.RegionID),
+		StorageGiB:   types.Int64Value(int64(res.Payload.Request.StorageGib)),
+		VCPU:         types.Int64Value(int64(res.Payload.Request.Vcpu)),
 	}
 
 	state.ID = types.StringValue("placeholder")
-
-	tflog.Trace(ctx, "read a data source")
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
