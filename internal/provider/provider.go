@@ -32,6 +32,7 @@ type CudoProviderModel struct {
 	Endpoint   types.String `tfsdk:"endpoint"`
 	APIKey     types.String `tfsdk:"api_key"`
 	DisableTLS types.Bool   `tfsdk:"disable_tls"`
+	ProjectID  types.String `tfsdk:"project_id"`
 }
 
 func (p *CudoProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
@@ -54,6 +55,10 @@ func (p *CudoProvider) Schema(ctx context.Context, req provider.SchemaRequest, r
 				MarkdownDescription: "Whether to connect using TLS",
 				Optional:            true,
 			},
+			"project_id": schema.BoolAttribute{
+				MarkdownDescription: "Which project id to use",
+				Optional:            true,
+			},
 		},
 	}
 }
@@ -67,17 +72,10 @@ func (p *CudoProvider) Configure(ctx context.Context, req provider.ConfigureRequ
 		return
 	}
 
-	if config.APIKey.IsUnknown() {
-		resp.Diagnostics.AddAttributeError(
-			path.Root("api_key"),
-			"Unknown Cudo API Key",
-			"The provider cannot create the client without an API KEY please pass it or set the CUDO_API_KEY environment variable.",
-		)
-	}
-
+	// API Key checks
 	api_key := os.Getenv("CUDO_API_KEY")
 
-	if !config.APIKey.IsNull() {
+	if config.APIKey.ValueString() != "" {
 		api_key = config.APIKey.ValueString()
 	}
 
@@ -89,14 +87,45 @@ func (p *CudoProvider) Configure(ctx context.Context, req provider.ConfigureRequ
 		)
 	}
 
-	// TODO check endpoint
-	// set default for production
+	// Endpoint checks
 
-	//transport := httptransport.New("rest.staging.compute.cudo.org", "", []string{"https"})
-	//transport.DefaultAuthentication = httptransport.BearerToken(api_key)
-	//transport.Debug = true
+	endpoint := os.Getenv("CUDO_ENDPOINT")
 
-	tx := httptransport.New("rest.staging.compute.cudo.org", client.DefaultBasePath, client.DefaultSchemes)
+	if config.Endpoint.ValueString() != "" {
+		endpoint = config.Endpoint.ValueString()
+	}
+
+	if endpoint == "" {
+		endpoint = "rest.compute.cudo.org"
+	}
+
+	disable_tls := config.DisableTLS.ValueBool()
+
+	// Project
+
+	project_id := os.Getenv("CUDO_PROJECT_ID")
+
+	if config.ProjectID.ValueString() != "" {
+		project_id = config.ProjectID.ValueString()
+	}
+
+	if project_id == "" {
+		resp.Diagnostics.AddAttributeError(
+			path.Root("project_id"),
+			"Missing Cudo project ID",
+			"The provider cannot create the client without a project_id please pass it or set the CUDO_PROJECT_ID environment variable.",
+		)
+	}
+
+	var scheme []string
+
+	if disable_tls {
+		scheme = []string{"https"}
+	} else {
+		scheme = client.DefaultSchemes
+	}
+
+	tx := httptransport.New(endpoint, client.DefaultBasePath, scheme)
 	tx.DefaultAuthentication = httptransport.BearerToken(api_key)
 	clientx := client.New(tx, strfmt.Default)
 
