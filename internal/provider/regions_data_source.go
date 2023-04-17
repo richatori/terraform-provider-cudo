@@ -2,7 +2,6 @@ package provider
 
 import (
 	"context"
-	"cudo.org/v1/terraform-provider-cudo/internal/client"
 	"cudo.org/v1/terraform-provider-cudo/internal/client/search"
 	"fmt"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -20,7 +19,7 @@ func NewRegionsDataSource() datasource.DataSource {
 
 // RegionsDataSource defines the data source implementation.
 type RegionsDataSource struct {
-	client *client.CudoComputeService
+	client *CudoClientData
 }
 
 type RegionsModel struct {
@@ -48,8 +47,8 @@ func (d *RegionsDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 				Description: "Placeholder identifier attribute.",
 				Computed:    true,
 			},
-			"images": schema.ListNestedAttribute{
-				Description: "List of images.",
+			"regions": schema.ListNestedAttribute{
+				Description: "List of regions.",
 				Computed:    true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -74,7 +73,7 @@ func (d *RegionsDataSource) Configure(ctx context.Context, req datasource.Config
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.CudoComputeService)
+	client, ok := req.ProviderData.(*CudoClientData)
 
 	if !ok {
 		resp.Diagnostics.AddError(
@@ -91,7 +90,7 @@ func (d *RegionsDataSource) Configure(ctx context.Context, req datasource.Config
 func (d *RegionsDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var state RegionsDataSourceModel
 
-	res, err := d.client.Search.ListRegions(search.NewListRegionsParams())
+	res, err := d.client.Client.Search.ListRegions(search.NewListRegionsParams())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to read regions",
@@ -115,4 +114,5 @@ func (d *RegionsDataSource) Read(ctx context.Context, req datasource.ReadRequest
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+
 }

@@ -2,7 +2,6 @@ package provider
 
 import (
 	"context"
-	"cudo.org/v1/terraform-provider-cudo/internal/client"
 	"cudo.org/v1/terraform-provider-cudo/internal/client/search"
 	"fmt"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -20,7 +19,7 @@ func NewImagesDataSource() datasource.DataSource {
 
 // ImagesDataSource defines the data source implementation.
 type ImagesDataSource struct {
-	client *client.CudoComputeService
+	client *CudoClientData
 }
 
 type imagesModel struct {
@@ -84,8 +83,7 @@ func (d *ImagesDataSource) Configure(ctx context.Context, req datasource.Configu
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.CudoComputeService)
-
+	client, ok := req.ProviderData.(*CudoClientData)
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Data Source Configure Type",
@@ -101,7 +99,7 @@ func (d *ImagesDataSource) Configure(ctx context.Context, req datasource.Configu
 func (d *ImagesDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var state ImagesDataSourceModel
 
-	res, err := d.client.Search.ListOSImages(search.NewListOSImagesParams())
+	res, err := d.client.Client.Search.ListOSImages(search.NewListOSImagesParams())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to read images",

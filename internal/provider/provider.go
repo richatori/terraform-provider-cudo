@@ -35,6 +35,11 @@ type CudoProviderModel struct {
 	ProjectID  types.String `tfsdk:"project_id"`
 }
 
+type CudoClientData struct {
+	Client           *client.CudoComputeService
+	DefaultProjectID string
+}
+
 func (p *CudoProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
 	resp.TypeName = "scaffolding"
 	resp.Version = p.version
@@ -55,7 +60,7 @@ func (p *CudoProvider) Schema(ctx context.Context, req provider.SchemaRequest, r
 				MarkdownDescription: "Whether to connect using TLS",
 				Optional:            true,
 			},
-			"project_id": schema.BoolAttribute{
+			"project_id": schema.StringAttribute{
 				MarkdownDescription: "Which project id to use",
 				Optional:            true,
 			},
@@ -129,8 +134,12 @@ func (p *CudoProvider) Configure(ctx context.Context, req provider.ConfigureRequ
 	tx.DefaultAuthentication = httptransport.BearerToken(api_key)
 	clientx := client.New(tx, strfmt.Default)
 
-	resp.DataSourceData = clientx
-	resp.ResourceData = clientx
+	ccd := &CudoClientData{
+		Client:           clientx,
+		DefaultProjectID: project_id,
+	}
+	resp.DataSourceData = ccd
+	resp.ResourceData = ccd
 }
 
 func (p *CudoProvider) Resources(ctx context.Context) []func() resource.Resource {
@@ -144,7 +153,8 @@ func (p *CudoProvider) DataSources(ctx context.Context) []func() datasource.Data
 		NewImagesDataSource,
 		NewRegionsDataSource,
 		NewComputeConfigsDataSource,
-		NewSshKeysDataSource,
+		//NewSshKeysDataSource,
+		//NewVMInstanceDataSource,
 	}
 }
 

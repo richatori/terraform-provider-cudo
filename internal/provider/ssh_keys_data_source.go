@@ -2,7 +2,6 @@ package provider
 
 import (
 	"context"
-	"cudo.org/v1/terraform-provider-cudo/internal/client"
 	"cudo.org/v1/terraform-provider-cudo/internal/client/ssh_keys"
 	"fmt"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -20,7 +19,7 @@ func NewSshKeysDataSource() datasource.DataSource {
 
 // SshKeysDataSource defines the data source implementation.
 type SshKeysDataSource struct {
-	client *client.CudoComputeService
+	client *CudoClientData
 }
 
 type SshKeysModel struct {
@@ -89,7 +88,7 @@ func (d *SshKeysDataSource) Configure(ctx context.Context, req datasource.Config
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.CudoComputeService)
+	client, ok := req.ProviderData.(*CudoClientData)
 
 	if !ok {
 		resp.Diagnostics.AddError(
@@ -106,7 +105,7 @@ func (d *SshKeysDataSource) Configure(ctx context.Context, req datasource.Config
 func (d *SshKeysDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var state SshKeysDataSourceModel
 
-	res, err := d.client.SSHKeys.ListSSHKeys(ssh_keys.NewListSSHKeysParams())
+	res, err := d.client.Client.SSHKeys.ListSSHKeys(ssh_keys.NewListSSHKeysParams())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to read sh keys",
