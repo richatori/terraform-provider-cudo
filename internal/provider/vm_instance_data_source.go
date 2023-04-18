@@ -2,7 +2,6 @@ package provider
 
 import (
 	"context"
-	client2 "cudo.org/v1/terraform-provider-cudo/internal/client"
 	"cudo.org/v1/terraform-provider-cudo/internal/client/virtual_machines"
 	"fmt"
 	"github.com/go-openapi/strfmt"
@@ -21,7 +20,7 @@ func NewVMInstanceDataSource() datasource.DataSource {
 
 // VMInstanceDataSource defines the data source implementation.
 type VMInstanceDataSource struct {
-	client *client2.CudoComputeService
+	client *CudoClientData
 }
 
 type VMModel struct {
@@ -189,7 +188,7 @@ func (d *VMInstanceDataSource) Configure(ctx context.Context, req datasource.Con
 		return
 	}
 
-	client, ok := req.ProviderData.(*client2.CudoComputeService)
+	client, ok := req.ProviderData.(*CudoClientData)
 
 	if !ok {
 		resp.Diagnostics.AddError(
@@ -208,9 +207,10 @@ func (d *VMInstanceDataSource) Read(ctx context.Context, req datasource.ReadRequ
 
 	resp.Diagnostics.Append(req.Config.Get(ctx, &state)...)
 
-	res, err := d.client.VirtualMachines.ListInstances(&virtual_machines.ListInstancesParams{
-		ProjectID: "", //d.client.DefaultProjectID,
-	})
+	params := virtual_machines.NewListInstancesParams()
+	params.ProjectID = d.client.DefaultProjectID
+
+	res, err := d.client.Client.VirtualMachines.ListInstances(params)
 
 	if err != nil {
 		resp.Diagnostics.AddError(

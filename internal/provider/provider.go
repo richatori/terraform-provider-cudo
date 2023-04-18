@@ -153,8 +153,8 @@ func (p *CudoProvider) DataSources(ctx context.Context) []func() datasource.Data
 		NewImagesDataSource,
 		NewRegionsDataSource,
 		NewComputeConfigsDataSource,
-		//NewSshKeysDataSource,
-		//NewVMInstanceDataSource,
+		NewSshKeysDataSource,
+		NewVMInstanceDataSource,
 	}
 }
 

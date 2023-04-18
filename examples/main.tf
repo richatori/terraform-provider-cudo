@@ -38,10 +38,10 @@ output "configs" {
 value = data.cudo_compute_configs.cfgs
 }
 
-# data "cudo_vm_instances" "ins" {
-#
-# }
-#
-# output "instances" {
-# value = data.cudo_vm_instances.ins
-# }
+data "cudo_vm_instances" "ins" {
+
+}
+
+output "instances" {
+value = data.cudo_vm_instances.ins
+}

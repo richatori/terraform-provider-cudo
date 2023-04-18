@@ -87,7 +87,7 @@ func (d *ImagesDataSource) Configure(ctx context.Context, req datasource.Configu
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Data Source Configure Type",
-			fmt.Sprintf("Expected *client.CudoComputeService, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *CudoClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return

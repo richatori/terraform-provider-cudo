@@ -2,7 +2,6 @@ package provider
 
 import (
 	"context"
-	"cudo.org/v1/terraform-provider-cudo/internal/client"
 	"cudo.org/v1/terraform-provider-cudo/internal/client/search"
 	"fmt"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -19,7 +18,7 @@ func NewComputeConfigsDataSource() datasource.DataSource {
 
 // ComputeConfigsDataSource defines the data source implementation.
 type ComputeConfigsDataSource struct {
-	client *client.CudoComputeService
+	client *CudoClientData
 }
 
 type ComputeConfigsModel struct {
@@ -215,12 +214,12 @@ func (d *ComputeConfigsDataSource) Configure(ctx context.Context, req datasource
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.CudoComputeService)
+	client, ok := req.ProviderData.(*CudoClientData)
 
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Data Source Configure Type",
-			fmt.Sprintf("Expected *client.CudoComputeService, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *CudoClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return
@@ -280,7 +279,7 @@ func (d *ComputeConfigsDataSource) Read(ctx context.Context, req datasource.Read
 	}
 	params.Vcpu = &vcpus
 
-	res, err := d.client.Search.SearchCompute(params)
+	res, err := d.client.Client.Search.SearchCompute(params)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to read compute_configs",
