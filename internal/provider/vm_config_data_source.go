@@ -10,18 +10,18 @@ import (
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ datasource.DataSource = &ComputeConfigsDataSource{}
+var _ datasource.DataSource = &VMConfigsDataSource{}
 
-func NewComputeConfigsDataSource() datasource.DataSource {
-	return &ComputeConfigsDataSource{}
+func NewVMConfigsDataSource() datasource.DataSource {
+	return &VMConfigsDataSource{}
 }
 
-// ComputeConfigsDataSource defines the data source implementation.
-type ComputeConfigsDataSource struct {
+// VMConfigsDataSource defines the data source implementation.
+type VMConfigsDataSource struct {
 	client *CudoClientData
 }
 
-type ComputeConfigsModel struct {
+type VMConfigsModel struct {
 	Id                  types.String `tfsdk:"id"`
 	CpuModel            types.String `tfsdk:"cpu_model"`
 	DataCenterId        types.String `tfsdk:"data_center_id"`
@@ -53,29 +53,29 @@ type SearchParamsModel struct {
 	VCPU         types.Int64  `tfsdk:"vcpu"`
 }
 
-// ComputeConfigsDataSourceModel describes the data source data model.
-type ComputeConfigsDataSourceModel struct {
-	ComputeConfigs []ComputeConfigsModel `tfsdk:"compute_configs"`
-	ID             types.String          `tfsdk:"id"`
-	SearchParams   *SearchParamsModel    `tfsdk:"search_params"`
+// VMConfigsDataSourceModel describes the data source data model.
+type VMConfigsDataSourceModel struct {
+	VMConfigs    []VMConfigsModel   `tfsdk:"vm_configs"`
+	ID           types.String       `tfsdk:"id"`
+	SearchParams *SearchParamsModel `tfsdk:"search_params"`
 }
 
-func (d *ComputeConfigsDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = "cudo_compute_configs"
+func (d *VMConfigsDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+	resp.TypeName = "cudo_vm_configs"
 }
 
-func (d *ComputeConfigsDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *VMConfigsDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "ComputeConfigs data source",
-		Description:         "Fetches the list of compute_configs",
+		MarkdownDescription: "VMConfigs data source",
+		Description:         "Fetches the list of vm configs",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: "Placeholder identifier attribute.",
 				Computed:    true,
 			},
 			"search_params": schema.SingleNestedAttribute{
-				Description: "Search parameters for limiting compute types",
+				Description: "Search parameters for limiting vm types",
 				Computed:    false,
 				Optional:    true,
 				Attributes: map[string]schema.Attribute{
@@ -136,7 +136,7 @@ func (d *ComputeConfigsDataSource) Schema(ctx context.Context, req datasource.Sc
 					},
 				},
 			},
-			"compute_configs": schema.ListNestedAttribute{
+			"vm_configs": schema.ListNestedAttribute{
 				Description: "List of available vm configurations",
 				Computed:    true,
 				NestedObject: schema.NestedAttributeObject{
@@ -162,7 +162,7 @@ func (d *ComputeConfigsDataSource) Schema(ctx context.Context, req datasource.Sc
 							Computed:            true,
 						},
 						"id": schema.StringAttribute{
-							MarkdownDescription: "Compute config identifier",
+							MarkdownDescription: "VM config identifier",
 							Computed:            true,
 						},
 						"memory_gib_price_hr": schema.StringAttribute{
@@ -208,7 +208,7 @@ func (d *ComputeConfigsDataSource) Schema(ctx context.Context, req datasource.Sc
 	}
 }
 
-func (d *ComputeConfigsDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
+func (d *VMConfigsDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -228,8 +228,8 @@ func (d *ComputeConfigsDataSource) Configure(ctx context.Context, req datasource
 	d.client = client
 }
 
-func (d *ComputeConfigsDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var state ComputeConfigsDataSourceModel
+func (d *VMConfigsDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+	var state VMConfigsDataSourceModel
 
 	resp.Diagnostics.Append(req.Config.Get(ctx, &state)...)
 
@@ -282,14 +282,14 @@ func (d *ComputeConfigsDataSource) Read(ctx context.Context, req datasource.Read
 	res, err := d.client.Client.Search.SearchCompute(params)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Unable to read compute_configs",
+			"Unable to read vm_configs",
 			err.Error(),
 		)
 		return
 	}
 
 	for _, cfg := range res.Payload.HostConfigs {
-		computeConfigState := ComputeConfigsModel{
+		vmConfigState := VMConfigsModel{
 			Id:                  types.StringValue(cfg.ID),
 			CpuModel:            types.StringValue(cfg.CPUModel),
 			DataCenterId:        types.StringValue(cfg.DataCenterID),
@@ -307,7 +307,7 @@ func (d *ComputeConfigsDataSource) Read(ctx context.Context, req datasource.Read
 			CountVmAvailable:    types.Int64Value(int64(cfg.CountVMAvailable)),
 		}
 
-		state.ComputeConfigs = append(state.ComputeConfigs, computeConfigState)
+		state.VMConfigs = append(state.VMConfigs, vmConfigState)
 	}
 
 	state.SearchParams = &SearchParamsModel{
