@@ -11,7 +11,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -34,23 +33,23 @@ type VMResource struct {
 // VMResourceModel describes the resource data model.
 type VMResourceModel struct {
 	BootDiskClass types.String `tfsdk:"boot_disk_class"`
-	BootDiskSize  types.Int64  `tfsdk:"boot_disk_size"`
+	BootDiskSize  types.Int64  `tfsdk:"boot_disk_size_gib"`
 	ConfigId      types.String `tfsdk:"config_id"`
 	GPUs          types.Int64  `tfsdk:"gpu_quantity"`
-	Image         types.String `tfsdk:"image_id"`
-	Memory        types.Int64  `tfsdk:"memory"`
+	ImageID       types.String `tfsdk:"image_id"`
+	Memory        types.Int64  `tfsdk:"memory_gib"`
 	Password      types.String `tfsdk:"password"`
 	VCPUs         types.Int64  `tfsdk:"vcpu_quantity"`
 	VMId          types.String `tfsdk:"vm_id"`
 	// Response
-	CPUClass        types.String  `tfsdk:"cpu_class"`
-	CPUModel        types.String  `tfsdk:"cpu_model"`
-	CreateBy        types.String  `tfsdk:"create_by"`
-	DatacenterID    types.String  `tfsdk:"datacenter_id"`
-	GpuMem          types.Int64   `tfsdk:"gpu_mem"`
-	GpuModel        types.String  `tfsdk:"gpu_model"`
-	ImageDesc       types.String  `tfsdk:"image_desc"`
-	ImageID         types.String  `tfsdk:"image_id"`
+	CPUClass     types.String `tfsdk:"cpu_class"`
+	CPUModel     types.String `tfsdk:"cpu_model"`
+	CreateBy     types.String `tfsdk:"create_by"`
+	DatacenterID types.String `tfsdk:"datacenter_id"`
+	GpuMem       types.Int64  `tfsdk:"gpu_mem"`
+	GpuModel     types.String `tfsdk:"gpu_model"`
+	ImageDesc    types.String `tfsdk:"image_desc"`
+
 	ImageName       types.String  `tfsdk:"image_name"`
 	LcmState        types.String  `tfsdk:"lcm_state"`
 	LocalIPAddress  types.String  `tfsdk:"local_ip_address"`
@@ -63,7 +62,7 @@ type VMResourceModel struct {
 }
 
 func (r *VMResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "cudo_vm"
+	resp.TypeName = "cudo_vm"
 }
 
 func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
@@ -73,33 +72,32 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 		Attributes: map[string]schema.Attribute{
 			"boot_disk_class": schema.StringAttribute{
 				MarkdownDescription: "Storage class for boot disk, either 'local' or 'network'",
-				Optional:            true,
+				Required:            true,
 				Validators:          []validator.String{stringvalidator.OneOf("local", "network")},
 			},
-			"boot_disk_size": schema.Int64Attribute{
+			"boot_disk_size_gib": schema.Int64Attribute{
 				MarkdownDescription: "Size of the boot disk in GiB",
-				Optional:            false,
+				Required:            true,
 				Validators:          []validator.Int64{int64validator.AtLeast(10)},
 			},
 			"config_id": schema.StringAttribute{
 				MarkdownDescription: "VM config id, from vm config data source",
-				Optional:            false,
+				Required:            true,
 				Validators:          []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
 			},
 			"gpu_quantity": schema.Int64Attribute{
 				MarkdownDescription: "Number of GPUs",
 				Optional:            true,
-				Default:             int64default.StaticInt64(0),
 				Validators:          []validator.Int64{int64validator.AtLeast(0), int64validator.AtMost(10)},
 			},
 			"image_id": schema.StringAttribute{
 				MarkdownDescription: "OS image ID on boot disk",
-				Optional:            false,
+				Required:            true,
 				Validators:          []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
 			},
-			"memory": schema.Int64Attribute{
+			"memory_gib": schema.Int64Attribute{
 				MarkdownDescription: "Amount of VM memory in GiB",
-				Optional:            false,
+				Required:            true,
 				Validators:          []validator.Int64{int64validator.AtLeast(1), int64validator.AtMost(1000)},
 			},
 			"password": schema.StringAttribute{
@@ -109,12 +107,12 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 			},
 			"vcpu_quantity": schema.Int64Attribute{
 				MarkdownDescription: "Number of VCPUs",
-				Optional:            false,
+				Required:            true,
 				Validators:          []validator.Int64{int64validator.AtLeast(1), int64validator.AtMost(100)},
 			},
 			"vm_id": schema.StringAttribute{
 				MarkdownDescription: "Your chosen VM identifier",
-				Optional:            false,
+				Required:            true,
 				Validators:          []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id e.g. my-vm")},
 			},
 
@@ -236,7 +234,7 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		},
 		GpuQuantity: int32(state.GPUs.ValueInt64()),
 		MemoryGib:   int32(state.Memory.ValueInt64()),
-		OsID:        state.Image.ValueString(),
+		OsID:        state.ImageID.ValueString(),
 		Password:    state.Password.ValueString(),
 		Quantity:    1,
 		Vcpu:        int32(state.VCPUs.ValueInt64()),
@@ -252,6 +250,38 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		)
 		return
 	}
+
+	paramsGet := virtual_machines.NewGetInstanceParams()
+	paramsGet.ProjectID = r.client.DefaultProjectID
+	paramsGet.InstanceID = state.VMId.ValueString()
+
+	res, err := r.client.Client.VirtualMachines.GetInstance(paramsGet)
+
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to create VM resource",
+			err.Error(),
+		)
+		return
+	}
+
+	state.CPUClass = types.StringValue(res.Payload.Compute.Instance.CPUClass)
+	state.CPUModel = types.StringValue(res.Payload.Compute.Instance.CPUModel)
+	state.CreateBy = types.StringValue(res.Payload.Compute.Instance.CreateBy)
+	state.DatacenterID = types.StringValue(res.Payload.Compute.Instance.DatacenterID)
+	state.GpuMem = types.Int64Value(res.Payload.Compute.Instance.GpuMem)
+	state.GpuModel = types.StringValue(res.Payload.Compute.Instance.GpuModel)
+	state.ImageDesc = types.StringValue(res.Payload.Compute.Instance.ImageDesc)
+	state.ImageID = types.StringValue(res.Payload.Compute.Instance.ImageID)
+	state.ImageName = types.StringValue(res.Payload.Compute.Instance.ImageName)
+	state.LcmState = types.StringValue(res.Payload.Compute.Instance.LcmState)
+	state.LocalIPAddress = types.StringValue(res.Payload.Compute.Instance.LocalIPAddress)
+	state.OneState = types.StringValue(res.Payload.Compute.Instance.OneState)
+	state.PriceHr = types.Float64Value(float64(res.Payload.Compute.Instance.PriceHr))
+	state.PublicIPAddress = types.StringValue(res.Payload.Compute.Instance.PublicIPAddress)
+	state.RegionID = types.StringValue(res.Payload.Compute.Instance.RegionID)
+	state.RegionName = types.StringValue(res.Payload.Compute.Instance.RegionName)
+	state.RenewableEnergy = types.BoolValue(res.Payload.Compute.Instance.RenewableEnergy)
 
 	tflog.Trace(ctx, "created a vm")
 
@@ -269,7 +299,6 @@ func (r *VMResource) Read(ctx context.Context, req resource.ReadRequest, resp *r
 	}
 
 	params := virtual_machines.NewGetInstanceParams()
-
 	params.ProjectID = r.client.DefaultProjectID
 	params.InstanceID = state.VMId.ValueString()
 

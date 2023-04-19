@@ -38,7 +38,7 @@ type VMModel struct {
 	ImageName       types.String  `tfsdk:"image_name"`
 	LcmState        types.String  `tfsdk:"lcm_state"`
 	LocalIPAddress  types.String  `tfsdk:"local_ip_address"`
-	Memory          types.Int64   `tfsdk:"memory"`
+	Memory          types.Int64   `tfsdk:"memory_gib"`
 	OneState        types.String  `tfsdk:"one_state"`
 	PriceHr         types.Float64 `tfsdk:"price_hr"`
 	PublicIPAddress types.String  `tfsdk:"public_ip_address"`
@@ -143,7 +143,7 @@ func (d *VMInstanceDataSource) Schema(ctx context.Context, req datasource.Schema
 							MarkdownDescription: "The local IP address of the VM instance.",
 							Computed:            true,
 						},
-						"memory": schema.Int64Attribute{
+						"memory_gib": schema.Int64Attribute{
 							MarkdownDescription: "The amount of memory allocated to the VM instance.",
 							Computed:            true,
 						},

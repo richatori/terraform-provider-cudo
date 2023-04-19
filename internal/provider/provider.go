@@ -144,7 +144,7 @@ func (p *CudoProvider) Configure(ctx context.Context, req provider.ConfigureRequ
 
 func (p *CudoProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
-		NewExampleResource,
+		NewVMResource,
 	}
 }
 
