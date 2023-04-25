@@ -2,12 +2,10 @@ package provider
 
 import (
 	"context"
-	"cudo.org/v1/terraform-provider-cudo/internal/client/ssh_keys"
 	"fmt"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -93,7 +91,7 @@ func (d *SshKeysDataSource) Configure(ctx context.Context, req datasource.Config
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Data Source Configure Type",
-			fmt.Sprintf("Expected *CudoClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *CudoClientData, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return
@@ -105,30 +103,36 @@ func (d *SshKeysDataSource) Configure(ctx context.Context, req datasource.Config
 func (d *SshKeysDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var state SshKeysDataSourceModel
 
-	res, err := d.client.Client.SSHKeys.ListSSHKeys(ssh_keys.NewListSSHKeysParams())
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Unable to read sh keys",
-			err.Error(),
-		)
-		return
-	}
+	resp.Diagnostics.Append(req.Config.Get(ctx, &state)...)
 
-	for _, key := range res.Payload.SSHKeys {
-		SshKeystate := SshKeysModel{
-			Id:          types.StringValue(key.ID),
-			PublicKey:   types.StringValue(key.PublicKey),
-			Fingerprint: types.StringValue(key.Fingerprint),
-			Comment:     types.StringValue(key.Comment),
-			Type:        types.StringValue(key.Type),
-		}
-
-		state.SshKeys = append(state.SshKeys, SshKeystate)
-	}
-
-	state.ID = types.StringValue("placeholder")
-
-	tflog.Trace(ctx, "read a data source")
+	//tflog.Trace(ctx, "SSH keys request")
+	//
+	//res, err := d.client.Client.SSHKeys.ListSSHKeys(ssh_keys.NewListSSHKeysParams())
+	//if err != nil {
+	//	resp.Diagnostics.AddError(
+	//		"Unable to read sh keys",
+	//		err.Error(),
+	//	)
+	//	return
+	//}
+	//
+	//tflog.Trace(ctx, "SSH keys response "+res.String())
+	//
+	//for _, key := range res.Payload.SSHKeys {
+	//	SshKeystate := SshKeysModel{
+	//		//Id:          types.StringValue(key.ID),
+	//		PublicKey:   types.StringValue(key.PublicKey),
+	//		Fingerprint: types.StringValue(key.Fingerprint),
+	//		Comment:     types.StringValue(key.Comment),
+	//		Type:        types.StringValue(key.Type),
+	//	}
+	//
+	//	state.SshKeys = append(state.SshKeys, SshKeystate)
+	//}
+	//
+	//state.ID = types.StringValue("placeholder")
+	//
+	//tflog.Trace(ctx, "SSH Keys state")
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
