@@ -49,7 +49,7 @@ provider "cudo" {
  }
 
  resource "cudo_vm" "my-vm" {
-   config_id          = "oaml6hca4fb0"
+   config_id          = data.cudo_vm_configs.cfgs.vm_configs[0].id
    vcpu_quantity      = 1
    boot_disk_size_gib = 50
    image_id           = "ubuntu-minimal-2004"

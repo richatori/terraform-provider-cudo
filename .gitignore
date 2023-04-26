@@ -36,3 +36,4 @@ website/vendor
 *.winfile eol=crlf
 
 examples/dev/main.tf
+examples/dev2/main.tf
