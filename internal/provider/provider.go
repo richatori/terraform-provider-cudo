@@ -41,7 +41,7 @@ type CudoClientData struct {
 }
 
 func (p *CudoProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
-	resp.TypeName = "scaffolding"
+	resp.TypeName = "cudo"
 	resp.Version = p.version
 }
 
