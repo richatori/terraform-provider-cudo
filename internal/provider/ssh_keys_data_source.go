@@ -32,7 +32,7 @@ type SshKeysModel struct {
 // SshKeysDataSourceModel describes the data source data model.
 type SshKeysDataSourceModel struct {
 	SshKeys []SshKeysModel `tfsdk:"ssh_keys"`
-	//ID      types.String   `tfsdk:"id"`
+	ID      types.String   `tfsdk:"id"`
 }
 
 func (d *SshKeysDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -45,10 +45,10 @@ func (d *SshKeysDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 		MarkdownDescription: "SshKeys data source",
 		Description:         "Fetches the list of SSH keys",
 		Attributes: map[string]schema.Attribute{
-			//"id": schema.StringAttribute{
-			//	Description: "Placeholder identifier attribute.",
-			//	Computed:    true,
-			//},
+			"id": schema.StringAttribute{
+				Description: "Placeholder identifier attribute.",
+				Computed:    true,
+			},
 			"ssh_keys": schema.ListNestedAttribute{
 				Description: "List of SSH keys",
 				Computed:    true,
@@ -109,7 +109,7 @@ func (d *SshKeysDataSource) Read(ctx context.Context, req datasource.ReadRequest
 	res, err := d.client.Client.SSHKeys.ListSSHKeys(ssh_keys.NewListSSHKeysParams())
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Unable to read sh keys",
+			"Unable to read ssh keys",
 			err.Error(),
 		)
 		return
@@ -117,7 +117,7 @@ func (d *SshKeysDataSource) Read(ctx context.Context, req datasource.ReadRequest
 
 	for _, key := range res.Payload.SSHKeys {
 		SshKeystate := SshKeysModel{
-			//Id:          types.StringValue(key.ID),
+			Id:          types.StringValue(key.ID),
 			PublicKey:   types.StringValue(key.PublicKey),
 			Fingerprint: types.StringValue(key.Fingerprint),
 			Comment:     types.StringValue(key.Comment),
@@ -127,7 +127,7 @@ func (d *SshKeysDataSource) Read(ctx context.Context, req datasource.ReadRequest
 		state.SshKeys = append(state.SshKeys, SshKeystate)
 	}
 
-	//state.ID = types.StringValue("placeholder")
+	state.ID = types.StringValue("placeholder")
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
