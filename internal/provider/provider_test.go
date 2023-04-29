@@ -1,7 +1,10 @@
 package provider
 
 import (
+	"cudo.org/v1/terraform-provider-cudo/internal/client"
 	"fmt"
+	httptransport "github.com/go-openapi/runtime/client"
+	"github.com/go-openapi/strfmt"
 	"os"
 	"testing"
 
@@ -13,16 +16,20 @@ var testAccProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServe
 	"cudo": providerserver.NewProtocol6WithError(New("test")()),
 }
 
+var project_id = "terraform-testing"
+var endpoint = "rest.staging.compute.cudo.org"
+var apiKey string
+
 func getProviderConfig() string {
-	apiKey := os.Getenv("TF_TEST_CUDO_API_KEY")
+	apiKey = os.Getenv("TF_TEST_CUDO_API_KEY")
 
 	return fmt.Sprintf(`
 provider "cudo" {
   api_key     = "%s"
-  endpoint    = "rest.staging.compute.cudo.org"
-  project_id  = "terraform-testing"
+  endpoint    = "%s"
+  project_id  = "%s"
 }
-`, apiKey)
+`, apiKey, endpoint, project_id)
 }
 
 func testAccPreCheck(t *testing.T) {
@@ -30,4 +37,11 @@ func testAccPreCheck(t *testing.T) {
 	// about the appropriate environment variables being set are common to see in a pre-check
 	// function.
 
+}
+
+func getClient() *client.CudoComputeService {
+	tx := httptransport.New(endpoint, client.DefaultBasePath, client.DefaultSchemes)
+	tx.DefaultAuthentication = httptransport.BearerToken(apiKey)
+	clientx := client.New(tx, strfmt.Default)
+	return clientx
 }

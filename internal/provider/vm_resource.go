@@ -32,6 +32,7 @@ type VMResource struct {
 
 // VMResourceModel describes the resource data model.
 type VMResourceModel struct {
+	Id            types.String `tfsdk:"id"`
 	BootDiskClass types.String `tfsdk:"boot_disk_class"`
 	BootDiskSize  types.Int64  `tfsdk:"boot_disk_size_gib"`
 	ConfigId      types.String `tfsdk:"config_id"`
@@ -70,6 +71,10 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 		// This description is used by the documentation generator and the language server.
 		MarkdownDescription: "VM resource",
 		Attributes: map[string]schema.Attribute{
+			"id": schema.StringAttribute{
+				MarkdownDescription: "placeholder",
+				Computed:            true,
+			},
 			"boot_disk_class": schema.StringAttribute{
 				MarkdownDescription: "Storage class for boot disk, either 'local' or 'network'",
 				Required:            true,
@@ -265,6 +270,7 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		return
 	}
 
+	state.Id = types.StringValue("placeholder")
 	state.CPUClass = types.StringValue(res.Payload.Compute.Instance.CPUClass)
 	state.CPUModel = types.StringValue(res.Payload.Compute.Instance.CPUModel)
 	state.CreateBy = types.StringValue(res.Payload.Compute.Instance.CreateBy)
@@ -312,6 +318,7 @@ func (r *VMResource) Read(ctx context.Context, req resource.ReadRequest, resp *r
 		return
 	}
 
+	state.Id = types.StringValue("placeholder")
 	state.CPUClass = types.StringValue(res.Payload.Compute.Instance.CPUClass)
 	state.CPUModel = types.StringValue(res.Payload.Compute.Instance.CPUModel)
 	state.CreateBy = types.StringValue(res.Payload.Compute.Instance.CreateBy)
@@ -359,6 +366,7 @@ func (r *VMResource) Update(ctx context.Context, req resource.UpdateRequest, res
 		return
 	}
 
+	state.Id = types.StringValue("placeholder")
 	state.CPUClass = types.StringValue(res.Payload.Compute.Instance.CPUClass)
 	state.CPUModel = types.StringValue(res.Payload.Compute.Instance.CPUModel)
 	state.CreateBy = types.StringValue(res.Payload.Compute.Instance.CreateBy)
