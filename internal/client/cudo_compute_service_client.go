@@ -10,13 +10,13 @@ import (
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 
-	"cudo.org/v1/terraform-provider-cudo/internal/client/api_keys"
-	"cudo.org/v1/terraform-provider-cudo/internal/client/permissions"
-	"cudo.org/v1/terraform-provider-cudo/internal/client/projects"
-	"cudo.org/v1/terraform-provider-cudo/internal/client/search"
-	"cudo.org/v1/terraform-provider-cudo/internal/client/ssh_keys"
-	"cudo.org/v1/terraform-provider-cudo/internal/client/user"
-	"cudo.org/v1/terraform-provider-cudo/internal/client/virtual_machines"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/client/api_keys"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/client/permissions"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/client/projects"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/client/search"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/client/ssh_keys"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/client/user"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/client/virtual_machines"
 )
 
 // Default cudo compute service HTTP client.

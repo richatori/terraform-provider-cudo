@@ -1,4 +1,4 @@
-module cudo.org/v1/terraform-provider-cudo
+module github.com/CudoVentures/terraform-provider-cudo
 
 go 1.19
 

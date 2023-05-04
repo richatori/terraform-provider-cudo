@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"cudo.org/v1/terraform-provider-cudo/internal/provider"
 	"flag"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/provider"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"log"
 )
@@ -35,8 +35,7 @@ func main() {
 	flag.Parse()
 
 	opts := providerserver.ServeOpts{
-		// TODO: Update this string with the published name of your provider.
-		Address: "cudo.org/v1/cudo", //"registry.terraform.io/hashicorp/scaffolding",
+		Address: "registry.terraform.io/providers/CudoVentures/cudo",
 		Debug:   debug,
 	}
 

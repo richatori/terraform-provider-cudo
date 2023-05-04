@@ -1,8 +1,8 @@
 package provider
 
 import (
-	"cudo.org/v1/terraform-provider-cudo/internal/client"
 	"fmt"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/client"
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 	"os"

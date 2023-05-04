@@ -2,8 +2,8 @@ package provider
 
 import (
 	"context"
-	"cudo.org/v1/terraform-provider-cudo/internal/client/search"
 	"fmt"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/client/search"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"

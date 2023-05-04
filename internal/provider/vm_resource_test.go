@@ -1,8 +1,8 @@
 package provider
 
 import (
-	"cudo.org/v1/terraform-provider-cudo/internal/helper"
 	"fmt"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/helper"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"

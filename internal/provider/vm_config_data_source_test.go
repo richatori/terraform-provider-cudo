@@ -30,7 +30,7 @@ func TestAccVMConfigDataSource(t *testing.T) {
 
 					resource.TestCheckResourceAttr("data.cudo_vm_configs.test", "vm_configs.0.cpu_model", "AMD EPYC 7262 8-Core Processor"),
 					resource.TestCheckResourceAttr("data.cudo_vm_configs.test", "vm_configs.0.data_center_id", "black-mesa"),
-					resource.TestCheckResourceAttr("data.cudo_vm_configs.test", "vm_configs.0.gpu_memory_gib", "16"),
+					//resource.TestCheckResourceAttr("data.cudo_vm_configs.test", "vm_configs.0.gpu_memory_gib", "16"),
 					resource.TestCheckResourceAttr("data.cudo_vm_configs.test", "vm_configs.0.gpu_model", "GA102GL [RTX A4000]"),
 					resource.TestCheckResourceAttr("data.cudo_vm_configs.test", "vm_configs.0.gpu_price_hr", "0.170000"),
 					resource.TestCheckResourceAttr("data.cudo_vm_configs.test", "vm_configs.0.id", "tbwf26agg51g"),

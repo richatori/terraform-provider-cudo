@@ -15,7 +15,7 @@ import (
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 
-	"cudo.org/v1/terraform-provider-cudo/internal/models"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
 )
 
 // AddBillingAccountUserPermissionReader is a Reader for the AddBillingAccountUserPermission structure.

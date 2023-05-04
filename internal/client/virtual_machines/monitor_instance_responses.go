@@ -12,7 +12,7 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
 
-	"cudo.org/v1/terraform-provider-cudo/internal/models"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
 )
 
 // MonitorInstanceReader is a Reader for the MonitorInstance structure.

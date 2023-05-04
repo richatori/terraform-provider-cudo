@@ -16,7 +16,7 @@ import (
 	"github.com/go-openapi/swag"
 	"github.com/go-openapi/validate"
 
-	"cudo.org/v1/terraform-provider-cudo/internal/models"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
 )
 
 // UpdateProjectReader is a Reader for the UpdateProject structure.

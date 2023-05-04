@@ -12,7 +12,7 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
 
-	"cudo.org/v1/terraform-provider-cudo/internal/models"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
 )
 
 // ListUserPermissionsReader is a Reader for the ListUserPermissions structure.

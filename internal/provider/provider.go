@@ -2,7 +2,7 @@ package provider
 
 import (
 	"context"
-	"cudo.org/v1/terraform-provider-cudo/internal/client"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 
 	httptransport "github.com/go-openapi/runtime/client"

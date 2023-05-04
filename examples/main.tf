@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     cudo = {
-      source = "cudo.org/v1/cudo"
+      source = "CudoVentures/cudo"
     }
   }
 }

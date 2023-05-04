@@ -2,8 +2,8 @@ package provider
 
 import (
 	"context"
-	"cudo.org/v1/terraform-provider-cudo/internal/client/virtual_machines"
 	"fmt"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/client/virtual_machines"
 	"github.com/go-openapi/strfmt"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"

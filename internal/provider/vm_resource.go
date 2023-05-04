@@ -2,10 +2,10 @@ package provider
 
 import (
 	"context"
-	"cudo.org/v1/terraform-provider-cudo/internal/client/projects"
-	"cudo.org/v1/terraform-provider-cudo/internal/client/virtual_machines"
-	"cudo.org/v1/terraform-provider-cudo/internal/models"
 	"fmt"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/client/projects"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/client/virtual_machines"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
