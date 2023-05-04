@@ -39,3 +39,13 @@ In order to run the full suite of Acceptance tests, run `make testacc`.
 ```shell
 make testacc
 ```
+
+## Releases
+
+To make a release:
+
+```shell
+git tag v0.2.1
+git push origin v0.2.1
+```
+
