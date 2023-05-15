@@ -14,7 +14,8 @@ VM resource
 
 ```terraform
 resource "cudo_vm" "my-vm" {
-  config_id          = "oaml6hca4fb0"
+  machine_type       = "standard"
+  datacenter         = "gb-bournemouth-1"
   vcpu_quantity      = 1
   boot_disk_size_gib = 50
   image_id           = "ubuntu-minimal-2004"
@@ -31,8 +32,9 @@ resource "cudo_vm" "my-vm" {
 
 - `boot_disk_class` (String) Storage class for boot disk, either 'local' or 'network'
 - `boot_disk_size_gib` (Number) Size of the boot disk in GiB
-- `config_id` (String) VM config id, from vm config data source
+- `datacenter_id` (String) The unique identifier of the datacenter where the VM instance is located.
 - `image_id` (String) OS image ID on boot disk
+- `machine_type` (String) VM machine type, from machine type data source
 - `memory_gib` (Number) Amount of VM memory in GiB
 - `vcpu_quantity` (Number) Number of VCPUs
 - `vm_id` (String) Your chosen VM identifier
@@ -44,11 +46,8 @@ resource "cudo_vm" "my-vm" {
 
 ### Read-Only
 
-- `cpu_class` (String) The class of the CPU.
 - `cpu_model` (String) The model of the CPU.
 - `create_by` (String) The name of the user who created the VM instance.
-- `datacenter_id` (String) The unique identifier of the datacenter where the VM instance is located.
-- `gpu_mem` (Number) The amount of memory on the GPU.
 - `gpu_model` (String) The model of the GPU.
 - `id` (String) placeholder
 - `image_desc` (String) The description of the image used to create the VM instance.

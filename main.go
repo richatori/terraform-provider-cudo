@@ -35,7 +35,7 @@ func main() {
 	flag.Parse()
 
 	opts := providerserver.ServeOpts{
-		Address: "registry.terraform.io/providers/CudoVentures/cudo",
+		Address: "registry.terraform.io/cudoventures/cudo",
 		Debug:   debug,
 	}
 

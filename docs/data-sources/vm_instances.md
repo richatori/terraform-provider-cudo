@@ -26,11 +26,9 @@ VMInstance data source
 Read-Only:
 
 - `boot_disk_size_gib` (Number) The size of the boot disk in gibibytes (GiB).
-- `cpu_class` (String) The class of the CPU.
 - `cpu_model` (String) The model of the CPU.
 - `create_by` (String) The name of the user who created the VM instance.
 - `datacenter_id` (String) The unique identifier of the datacenter where the VM instance is located.
-- `gpu_mem` (Number) The amount of memory on the GPU.
 - `gpu_model` (String) The model of the GPU.
 - `gpu_quantity` (Number) The number of GPUs attached to the VM instance.
 - `id` (String) The unique identifier of the VM instance.

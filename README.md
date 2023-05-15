@@ -27,7 +27,14 @@ If you wish to work on the provider, you'll first need [Go](http://www.golang.or
 
 To compile the provider, run `go install`. This will build the provider and put the provider binary in the `$GOPATH/bin` directory.
 
+
+## Documentation
 To generate or update documentation, run `go generate`.
+
+or to change name:
+
+go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs --rendered-provider-name Cudo
+
 
 
 
