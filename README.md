@@ -27,6 +27,22 @@ If you wish to work on the provider, you'll first need [Go](http://www.golang.or
 
 To compile the provider, run `go install`. This will build the provider and put the provider binary in the `$GOPATH/bin` directory.
 
+To run locally add the code below to ~/.terraformrc
+
+```
+provider_installation {
+
+  dev_overrides {
+      "cudoventures/cudo" = "/home/<USER-DIR>/go/bin"
+  }
+
+  # For all other providers, install them directly from their origin provider
+  # registries as normal. If you omit this, Terraform will _only_ use
+  # the dev_overrides block, and so no other providers will be available.
+  direct {}
+}
+
+```
 
 ## Documentation
 To generate or update documentation, run `go generate`.
