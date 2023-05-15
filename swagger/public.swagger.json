@@ -441,6 +441,92 @@
         }
       }
     },
+    "/v1/compute/search_v2": {
+      "get": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Search machines",
+        "operationId": "SearchCompute2",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "cpuModel",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "gpu",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "gpuModel",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "memoryGib",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "orderBy",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "pageNumber",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "pageSize",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "regionId",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "storageGib",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "vcpu",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "dataCenterId",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/SearchComputeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
     "/v1/data-centers/{dataCenterId}/add-user-permission": {
       "post": {
         "tags": [
@@ -809,93 +895,6 @@
             "description": "A successful response.",
             "schema": {
               "type": "object"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/Status"
-            }
-          }
-        }
-      }
-    },
-    "/v1/projects/{projectId}/compute/{id}": {
-      "post": {
-        "tags": [
-          "Projects"
-        ],
-        "summary": "Create virtual machine",
-        "operationId": "BuyCompute",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "projectId",
-            "in": "path",
-            "required": true
-          },
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "bootDisk": {
-                  "$ref": "#/definitions/Disk"
-                },
-                "customSshKeys": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "gpuQuantity": {
-                  "type": "integer",
-                  "format": "int32"
-                },
-                "memoryGib": {
-                  "type": "integer",
-                  "format": "int32"
-                },
-                "osId": {
-                  "type": "string"
-                },
-                "password": {
-                  "type": "string"
-                },
-                "quantity": {
-                  "type": "integer",
-                  "format": "int32"
-                },
-                "sshKeySource": {
-                  "$ref": "#/definitions/SshKeySource"
-                },
-                "startScript": {
-                  "type": "string"
-                },
-                "vcpu": {
-                  "type": "integer",
-                  "format": "int32"
-                },
-                "vmId": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/BuyComputeResponse"
             }
           },
           "default": {
@@ -1328,6 +1327,89 @@
         }
       }
     },
+    "/v1/projects/{projectId}/vm": {
+      "post": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Create virtual machine",
+        "operationId": "CreateVM",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "bootDisk": {
+                  "$ref": "#/definitions/CreateVMRequest.Disk"
+                },
+                "bootDiskImageId": {
+                  "type": "string"
+                },
+                "customSshKeys": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "dataCenterId": {
+                  "type": "string"
+                },
+                "gpus": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "machineType": {
+                  "type": "string"
+                },
+                "memoryGib": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "sshKeySource": {
+                  "$ref": "#/definitions/CreateVMRequest.SshKeySource"
+                },
+                "startScript": {
+                  "type": "string"
+                },
+                "vcpus": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "vmId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CreateVMResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
     "/v1/regions": {
       "get": {
         "tags": [
@@ -1508,9 +1590,6 @@
         }
       }
     },
-    "BuyComputeResponse": {
-      "type": "object"
-    },
     "ComputeInstance": {
       "type": "object",
       "properties": {
@@ -1546,6 +1625,39 @@
         }
       }
     },
+    "CreateVMRequest.Disk": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "sizeGib": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "storageClass": {
+          "$ref": "#/definitions/StorageClass"
+        }
+      }
+    },
+    "CreateVMRequest.SshKeySource": {
+      "type": "string",
+      "default": "SSH_KEY_SOURCE_UNKNOWN",
+      "enum": [
+        "SSH_KEY_SOURCE_UNKNOWN",
+        "SSH_KEY_SOURCE_PROJECT",
+        "SSH_KEY_SOURCE_USER",
+        "SSH_KEY_SOURCE_NONE"
+      ]
+    },
+    "CreateVMResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
     "DataCenterCategory": {
       "type": "object",
       "properties": {
@@ -1568,21 +1680,6 @@
         "value": {
           "description": "The decimal value, as a string.\n\nThe string representation consists of an optional sign, `+` (`U+002B`)\nor `-` (`U+002D`), followed by a sequence of zero or more decimal digits\n(\"the integer\"), optionally followed by a fraction, optionally followed\nby an exponent.\n\nThe fraction consists of a decimal point followed by zero or more decimal\ndigits. The string must contain at least one digit in either the integer\nor the fraction. The number formed by the sign, the integer and the\nfraction is referred to as the significand.\n\nThe exponent consists of the character `e` (`U+0065`) or `E` (`U+0045`)\nfollowed by one or more decimal digits.\n\nServices **should** normalize decimal values before storing them by:\n\n  - Removing an explicitly-provided `+` sign (`+2.5` -\u003e `2.5`).\n  - Replacing a zero-length integer value with `0` (`.5` -\u003e `0.5`).\n  - Coercing the exponent character to lower-case (`2.5E8` -\u003e `2.5e8`).\n  - Removing an explicitly-provided zero exponent (`2.5e0` -\u003e `2.5`).\n\nServices **may** perform additional normalization based on its own needs\nand the internal decimal implementation selected, such as shifting the\ndecimal point and exponent value together (example: `2.5e-1` \u003c-\u003e `0.25`).\nAdditionally, services **may** preserve trailing zeroes in the fraction\nto indicate increased precision, but are not required to do so.\n\nNote that only the `.` character is supported to divide the integer\nand the fraction; `,` **should not** be supported regardless of locale.\nAdditionally, thousand separators **should not** be supported. If a\nservice does support them, values **must** be normalized.\n\nThe ENBF grammar is:\n\n    DecimalString =\n      [Sign] Significand [Exponent];\n\n    Sign = '+' | '-';\n\n    Significand =\n      Digits ['.'] [Digits] | [Digits] '.' Digits;\n\n    Exponent = ('e' | 'E') [Sign] Digits;\n\n    Digits = { '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' };\n\nServices **should** clearly document the range of supported values, the\nmaximum supported precision (total number of digits), and, if applicable,\nthe scale (number of digits after the decimal point), as well as how it\nbehaves when receiving out-of-bounds values.\n\nServices **may** choose to accept values passed as input even when the\nvalue has a higher precision or scale than the service supports, and\n**should** round the value to fit the supported scale. Alternatively, the\nservice **may** error with `400 Bad Request` (`INVALID_ARGUMENT` in gRPC)\nif precision would be lost.\n\nServices **should** error with `400 Bad Request` (`INVALID_ARGUMENT` in\ngRPC) if the service receives a value outside of the supported range.",
           "type": "string"
-        }
-      }
-    },
-    "Disk": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "sizeGib": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "storageClass": {
-          "$ref": "#/definitions/StorageClass"
         }
       }
     },
@@ -1672,10 +1769,6 @@
         "dataCenterId": {
           "type": "string"
         },
-        "gpuMemoryGib": {
-          "type": "integer",
-          "format": "int32"
-        },
         "gpuModel": {
           "type": "string"
         },
@@ -1683,6 +1776,9 @@
           "$ref": "#/definitions/Decimal"
         },
         "id": {
+          "type": "string"
+        },
+        "machineType": {
           "type": "string"
         },
         "memoryGibPriceHr": {
@@ -1740,6 +1836,10 @@
         "size": {
           "type": "string"
         },
+        "sizeGib": {
+          "type": "integer",
+          "format": "int32"
+        },
         "tags": {
           "type": "array",
           "items": {
@@ -1755,9 +1855,6 @@
           "type": "integer",
           "format": "int64"
         },
-        "cpuClass": {
-          "type": "string"
-        },
         "cpuModel": {
           "type": "string"
         },
@@ -1768,10 +1865,6 @@
         "datacenterId": {
           "type": "string",
           "readOnly": true
-        },
-        "gpuMem": {
-          "type": "integer",
-          "format": "int64"
         },
         "gpuModel": {
           "type": "string"
@@ -2294,16 +2387,6 @@
         }
       }
     },
-    "SshKeySource": {
-      "type": "string",
-      "default": "SSH_KEY_SOURCE_UNKNOWN",
-      "enum": [
-        "SSH_KEY_SOURCE_UNKNOWN",
-        "SSH_KEY_SOURCE_PROJECT",
-        "SSH_KEY_SOURCE_USER",
-        "SSH_KEY_SOURCE_NONE"
-      ]
-    },
     "StartInstanceResponse": {
       "type": "object"
     },
@@ -2344,6 +2427,9 @@
     "UserPermission": {
       "type": "object",
       "properties": {
+        "permissionRole": {
+          "$ref": "#/definitions/Role"
+        },
         "role": {
           "type": "string"
         },

@@ -26,11 +26,9 @@ type VMInstanceDataSource struct {
 type VMModel struct {
 	Id              types.String  `tfsdk:"id"`
 	BootDiskSizeGib types.Int64   `tfsdk:"boot_disk_size_gib"`
-	CPUClass        types.String  `tfsdk:"cpu_class"`
 	CPUModel        types.String  `tfsdk:"cpu_model"`
 	CreateBy        types.String  `tfsdk:"create_by"`
 	DatacenterID    types.String  `tfsdk:"datacenter_id"`
-	GpuMem          types.Int64   `tfsdk:"gpu_mem"`
 	GpuModel        types.String  `tfsdk:"gpu_model"`
 	GpuQuantity     types.Int64   `tfsdk:"gpu_quantity"`
 	ImageDesc       types.String  `tfsdk:"image_desc"`
@@ -95,10 +93,6 @@ func (d *VMInstanceDataSource) Schema(ctx context.Context, req datasource.Schema
 							MarkdownDescription: "The size of the boot disk in gibibytes (GiB).",
 							Computed:            true,
 						},
-						"cpu_class": schema.StringAttribute{
-							MarkdownDescription: "The class of the CPU.",
-							Computed:            true,
-						},
 						"cpu_model": schema.StringAttribute{
 							MarkdownDescription: "The model of the CPU.",
 							Computed:            true,
@@ -109,10 +103,6 @@ func (d *VMInstanceDataSource) Schema(ctx context.Context, req datasource.Schema
 						},
 						"datacenter_id": schema.StringAttribute{
 							MarkdownDescription: "The unique identifier of the datacenter where the VM instance is located.",
-							Computed:            true,
-						},
-						"gpu_mem": schema.Int64Attribute{
-							MarkdownDescription: "The amount of memory on the GPU.",
 							Computed:            true,
 						},
 						"gpu_model": schema.StringAttribute{
@@ -224,11 +214,9 @@ func (d *VMInstanceDataSource) Read(ctx context.Context, req datasource.ReadRequ
 		vmState := VMModel{
 			Id:              types.StringValue(i.Instance.ID),
 			BootDiskSizeGib: types.Int64Value(i.Instance.BootDiskSizeGib),
-			CPUClass:        types.StringValue(i.Instance.CPUClass),
 			CPUModel:        types.StringValue(i.Instance.CPUModel),
 			CreateBy:        types.StringValue(i.Instance.CreateBy),
 			DatacenterID:    types.StringValue(i.Instance.DatacenterID),
-			GpuMem:          types.Int64Value(i.Instance.GpuMem),
 			GpuModel:        types.StringValue(i.Instance.GpuModel),
 			GpuQuantity:     types.Int64Value(i.Instance.GpuQuantity),
 			ImageDesc:       types.StringValue(i.Instance.ImageDesc),

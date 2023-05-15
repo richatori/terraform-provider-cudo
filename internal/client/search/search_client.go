@@ -34,6 +34,8 @@ type ClientService interface {
 
 	SearchCompute(params *SearchComputeParams, opts ...ClientOption) (*SearchComputeOK, error)
 
+	SearchCompute2(params *SearchCompute2Params, opts ...ClientOption) (*SearchCompute2OK, error)
+
 	SetTransport(transport runtime.ClientTransport)
 }
 
@@ -145,6 +147,43 @@ func (a *Client) SearchCompute(params *SearchComputeParams, opts ...ClientOption
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*SearchComputeDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+SearchCompute2 searches machines
+*/
+func (a *Client) SearchCompute2(params *SearchCompute2Params, opts ...ClientOption) (*SearchCompute2OK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewSearchCompute2Params()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "SearchCompute2",
+		Method:             "GET",
+		PathPattern:        "/v1/compute/search_v2",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &SearchCompute2Reader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*SearchCompute2OK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*SearchCompute2Default)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

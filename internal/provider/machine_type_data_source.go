@@ -10,24 +10,25 @@ import (
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ datasource.DataSource = &VMConfigsDataSource{}
+var _ datasource.DataSource = &MachineTypeDataSource{}
 
-func NewVMConfigsDataSource() datasource.DataSource {
-	return &VMConfigsDataSource{}
+func NewMachineTypeDataSource() datasource.DataSource {
+	return &MachineTypeDataSource{}
 }
 
-// VMConfigsDataSource defines the data source implementation.
-type VMConfigsDataSource struct {
+// MachineTypeDataSource defines the data source implementation.
+type MachineTypeDataSource struct {
 	client *CudoClientData
 }
 
-type VMConfigsModel struct {
-	Id                  types.String `tfsdk:"id"`
-	CpuModel            types.String `tfsdk:"cpu_model"`
-	DataCenterId        types.String `tfsdk:"data_center_id"`
-	GpuMemoryGib        types.Int64  `tfsdk:"gpu_memory_gib"`
+type MachineTypeModel struct {
+	Id           types.String `tfsdk:"id"`
+	CpuModel     types.String `tfsdk:"cpu_model"`
+	DataCenterId types.String `tfsdk:"data_center_id"`
+	//GpuMemoryGib        types.Int64  `tfsdk:"gpu_memory_gib"`
 	GpuModel            types.String `tfsdk:"gpu_model"`
 	GpuPriceHr          types.String `tfsdk:"gpu_price_hr"`
+	MachineType         types.String `tfsdk:"machine_type"`
 	MemoryGibPriceHr    types.String `tfsdk:"memory_gib_price_hr"`
 	StorageGibPriceHr   types.String `tfsdk:"storage_gib_price_hr"`
 	TotalGpuPriceHr     types.String `tfsdk:"total_gpu_price_hr"`
@@ -53,29 +54,29 @@ type SearchParamsModel struct {
 	VCPU         types.Int64  `tfsdk:"vcpu"`
 }
 
-// VMConfigsDataSourceModel describes the data source data model.
-type VMConfigsDataSourceModel struct {
-	VMConfigs    []VMConfigsModel   `tfsdk:"vm_configs"`
+// MachineTypeDataSourceModel describes the data source data model.
+type MachineTypeDataSourceModel struct {
+	MachineType  []MachineTypeModel `tfsdk:"machine_types"`
 	ID           types.String       `tfsdk:"id"`
 	SearchParams *SearchParamsModel `tfsdk:"search_params"`
 }
 
-func (d *VMConfigsDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = "cudo_vm_configs"
+func (d *MachineTypeDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+	resp.TypeName = "cudo_machine_types"
 }
 
-func (d *VMConfigsDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *MachineTypeDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "VMConfigs data source",
-		Description:         "Fetches the list of vm configs",
+		MarkdownDescription: "MachineType data source",
+		Description:         "Fetches the list of machine types",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: "Placeholder identifier attribute.",
 				Computed:    true,
 			},
 			"search_params": schema.SingleNestedAttribute{
-				Description: "Search parameters for limiting vm types",
+				Description: "Search parameters for limiting machine types",
 				Computed:    false,
 				Optional:    true,
 				Attributes: map[string]schema.Attribute{
@@ -136,8 +137,8 @@ func (d *VMConfigsDataSource) Schema(ctx context.Context, req datasource.SchemaR
 					},
 				},
 			},
-			"vm_configs": schema.ListNestedAttribute{
-				Description: "List of available vm configurations",
+			"machine_types": schema.ListNestedAttribute{
+				Description: "List of available machine types",
 				Computed:    true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -149,10 +150,6 @@ func (d *VMConfigsDataSource) Schema(ctx context.Context, req datasource.SchemaR
 							MarkdownDescription: "ID of the data center where the VM is located",
 							Computed:            true,
 						},
-						"gpu_memory_gib": schema.Int64Attribute{
-							MarkdownDescription: "Amount of GPU memory in GiB",
-							Computed:            true,
-						},
 						"gpu_model": schema.StringAttribute{
 							MarkdownDescription: "GPU model name",
 							Computed:            true,
@@ -162,7 +159,11 @@ func (d *VMConfigsDataSource) Schema(ctx context.Context, req datasource.SchemaR
 							Computed:            true,
 						},
 						"id": schema.StringAttribute{
-							MarkdownDescription: "VM config identifier",
+							MarkdownDescription: "Machine type identifier",
+							Computed:            true,
+						},
+						"machine_type": schema.StringAttribute{
+							MarkdownDescription: "Machine type identifier",
 							Computed:            true,
 						},
 						"memory_gib_price_hr": schema.StringAttribute{
@@ -208,7 +209,7 @@ func (d *VMConfigsDataSource) Schema(ctx context.Context, req datasource.SchemaR
 	}
 }
 
-func (d *VMConfigsDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
+func (d *MachineTypeDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -228,12 +229,12 @@ func (d *VMConfigsDataSource) Configure(ctx context.Context, req datasource.Conf
 	d.client = client
 }
 
-func (d *VMConfigsDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var state VMConfigsDataSourceModel
+func (d *MachineTypeDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+	var state MachineTypeDataSourceModel
 
 	resp.Diagnostics.Append(req.Config.Get(ctx, &state)...)
 
-	params := search.NewSearchComputeParams()
+	params := search.NewSearchCompute2Params()
 
 	if state.SearchParams == nil {
 		state.SearchParams = &SearchParamsModel{}
@@ -279,26 +280,35 @@ func (d *VMConfigsDataSource) Read(ctx context.Context, req datasource.ReadReque
 	}
 	params.Vcpu = &vcpus
 
-	res, err := d.client.Client.Search.SearchCompute(params)
+	res, err := d.client.Client.Search.SearchCompute2(params)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Unable to read vm_configs",
+			"Unable to read machine_types",
 			err.Error(),
 		)
 		return
 	}
 
 	for _, cfg := range res.Payload.HostConfigs {
-		vmConfigState := VMConfigsModel{
-			Id:                  types.StringValue(cfg.ID),
+		gpuPriceHr := "0"
+		if cfg.GpuPriceHr != nil {
+			gpuPriceHr = cfg.GpuPriceHr.Value
+		}
+
+		totalGpuPriceHr := "0"
+		if cfg.TotalGpuPriceHr != nil {
+			totalGpuPriceHr = cfg.TotalGpuPriceHr.Value
+		}
+		machineTypeState := MachineTypeModel{
+			Id:                  types.StringValue(cfg.MachineType),
 			CpuModel:            types.StringValue(cfg.CPUModel),
 			DataCenterId:        types.StringValue(cfg.DataCenterID),
-			GpuMemoryGib:        types.Int64Value(int64(cfg.GpuMemoryGib)),
 			GpuModel:            types.StringValue(cfg.GpuModel),
-			GpuPriceHr:          types.StringValue(cfg.GpuPriceHr.Value),
+			GpuPriceHr:          types.StringValue(gpuPriceHr),
+			MachineType:         types.StringValue(cfg.MachineType),
 			MemoryGibPriceHr:    types.StringValue(cfg.MemoryGibPriceHr.Value),
 			StorageGibPriceHr:   types.StringValue(cfg.StorageGibPriceHr.Value),
-			TotalGpuPriceHr:     types.StringValue(cfg.TotalGpuPriceHr.Value),
+			TotalGpuPriceHr:     types.StringValue(totalGpuPriceHr),
 			TotalMemoryPriceHr:  types.StringValue(cfg.TotalMemoryPriceHr.Value),
 			TotalPriceHr:        types.StringValue(cfg.TotalPriceHr.Value),
 			TotalStoragePriceHr: types.StringValue(cfg.TotalStoragePriceHr.Value),
@@ -307,7 +317,7 @@ func (d *VMConfigsDataSource) Read(ctx context.Context, req datasource.ReadReque
 			CountVmAvailable:    types.Int64Value(int64(cfg.CountVMAvailable)),
 		}
 
-		state.VMConfigs = append(state.VMConfigs, vmConfigState)
+		state.MachineType = append(state.MachineType, machineTypeState)
 	}
 
 	state.SearchParams = &SearchParamsModel{

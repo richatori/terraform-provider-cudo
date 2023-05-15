@@ -27,9 +27,6 @@ type HostConfigCategory struct {
 	// data center Id
 	DataCenterID string `json:"dataCenterId,omitempty"`
 
-	// gpu memory gib
-	GpuMemoryGib int32 `json:"gpuMemoryGib,omitempty"`
-
 	// gpu model
 	GpuModel string `json:"gpuModel,omitempty"`
 
@@ -38,6 +35,9 @@ type HostConfigCategory struct {
 
 	// id
 	ID string `json:"id,omitempty"`
+
+	// machine type
+	MachineType string `json:"machineType,omitempty"`
 
 	// memory gib price hr
 	MemoryGibPriceHr *Decimal `json:"memoryGibPriceHr,omitempty"`

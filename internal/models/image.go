@@ -32,6 +32,9 @@ type Image struct {
 	// size
 	Size string `json:"size,omitempty"`
 
+	// size gib
+	SizeGib int32 `json:"sizeGib,omitempty"`
+
 	// tags
 	Tags []string `json:"tags"`
 }

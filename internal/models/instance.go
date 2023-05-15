@@ -22,9 +22,6 @@ type Instance struct {
 	// boot disk size gib
 	BootDiskSizeGib int64 `json:"bootDiskSizeGib,omitempty"`
 
-	// cpu class
-	CPUClass string `json:"cpuClass,omitempty"`
-
 	// cpu model
 	CPUModel string `json:"cpuModel,omitempty"`
 
@@ -35,9 +32,6 @@ type Instance struct {
 	// datacenter Id
 	// Read Only: true
 	DatacenterID string `json:"datacenterId,omitempty"`
-
-	// gpu mem
-	GpuMem int64 `json:"gpuMem,omitempty"`
 
 	// gpu model
 	GpuModel string `json:"gpuModel,omitempty"`

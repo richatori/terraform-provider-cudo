@@ -8,6 +8,7 @@ package models
 import (
 	"context"
 
+	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 )
@@ -16,6 +17,9 @@ import (
 //
 // swagger:model UserPermission
 type UserPermission struct {
+
+	// permission role
+	PermissionRole *Role `json:"permissionRole,omitempty"`
 
 	// role
 	Role string `json:"role,omitempty"`
@@ -32,11 +36,64 @@ type UserPermission struct {
 
 // Validate validates this user permission
 func (m *UserPermission) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validatePermissionRole(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
 	return nil
 }
 
-// ContextValidate validates this user permission based on context it is used
+func (m *UserPermission) validatePermissionRole(formats strfmt.Registry) error {
+	if swag.IsZero(m.PermissionRole) { // not required
+		return nil
+	}
+
+	if m.PermissionRole != nil {
+		if err := m.PermissionRole.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("permissionRole")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("permissionRole")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+// ContextValidate validate this user permission based on the context it is used
 func (m *UserPermission) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.contextValidatePermissionRole(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *UserPermission) contextValidatePermissionRole(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.PermissionRole != nil {
+		if err := m.PermissionRole.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("permissionRole")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("permissionRole")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 

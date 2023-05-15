@@ -35,7 +35,7 @@ type VMResourceModel struct {
 	Id            types.String `tfsdk:"id"`
 	BootDiskClass types.String `tfsdk:"boot_disk_class"`
 	BootDiskSize  types.Int64  `tfsdk:"boot_disk_size_gib"`
-	ConfigId      types.String `tfsdk:"config_id"`
+	MachineType   types.String `tfsdk:"machine_type"`
 	GPUs          types.Int64  `tfsdk:"gpu_quantity"`
 	ImageID       types.String `tfsdk:"image_id"`
 	Memory        types.Int64  `tfsdk:"memory_gib"`
@@ -43,11 +43,9 @@ type VMResourceModel struct {
 	VCPUs         types.Int64  `tfsdk:"vcpu_quantity"`
 	VMId          types.String `tfsdk:"vm_id"`
 	// Response
-	CPUClass     types.String `tfsdk:"cpu_class"`
 	CPUModel     types.String `tfsdk:"cpu_model"`
 	CreateBy     types.String `tfsdk:"create_by"`
 	DatacenterID types.String `tfsdk:"datacenter_id"`
-	GpuMem       types.Int64  `tfsdk:"gpu_mem"`
 	GpuModel     types.String `tfsdk:"gpu_model"`
 	ImageDesc    types.String `tfsdk:"image_desc"`
 
@@ -85,8 +83,8 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				Required:            true,
 				Validators:          []validator.Int64{int64validator.AtLeast(10)},
 			},
-			"config_id": schema.StringAttribute{
-				MarkdownDescription: "VM config id, from vm config data source",
+			"machine_type": schema.StringAttribute{
+				MarkdownDescription: "VM machine type, from machine type data source",
 				Required:            true,
 				Validators:          []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
 			},
@@ -120,11 +118,6 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				Required:            true,
 				Validators:          []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id e.g. my-vm")},
 			},
-
-			"cpu_class": schema.StringAttribute{
-				MarkdownDescription: "The class of the CPU.",
-				Computed:            true,
-			},
 			"cpu_model": schema.StringAttribute{
 				MarkdownDescription: "The model of the CPU.",
 				Computed:            true,
@@ -136,11 +129,8 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 
 			"datacenter_id": schema.StringAttribute{
 				MarkdownDescription: "The unique identifier of the datacenter where the VM instance is located.",
-				Computed:            true,
-			},
-			"gpu_mem": schema.Int64Attribute{
-				MarkdownDescription: "The amount of memory on the GPU.",
-				Computed:            true,
+				Required:            true,
+				Validators:          []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
 			},
 			"gpu_model": schema.StringAttribute{
 				MarkdownDescription: "The model of the GPU.",
@@ -229,24 +219,24 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		bootDiskClass = models.NewStorageClass(models.StorageClassSTORAGECLASSNETWORK)
 	}
 
-	params := projects.NewBuyComputeParams()
+	params := projects.NewCreateVMParams()
 	params.ProjectID = r.client.DefaultProjectID
-	params.ID = state.ConfigId.ValueString()
-	params.Body = projects.BuyComputeBody{
-		BootDisk: &models.Disk{
+	params.Body = projects.CreateVMBody{
+		BootDisk: &models.CreateVMRequestDisk{
 			SizeGib:      int32(state.BootDiskSize.ValueInt64()),
 			StorageClass: bootDiskClass,
 		},
-		GpuQuantity: int32(state.GPUs.ValueInt64()),
-		MemoryGib:   int32(state.Memory.ValueInt64()),
-		OsID:        state.ImageID.ValueString(),
-		Password:    state.Password.ValueString(),
-		Quantity:    1,
-		Vcpu:        int32(state.VCPUs.ValueInt64()),
-		VMID:        state.VMId.ValueString(),
+		DataCenterID:    state.DatacenterID.ValueString(),
+		Gpus:            int32(state.GPUs.ValueInt64()),
+		MachineType:     state.MachineType.ValueString(),
+		MemoryGib:       int32(state.Memory.ValueInt64()),
+		BootDiskImageID: state.ImageID.ValueString(),
+		Password:        state.Password.ValueString(),
+		Vcpus:           int32(state.VCPUs.ValueInt64()),
+		VMID:            state.VMId.ValueString(),
 	}
 
-	_, err := r.client.Client.Projects.BuyCompute(params)
+	_, err := r.client.Client.Projects.CreateVM(params)
 
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -271,11 +261,9 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 	}
 
 	state.Id = types.StringValue("placeholder")
-	state.CPUClass = types.StringValue(res.Payload.Compute.Instance.CPUClass)
 	state.CPUModel = types.StringValue(res.Payload.Compute.Instance.CPUModel)
 	state.CreateBy = types.StringValue(res.Payload.Compute.Instance.CreateBy)
 	state.DatacenterID = types.StringValue(res.Payload.Compute.Instance.DatacenterID)
-	state.GpuMem = types.Int64Value(res.Payload.Compute.Instance.GpuMem)
 	state.GpuModel = types.StringValue(res.Payload.Compute.Instance.GpuModel)
 	state.ImageDesc = types.StringValue(res.Payload.Compute.Instance.ImageDesc)
 	state.ImageID = types.StringValue(res.Payload.Compute.Instance.ImageID)
@@ -319,11 +307,9 @@ func (r *VMResource) Read(ctx context.Context, req resource.ReadRequest, resp *r
 	}
 
 	state.Id = types.StringValue("placeholder")
-	state.CPUClass = types.StringValue(res.Payload.Compute.Instance.CPUClass)
 	state.CPUModel = types.StringValue(res.Payload.Compute.Instance.CPUModel)
 	state.CreateBy = types.StringValue(res.Payload.Compute.Instance.CreateBy)
 	state.DatacenterID = types.StringValue(res.Payload.Compute.Instance.DatacenterID)
-	state.GpuMem = types.Int64Value(res.Payload.Compute.Instance.GpuMem)
 	state.GpuModel = types.StringValue(res.Payload.Compute.Instance.GpuModel)
 	state.ImageDesc = types.StringValue(res.Payload.Compute.Instance.ImageDesc)
 	state.ImageID = types.StringValue(res.Payload.Compute.Instance.ImageID)
@@ -367,11 +353,9 @@ func (r *VMResource) Update(ctx context.Context, req resource.UpdateRequest, res
 	}
 
 	state.Id = types.StringValue("placeholder")
-	state.CPUClass = types.StringValue(res.Payload.Compute.Instance.CPUClass)
 	state.CPUModel = types.StringValue(res.Payload.Compute.Instance.CPUModel)
 	state.CreateBy = types.StringValue(res.Payload.Compute.Instance.CreateBy)
 	state.DatacenterID = types.StringValue(res.Payload.Compute.Instance.DatacenterID)
-	state.GpuMem = types.Int64Value(res.Payload.Compute.Instance.GpuMem)
 	state.GpuModel = types.StringValue(res.Payload.Compute.Instance.GpuModel)
 	state.ImageDesc = types.StringValue(res.Payload.Compute.Instance.ImageDesc)
 	state.ImageID = types.StringValue(res.Payload.Compute.Instance.ImageID)
