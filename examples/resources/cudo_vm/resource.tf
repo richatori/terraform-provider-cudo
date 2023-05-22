@@ -7,4 +7,6 @@ resource "cudo_vm" "my-vm" {
   memory_gib         = 2
   vm_id              = "terra-vm-1"
   boot_disk_class    = "network"
+  ssh_key_source     = "custom"
+  ssh_keys_custom    = ["custom-sshkey-1","custom-sshkey-2"]
 }

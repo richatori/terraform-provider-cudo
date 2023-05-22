@@ -22,6 +22,8 @@ resource "cudo_vm" "my-vm" {
   memory_gib         = 2
   vm_id              = "terra-vm-1"
   boot_disk_class    = "network"
+  ssh_key_source     = "custom"
+  ssh_keys_custom    = ["custom-sshkey-1","custom-sshkey-2"]
 }
 ```
 
@@ -43,6 +45,8 @@ resource "cudo_vm" "my-vm" {
 
 - `gpu_quantity` (Number) Number of GPUs
 - `password` (String) VM password
+- `ssh_key_source` (String) Which SSH keys to add to the VM: user (default), project or custom
+- `ssh_keys_custom` (List of String) List of custom SSH keys to add to the VM, ssh_key_source must be set to custom
 
 ### Read-Only
 

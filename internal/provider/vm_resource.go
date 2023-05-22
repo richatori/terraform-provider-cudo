@@ -32,16 +32,18 @@ type VMResource struct {
 
 // VMResourceModel describes the resource data model.
 type VMResourceModel struct {
-	Id            types.String `tfsdk:"id"`
-	BootDiskClass types.String `tfsdk:"boot_disk_class"`
-	BootDiskSize  types.Int64  `tfsdk:"boot_disk_size_gib"`
-	MachineType   types.String `tfsdk:"machine_type"`
-	GPUs          types.Int64  `tfsdk:"gpu_quantity"`
-	ImageID       types.String `tfsdk:"image_id"`
-	Memory        types.Int64  `tfsdk:"memory_gib"`
-	Password      types.String `tfsdk:"password"`
-	VCPUs         types.Int64  `tfsdk:"vcpu_quantity"`
-	VMId          types.String `tfsdk:"vm_id"`
+	Id            types.String   `tfsdk:"id"`
+	BootDiskClass types.String   `tfsdk:"boot_disk_class"`
+	BootDiskSize  types.Int64    `tfsdk:"boot_disk_size_gib"`
+	MachineType   types.String   `tfsdk:"machine_type"`
+	GPUs          types.Int64    `tfsdk:"gpu_quantity"`
+	ImageID       types.String   `tfsdk:"image_id"`
+	Memory        types.Int64    `tfsdk:"memory_gib"`
+	Password      types.String   `tfsdk:"password"`
+	VCPUs         types.Int64    `tfsdk:"vcpu_quantity"`
+	VMId          types.String   `tfsdk:"vm_id"`
+	SSHKeySource  types.String   `tfsdk:"ssh_key_source"`
+	SSHKeysCustom []types.String `tfsdk:"ssh_keys_custom"`
 	// Response
 	CPUModel     types.String `tfsdk:"cpu_model"`
 	CreateBy     types.String `tfsdk:"create_by"`
@@ -176,6 +178,16 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				MarkdownDescription: "Whether the VM instance is powered by renewable energy",
 				Computed:            true,
 			},
+			"ssh_key_source": schema.StringAttribute{
+				MarkdownDescription: "Which SSH keys to add to the VM: user (default), project or custom",
+				Optional:            true,
+				Validators:          []validator.String{stringvalidator.OneOf("user", "project", "custom")},
+			},
+			"ssh_keys_custom": schema.ListAttribute{
+				ElementType:         types.StringType,
+				MarkdownDescription: "List of custom SSH keys to add to the VM, ssh_key_source must be set to custom",
+				Optional:            true,
+			},
 		},
 	}
 }
@@ -219,6 +231,21 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		bootDiskClass = models.NewStorageClass(models.StorageClassSTORAGECLASSNETWORK)
 	}
 
+	sshKeySource := "SSH_KEY_SOURCE_USER"
+	switch state.SSHKeySource.ValueString() {
+	case "project":
+		sshKeySource = "SSH_KEY_SOURCE_PROJECT"
+	case "custom":
+		sshKeySource = "SSH_KEY_SOURCE_NONE"
+	}
+
+	ks := models.CreateVMRequestSSHKeySource(sshKeySource)
+
+	var customKeys []string
+	for _, key := range state.SSHKeysCustom {
+		customKeys = append(customKeys, key.ValueString())
+	}
+
 	params := projects.NewCreateVMParams()
 	params.ProjectID = r.client.DefaultProjectID
 	params.Body = projects.CreateVMBody{
@@ -234,6 +261,8 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		Password:        state.Password.ValueString(),
 		Vcpus:           int32(state.VCPUs.ValueInt64()),
 		VMID:            state.VMId.ValueString(),
+		SSHKeySource:    &ks,
+		CustomSSHKeys:   customKeys,
 	}
 
 	_, err := r.client.Client.Projects.CreateVM(params)

@@ -49,7 +49,7 @@ To generate or update documentation, run `go generate`.
 
 or to change name:
 
-go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs --rendered-provider-name Cudo
+go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs generate --rendered-provider-name Cudo
 
 
 
