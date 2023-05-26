@@ -24,6 +24,10 @@ resource "cudo_vm" "my-vm" {
   boot_disk_class    = "network"
   ssh_key_source     = "custom"
   ssh_keys_custom    = ["custom-sshkey-1","custom-sshkey-2"]
+  start_script = <<EOF
+                     touch /multiline-script.txt
+                     echo  $PWD > /current-dir.txt
+                     EOF
 }
 ```
 
@@ -47,6 +51,7 @@ resource "cudo_vm" "my-vm" {
 - `password` (String) VM password
 - `ssh_key_source` (String) Which SSH keys to add to the VM: user (default), project or custom
 - `ssh_keys_custom` (List of String) List of custom SSH keys to add to the VM, ssh_key_source must be set to custom
+- `start_script` (String) A script to run when VM boots
 
 ### Read-Only
 

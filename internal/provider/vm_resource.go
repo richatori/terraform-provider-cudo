@@ -44,6 +44,7 @@ type VMResourceModel struct {
 	VMId          types.String   `tfsdk:"vm_id"`
 	SSHKeySource  types.String   `tfsdk:"ssh_key_source"`
 	SSHKeysCustom []types.String `tfsdk:"ssh_keys_custom"`
+	StartScript   types.String   `tfsdk:"start_script"`
 	// Response
 	CPUModel     types.String `tfsdk:"cpu_model"`
 	CreateBy     types.String `tfsdk:"create_by"`
@@ -188,6 +189,10 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				MarkdownDescription: "List of custom SSH keys to add to the VM, ssh_key_source must be set to custom",
 				Optional:            true,
 			},
+			"start_script": schema.StringAttribute{
+				MarkdownDescription: "A script to run when VM boots",
+				Optional:            true,
+			},
 		},
 	}
 }
@@ -263,6 +268,7 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		VMID:            state.VMId.ValueString(),
 		SSHKeySource:    &ks,
 		CustomSSHKeys:   customKeys,
+		StartScript:     state.StartScript.ValueString(),
 	}
 
 	_, err := r.client.Client.Projects.CreateVM(params)
