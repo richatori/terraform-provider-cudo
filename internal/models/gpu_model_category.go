@@ -11,6 +11,7 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // GpuModelCategory gpu model category
@@ -19,20 +20,31 @@ import (
 type GpuModelCategory struct {
 
 	// count Vm available
-	CountVMAvailable int32 `json:"countVmAvailable,omitempty"`
+	// Required: true
+	CountVMAvailable *int32 `json:"countVmAvailable"`
 
 	// min price hr
-	MinPriceHr *Decimal `json:"minPriceHr,omitempty"`
+	// Required: true
+	MinPriceHr *Decimal `json:"minPriceHr"`
 
 	// name
-	Name string `json:"name,omitempty"`
+	// Required: true
+	Name *string `json:"name"`
 }
 
 // Validate validates this gpu model category
 func (m *GpuModelCategory) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.validateCountVMAvailable(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateMinPriceHr(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateName(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -42,9 +54,19 @@ func (m *GpuModelCategory) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *GpuModelCategory) validateCountVMAvailable(formats strfmt.Registry) error {
+
+	if err := validate.Required("countVmAvailable", "body", m.CountVMAvailable); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *GpuModelCategory) validateMinPriceHr(formats strfmt.Registry) error {
-	if swag.IsZero(m.MinPriceHr) { // not required
-		return nil
+
+	if err := validate.Required("minPriceHr", "body", m.MinPriceHr); err != nil {
+		return err
 	}
 
 	if m.MinPriceHr != nil {
@@ -56,6 +78,15 @@ func (m *GpuModelCategory) validateMinPriceHr(formats strfmt.Registry) error {
 			}
 			return err
 		}
+	}
+
+	return nil
+}
+
+func (m *GpuModelCategory) validateName(formats strfmt.Registry) error {
+
+	if err := validate.Required("name", "body", m.Name); err != nil {
+		return err
 	}
 
 	return nil

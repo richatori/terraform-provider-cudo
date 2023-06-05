@@ -187,7 +187,8 @@ swagger:model UpdateProjectBody
 type UpdateProjectBody struct {
 
 	// billing account Id
-	BillingAccountID string `json:"billingAccountId,omitempty"`
+	// Required: true
+	BillingAccountID *string `json:"billingAccountId"`
 
 	// create by
 	// Read Only: true
@@ -200,6 +201,24 @@ type UpdateProjectBody struct {
 
 // Validate validates this update project body
 func (o *UpdateProjectBody) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := o.validateBillingAccountID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (o *UpdateProjectBody) validateBillingAccountID(formats strfmt.Registry) error {
+
+	if err := validate.Required("project"+"."+"billingAccountId", "body", o.BillingAccountID); err != nil {
+		return err
+	}
+
 	return nil
 }
 

@@ -11,6 +11,7 @@ import (
 	"github.com/go-openapi/strfmt"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/api_keys"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/client/networks"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/permissions"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/projects"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/search"
@@ -62,6 +63,7 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *CudoComput
 	cli := new(CudoComputeService)
 	cli.Transport = transport
 	cli.APIKeys = api_keys.New(transport, formats)
+	cli.Networks = networks.New(transport, formats)
 	cli.Permissions = permissions.New(transport, formats)
 	cli.Projects = projects.New(transport, formats)
 	cli.Search = search.New(transport, formats)
@@ -114,6 +116,8 @@ func (cfg *TransportConfig) WithSchemes(schemes []string) *TransportConfig {
 type CudoComputeService struct {
 	APIKeys api_keys.ClientService
 
+	Networks networks.ClientService
+
 	Permissions permissions.ClientService
 
 	Projects projects.ClientService
@@ -133,6 +137,7 @@ type CudoComputeService struct {
 func (c *CudoComputeService) SetTransport(transport runtime.ClientTransport) {
 	c.Transport = transport
 	c.APIKeys.SetTransport(transport)
+	c.Networks.SetTransport(transport)
 	c.Permissions.SetTransport(transport)
 	c.Projects.SetTransport(transport)
 	c.Search.SetTransport(transport)

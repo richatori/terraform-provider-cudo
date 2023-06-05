@@ -20,37 +20,61 @@ import (
 type Order struct {
 
 	// description
-	Description string `json:"description,omitempty"`
+	// Required: true
+	Description *string `json:"description"`
 
 	// end time
+	// Required: true
 	// Format: date-time
-	EndTime strfmt.DateTime `json:"endTime,omitempty"`
+	EndTime *strfmt.DateTime `json:"endTime"`
 
 	// order Id
-	OrderID string `json:"orderId,omitempty"`
+	// Required: true
+	OrderID *string `json:"orderId"`
 
 	// price hr
-	PriceHr float32 `json:"priceHr,omitempty"`
+	// Required: true
+	PriceHr *float32 `json:"priceHr"`
 
 	// quantity
-	Quantity int32 `json:"quantity,omitempty"`
+	// Required: true
+	Quantity *int32 `json:"quantity"`
 
 	// spend
-	Spend *Decimal `json:"spend,omitempty"`
+	// Required: true
+	Spend *Decimal `json:"spend"`
 
 	// start time
+	// Required: true
 	// Format: date-time
-	StartTime strfmt.DateTime `json:"startTime,omitempty"`
+	StartTime *strfmt.DateTime `json:"startTime"`
 
 	// uid
-	UID string `json:"uid,omitempty"`
+	// Required: true
+	UID *string `json:"uid"`
 }
 
 // Validate validates this order
 func (m *Order) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.validateDescription(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateEndTime(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateOrderID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validatePriceHr(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateQuantity(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -62,15 +86,29 @@ func (m *Order) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateUID(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
 	return nil
 }
 
+func (m *Order) validateDescription(formats strfmt.Registry) error {
+
+	if err := validate.Required("description", "body", m.Description); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *Order) validateEndTime(formats strfmt.Registry) error {
-	if swag.IsZero(m.EndTime) { // not required
-		return nil
+
+	if err := validate.Required("endTime", "body", m.EndTime); err != nil {
+		return err
 	}
 
 	if err := validate.FormatOf("endTime", "body", "date-time", m.EndTime.String(), formats); err != nil {
@@ -80,9 +118,37 @@ func (m *Order) validateEndTime(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *Order) validateOrderID(formats strfmt.Registry) error {
+
+	if err := validate.Required("orderId", "body", m.OrderID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Order) validatePriceHr(formats strfmt.Registry) error {
+
+	if err := validate.Required("priceHr", "body", m.PriceHr); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Order) validateQuantity(formats strfmt.Registry) error {
+
+	if err := validate.Required("quantity", "body", m.Quantity); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *Order) validateSpend(formats strfmt.Registry) error {
-	if swag.IsZero(m.Spend) { // not required
-		return nil
+
+	if err := validate.Required("spend", "body", m.Spend); err != nil {
+		return err
 	}
 
 	if m.Spend != nil {
@@ -100,11 +166,21 @@ func (m *Order) validateSpend(formats strfmt.Registry) error {
 }
 
 func (m *Order) validateStartTime(formats strfmt.Registry) error {
-	if swag.IsZero(m.StartTime) { // not required
-		return nil
+
+	if err := validate.Required("startTime", "body", m.StartTime); err != nil {
+		return err
 	}
 
 	if err := validate.FormatOf("startTime", "body", "date-time", m.StartTime.String(), formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Order) validateUID(formats strfmt.Registry) error {
+
+	if err := validate.Required("uid", "body", m.UID); err != nil {
 		return err
 	}
 

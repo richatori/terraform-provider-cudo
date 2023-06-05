@@ -9,11 +9,13 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"strconv"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
 )
@@ -186,10 +188,14 @@ swagger:model CreateVMBody
 type CreateVMBody struct {
 
 	// boot disk
-	BootDisk *models.CreateVMRequestDisk `json:"bootDisk,omitempty"`
+	BootDisk *models.Disk `json:"bootDisk,omitempty"`
 
 	// boot disk image Id
-	BootDiskImageID string `json:"bootDiskImageId,omitempty"`
+	// Required: true
+	BootDiskImageID *string `json:"bootDiskImageId"`
+
+	// cpu model
+	CPUModel string `json:"cpuModel,omitempty"`
 
 	// custom Ssh keys
 	CustomSSHKeys []string `json:"customSshKeys"`
@@ -197,20 +203,32 @@ type CreateVMBody struct {
 	// data center Id
 	DataCenterID string `json:"dataCenterId,omitempty"`
 
+	// gpu model
+	GpuModel string `json:"gpuModel,omitempty"`
+
 	// gpus
 	Gpus int32 `json:"gpus,omitempty"`
 
 	// machine type
 	MachineType string `json:"machineType,omitempty"`
 
+	// max price hr
+	MaxPriceHr *models.Decimal `json:"maxPriceHr,omitempty"`
+
 	// memory gib
 	MemoryGib int32 `json:"memoryGib,omitempty"`
+
+	// nics
+	Nics []*models.NIC `json:"nics"`
 
 	// password
 	Password string `json:"password,omitempty"`
 
+	// ignored if any nics are provided
+	SecurityGroupIds []string `json:"securityGroupIds"`
+
 	// ssh key source
-	SSHKeySource *models.CreateVMRequestSSHKeySource `json:"sshKeySource,omitempty"`
+	SSHKeySource *models.SSHKeySource `json:"sshKeySource,omitempty"`
 
 	// start script
 	StartScript string `json:"startScript,omitempty"`
@@ -219,7 +237,8 @@ type CreateVMBody struct {
 	Vcpus int32 `json:"vcpus,omitempty"`
 
 	// vm Id
-	VMID string `json:"vmId,omitempty"`
+	// Required: true
+	VMID *string `json:"vmId"`
 }
 
 // Validate validates this create VM body
@@ -230,7 +249,23 @@ func (o *CreateVMBody) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := o.validateBootDiskImageID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := o.validateMaxPriceHr(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := o.validateNics(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := o.validateSSHKeySource(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := o.validateVMID(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -259,6 +294,60 @@ func (o *CreateVMBody) validateBootDisk(formats strfmt.Registry) error {
 	return nil
 }
 
+func (o *CreateVMBody) validateBootDiskImageID(formats strfmt.Registry) error {
+
+	if err := validate.Required("body"+"."+"bootDiskImageId", "body", o.BootDiskImageID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (o *CreateVMBody) validateMaxPriceHr(formats strfmt.Registry) error {
+	if swag.IsZero(o.MaxPriceHr) { // not required
+		return nil
+	}
+
+	if o.MaxPriceHr != nil {
+		if err := o.MaxPriceHr.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("body" + "." + "maxPriceHr")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("body" + "." + "maxPriceHr")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (o *CreateVMBody) validateNics(formats strfmt.Registry) error {
+	if swag.IsZero(o.Nics) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(o.Nics); i++ {
+		if swag.IsZero(o.Nics[i]) { // not required
+			continue
+		}
+
+		if o.Nics[i] != nil {
+			if err := o.Nics[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("body" + "." + "nics" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("body" + "." + "nics" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
 func (o *CreateVMBody) validateSSHKeySource(formats strfmt.Registry) error {
 	if swag.IsZero(o.SSHKeySource) { // not required
 		return nil
@@ -278,11 +367,28 @@ func (o *CreateVMBody) validateSSHKeySource(formats strfmt.Registry) error {
 	return nil
 }
 
+func (o *CreateVMBody) validateVMID(formats strfmt.Registry) error {
+
+	if err := validate.Required("body"+"."+"vmId", "body", o.VMID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // ContextValidate validate this create VM body based on the context it is used
 func (o *CreateVMBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := o.contextValidateBootDisk(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := o.contextValidateMaxPriceHr(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := o.contextValidateNics(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -307,6 +413,42 @@ func (o *CreateVMBody) contextValidateBootDisk(ctx context.Context, formats strf
 			}
 			return err
 		}
+	}
+
+	return nil
+}
+
+func (o *CreateVMBody) contextValidateMaxPriceHr(ctx context.Context, formats strfmt.Registry) error {
+
+	if o.MaxPriceHr != nil {
+		if err := o.MaxPriceHr.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("body" + "." + "maxPriceHr")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("body" + "." + "maxPriceHr")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (o *CreateVMBody) contextValidateNics(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(o.Nics); i++ {
+
+		if o.Nics[i] != nil {
+			if err := o.Nics[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("body" + "." + "nics" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("body" + "." + "nics" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
 	}
 
 	return nil

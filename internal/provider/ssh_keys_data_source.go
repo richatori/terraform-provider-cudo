@@ -118,7 +118,7 @@ func (d *SshKeysDataSource) Read(ctx context.Context, req datasource.ReadRequest
 	for _, key := range res.Payload.SSHKeys {
 		SshKeystate := SshKeysModel{
 			Id:          types.StringValue(key.ID),
-			PublicKey:   types.StringValue(key.PublicKey),
+			PublicKey:   types.StringValue(*key.PublicKey),
 			Fingerprint: types.StringValue(key.Fingerprint),
 			Comment:     types.StringValue(key.Comment),
 			Type:        types.StringValue(key.Type),

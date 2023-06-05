@@ -12,6 +12,7 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // SearchComputeResponse search compute response
@@ -20,36 +21,49 @@ import (
 type SearchComputeResponse struct {
 
 	// count Vm available
-	CountVMAvailable int32 `json:"countVmAvailable,omitempty"`
+	// Required: true
+	CountVMAvailable *int32 `json:"countVmAvailable"`
 
 	// cpu models
+	// Required: true
 	CPUModels []*CPUModelCategory `json:"cpuModels"`
 
 	// data centers
+	// Required: true
 	DataCenters []*DataCenterCategory `json:"dataCenters"`
 
 	// gpu models
+	// Required: true
 	GpuModels []*GpuModelCategory `json:"gpuModels"`
 
 	// host configs
+	// Required: true
 	HostConfigs []*HostConfigCategory `json:"hostConfigs"`
 
 	// max gpu
-	MaxGpu int32 `json:"maxGpu,omitempty"`
+	// Required: true
+	MaxGpu *int32 `json:"maxGpu"`
 
 	// max memory gib
-	MaxMemoryGib int32 `json:"maxMemoryGib,omitempty"`
+	// Required: true
+	MaxMemoryGib *int32 `json:"maxMemoryGib"`
 
 	// max vcpu
-	MaxVcpu int32 `json:"maxVcpu,omitempty"`
+	// Required: true
+	MaxVcpu *int32 `json:"maxVcpu"`
 
 	// request
-	Request *SearchComputeRequest `json:"request,omitempty"`
+	// Required: true
+	Request *SearchComputeRequest `json:"request"`
 }
 
 // Validate validates this search compute response
 func (m *SearchComputeResponse) Validate(formats strfmt.Registry) error {
 	var res []error
+
+	if err := m.validateCountVMAvailable(formats); err != nil {
+		res = append(res, err)
+	}
 
 	if err := m.validateCPUModels(formats); err != nil {
 		res = append(res, err)
@@ -67,6 +81,18 @@ func (m *SearchComputeResponse) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateMaxGpu(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateMaxMemoryGib(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateMaxVcpu(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateRequest(formats); err != nil {
 		res = append(res, err)
 	}
@@ -77,9 +103,19 @@ func (m *SearchComputeResponse) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *SearchComputeResponse) validateCountVMAvailable(formats strfmt.Registry) error {
+
+	if err := validate.Required("countVmAvailable", "body", m.CountVMAvailable); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *SearchComputeResponse) validateCPUModels(formats strfmt.Registry) error {
-	if swag.IsZero(m.CPUModels) { // not required
-		return nil
+
+	if err := validate.Required("cpuModels", "body", m.CPUModels); err != nil {
+		return err
 	}
 
 	for i := 0; i < len(m.CPUModels); i++ {
@@ -104,8 +140,9 @@ func (m *SearchComputeResponse) validateCPUModels(formats strfmt.Registry) error
 }
 
 func (m *SearchComputeResponse) validateDataCenters(formats strfmt.Registry) error {
-	if swag.IsZero(m.DataCenters) { // not required
-		return nil
+
+	if err := validate.Required("dataCenters", "body", m.DataCenters); err != nil {
+		return err
 	}
 
 	for i := 0; i < len(m.DataCenters); i++ {
@@ -130,8 +167,9 @@ func (m *SearchComputeResponse) validateDataCenters(formats strfmt.Registry) err
 }
 
 func (m *SearchComputeResponse) validateGpuModels(formats strfmt.Registry) error {
-	if swag.IsZero(m.GpuModels) { // not required
-		return nil
+
+	if err := validate.Required("gpuModels", "body", m.GpuModels); err != nil {
+		return err
 	}
 
 	for i := 0; i < len(m.GpuModels); i++ {
@@ -156,8 +194,9 @@ func (m *SearchComputeResponse) validateGpuModels(formats strfmt.Registry) error
 }
 
 func (m *SearchComputeResponse) validateHostConfigs(formats strfmt.Registry) error {
-	if swag.IsZero(m.HostConfigs) { // not required
-		return nil
+
+	if err := validate.Required("hostConfigs", "body", m.HostConfigs); err != nil {
+		return err
 	}
 
 	for i := 0; i < len(m.HostConfigs); i++ {
@@ -181,9 +220,37 @@ func (m *SearchComputeResponse) validateHostConfigs(formats strfmt.Registry) err
 	return nil
 }
 
+func (m *SearchComputeResponse) validateMaxGpu(formats strfmt.Registry) error {
+
+	if err := validate.Required("maxGpu", "body", m.MaxGpu); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *SearchComputeResponse) validateMaxMemoryGib(formats strfmt.Registry) error {
+
+	if err := validate.Required("maxMemoryGib", "body", m.MaxMemoryGib); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *SearchComputeResponse) validateMaxVcpu(formats strfmt.Registry) error {
+
+	if err := validate.Required("maxVcpu", "body", m.MaxVcpu); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *SearchComputeResponse) validateRequest(formats strfmt.Registry) error {
-	if swag.IsZero(m.Request) { // not required
-		return nil
+
+	if err := validate.Required("request", "body", m.Request); err != nil {
+		return err
 	}
 
 	if m.Request != nil {

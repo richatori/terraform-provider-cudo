@@ -8,8 +8,10 @@ package models
 import (
 	"context"
 
+	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // GetVncConnectURLResponse get vnc connect Url response
@@ -18,14 +20,47 @@ import (
 type GetVncConnectURLResponse struct {
 
 	// connect Url
-	ConnectURL string `json:"connectUrl,omitempty"`
+	// Required: true
+	ConnectURL *string `json:"connectUrl"`
 
 	// token
-	Token string `json:"token,omitempty"`
+	// Required: true
+	Token *string `json:"token"`
 }
 
 // Validate validates this get vnc connect Url response
 func (m *GetVncConnectURLResponse) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validateConnectURL(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateToken(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *GetVncConnectURLResponse) validateConnectURL(formats strfmt.Registry) error {
+
+	if err := validate.Required("connectUrl", "body", m.ConnectURL); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *GetVncConnectURLResponse) validateToken(formats strfmt.Registry) error {
+
+	if err := validate.Required("token", "body", m.Token); err != nil {
+		return err
+	}
+
 	return nil
 }
 

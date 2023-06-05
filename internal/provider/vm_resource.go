@@ -52,15 +52,16 @@ type VMResourceModel struct {
 	GpuModel     types.String `tfsdk:"gpu_model"`
 	ImageDesc    types.String `tfsdk:"image_desc"`
 
-	ImageName       types.String  `tfsdk:"image_name"`
-	LcmState        types.String  `tfsdk:"lcm_state"`
-	LocalIPAddress  types.String  `tfsdk:"local_ip_address"`
-	OneState        types.String  `tfsdk:"one_state"`
-	PriceHr         types.Float64 `tfsdk:"price_hr"`
-	PublicIPAddress types.String  `tfsdk:"public_ip_address"`
-	RegionID        types.String  `tfsdk:"region_id"`
-	RegionName      types.String  `tfsdk:"region_name"`
-	RenewableEnergy types.Bool    `tfsdk:"renewable_energy"`
+	ImageName         types.String  `tfsdk:"image_name"`
+	LcmState          types.String  `tfsdk:"lcm_state"`
+	InternalIPAddress types.String  `tfsdk:"internal_ip_address"`
+	ExternalIPAddress types.String  `tfsdk:"external_ip_address"`
+	OneState          types.String  `tfsdk:"one_state"`
+	PriceHr           types.Float64 `tfsdk:"price_hr"`
+	PublicIPAddress   types.String  `tfsdk:"public_ip_address"`
+	RegionID          types.String  `tfsdk:"region_id"`
+	RegionName        types.String  `tfsdk:"region_name"`
+	RenewableEnergy   types.Bool    `tfsdk:"renewable_energy"`
 }
 
 func (r *VMResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -151,8 +152,12 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				MarkdownDescription: "The state of the VM instance in the LCM.",
 				Computed:            true,
 			},
-			"local_ip_address": schema.StringAttribute{
-				MarkdownDescription: "The local IP address of the VM instance.",
+			"internal_ip_address": schema.StringAttribute{
+				MarkdownDescription: "The internal IP address of the VM instance.",
+				Computed:            true,
+			},
+			"external_ip_address": schema.StringAttribute{
+				MarkdownDescription: "The external IP address of the VM instance.",
 				Computed:            true,
 			},
 			"one_state": schema.StringAttribute{
@@ -244,7 +249,7 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		sshKeySource = "SSH_KEY_SOURCE_NONE"
 	}
 
-	ks := models.CreateVMRequestSSHKeySource(sshKeySource)
+	ks := models.SSHKeySource(sshKeySource)
 
 	var customKeys []string
 	for _, key := range state.SSHKeysCustom {
@@ -254,7 +259,7 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 	params := projects.NewCreateVMParams()
 	params.ProjectID = r.client.DefaultProjectID
 	params.Body = projects.CreateVMBody{
-		BootDisk: &models.CreateVMRequestDisk{
+		BootDisk: &models.Disk{
 			SizeGib:      int32(state.BootDiskSize.ValueInt64()),
 			StorageClass: bootDiskClass,
 		},
@@ -262,10 +267,10 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		Gpus:            int32(state.GPUs.ValueInt64()),
 		MachineType:     state.MachineType.ValueString(),
 		MemoryGib:       int32(state.Memory.ValueInt64()),
-		BootDiskImageID: state.ImageID.ValueString(),
+		BootDiskImageID: state.ImageID.ValueStringPointer(),
 		Password:        state.Password.ValueString(),
 		Vcpus:           int32(state.VCPUs.ValueInt64()),
-		VMID:            state.VMId.ValueString(),
+		VMID:            state.VMId.ValueStringPointer(),
 		SSHKeySource:    &ks,
 		CustomSSHKeys:   customKeys,
 		StartScript:     state.StartScript.ValueString(),
@@ -296,21 +301,22 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 	}
 
 	state.Id = types.StringValue("placeholder")
-	state.CPUModel = types.StringValue(res.Payload.Compute.Instance.CPUModel)
-	state.CreateBy = types.StringValue(res.Payload.Compute.Instance.CreateBy)
-	state.DatacenterID = types.StringValue(res.Payload.Compute.Instance.DatacenterID)
-	state.GpuModel = types.StringValue(res.Payload.Compute.Instance.GpuModel)
-	state.ImageDesc = types.StringValue(res.Payload.Compute.Instance.ImageDesc)
-	state.ImageID = types.StringValue(res.Payload.Compute.Instance.ImageID)
-	state.ImageName = types.StringValue(res.Payload.Compute.Instance.ImageName)
-	state.LcmState = types.StringValue(res.Payload.Compute.Instance.LcmState)
-	state.LocalIPAddress = types.StringValue(res.Payload.Compute.Instance.LocalIPAddress)
-	state.OneState = types.StringValue(res.Payload.Compute.Instance.OneState)
-	state.PriceHr = types.Float64Value(float64(res.Payload.Compute.Instance.PriceHr))
-	state.PublicIPAddress = types.StringValue(res.Payload.Compute.Instance.PublicIPAddress)
-	state.RegionID = types.StringValue(res.Payload.Compute.Instance.RegionID)
-	state.RegionName = types.StringValue(res.Payload.Compute.Instance.RegionName)
-	state.RenewableEnergy = types.BoolValue(res.Payload.Compute.Instance.RenewableEnergy)
+	state.CPUModel = types.StringValue(res.Payload.Instance.CPUModel)
+	state.CreateBy = types.StringValue(res.Payload.Instance.CreateBy)
+	state.DatacenterID = types.StringValue(res.Payload.Instance.DatacenterID)
+	state.GpuModel = types.StringValue(res.Payload.Instance.GpuModel)
+	state.ImageDesc = types.StringValue(res.Payload.Instance.ImageDesc)
+	state.ImageID = types.StringValue(res.Payload.Instance.ImageID)
+	state.ImageName = types.StringValue(res.Payload.Instance.ImageName)
+	state.LcmState = types.StringValue(res.Payload.Instance.LcmState)
+	state.InternalIPAddress = types.StringValue(res.Payload.Instance.InternalIPAddress)
+	state.ExternalIPAddress = types.StringValue(res.Payload.Instance.ExternalIPAddress)
+	state.OneState = types.StringValue(res.Payload.Instance.OneState)
+	state.PriceHr = types.Float64Value(float64(res.Payload.Instance.PriceHr))
+	state.PublicIPAddress = types.StringValue(res.Payload.Instance.PublicIPAddress)
+	state.RegionID = types.StringValue(res.Payload.Instance.RegionID)
+	state.RegionName = types.StringValue(res.Payload.Instance.RegionName)
+	state.RenewableEnergy = types.BoolValue(res.Payload.Instance.RenewableEnergy)
 
 	tflog.Trace(ctx, "created a vm")
 
@@ -342,21 +348,22 @@ func (r *VMResource) Read(ctx context.Context, req resource.ReadRequest, resp *r
 	}
 
 	state.Id = types.StringValue("placeholder")
-	state.CPUModel = types.StringValue(res.Payload.Compute.Instance.CPUModel)
-	state.CreateBy = types.StringValue(res.Payload.Compute.Instance.CreateBy)
-	state.DatacenterID = types.StringValue(res.Payload.Compute.Instance.DatacenterID)
-	state.GpuModel = types.StringValue(res.Payload.Compute.Instance.GpuModel)
-	state.ImageDesc = types.StringValue(res.Payload.Compute.Instance.ImageDesc)
-	state.ImageID = types.StringValue(res.Payload.Compute.Instance.ImageID)
-	state.ImageName = types.StringValue(res.Payload.Compute.Instance.ImageName)
-	state.LcmState = types.StringValue(res.Payload.Compute.Instance.LcmState)
-	state.LocalIPAddress = types.StringValue(res.Payload.Compute.Instance.LocalIPAddress)
-	state.OneState = types.StringValue(res.Payload.Compute.Instance.OneState)
-	state.PriceHr = types.Float64Value(float64(res.Payload.Compute.Instance.PriceHr))
-	state.PublicIPAddress = types.StringValue(res.Payload.Compute.Instance.PublicIPAddress)
-	state.RegionID = types.StringValue(res.Payload.Compute.Instance.RegionID)
-	state.RegionName = types.StringValue(res.Payload.Compute.Instance.RegionName)
-	state.RenewableEnergy = types.BoolValue(res.Payload.Compute.Instance.RenewableEnergy)
+	state.CPUModel = types.StringValue(res.Payload.Instance.CPUModel)
+	state.CreateBy = types.StringValue(res.Payload.Instance.CreateBy)
+	state.DatacenterID = types.StringValue(res.Payload.Instance.DatacenterID)
+	state.GpuModel = types.StringValue(res.Payload.Instance.GpuModel)
+	state.ImageDesc = types.StringValue(res.Payload.Instance.ImageDesc)
+	state.ImageID = types.StringValue(res.Payload.Instance.ImageID)
+	state.ImageName = types.StringValue(res.Payload.Instance.ImageName)
+	state.LcmState = types.StringValue(res.Payload.Instance.LcmState)
+	state.InternalIPAddress = types.StringValue(res.Payload.Instance.InternalIPAddress)
+	state.ExternalIPAddress = types.StringValue(res.Payload.Instance.ExternalIPAddress)
+	state.OneState = types.StringValue(res.Payload.Instance.OneState)
+	state.PriceHr = types.Float64Value(float64(res.Payload.Instance.PriceHr))
+	state.PublicIPAddress = types.StringValue(res.Payload.Instance.PublicIPAddress)
+	state.RegionID = types.StringValue(res.Payload.Instance.RegionID)
+	state.RegionName = types.StringValue(res.Payload.Instance.RegionName)
+	state.RenewableEnergy = types.BoolValue(res.Payload.Instance.RenewableEnergy)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
@@ -388,21 +395,22 @@ func (r *VMResource) Update(ctx context.Context, req resource.UpdateRequest, res
 	}
 
 	state.Id = types.StringValue("placeholder")
-	state.CPUModel = types.StringValue(res.Payload.Compute.Instance.CPUModel)
-	state.CreateBy = types.StringValue(res.Payload.Compute.Instance.CreateBy)
-	state.DatacenterID = types.StringValue(res.Payload.Compute.Instance.DatacenterID)
-	state.GpuModel = types.StringValue(res.Payload.Compute.Instance.GpuModel)
-	state.ImageDesc = types.StringValue(res.Payload.Compute.Instance.ImageDesc)
-	state.ImageID = types.StringValue(res.Payload.Compute.Instance.ImageID)
-	state.ImageName = types.StringValue(res.Payload.Compute.Instance.ImageName)
-	state.LcmState = types.StringValue(res.Payload.Compute.Instance.LcmState)
-	state.LocalIPAddress = types.StringValue(res.Payload.Compute.Instance.LocalIPAddress)
-	state.OneState = types.StringValue(res.Payload.Compute.Instance.OneState)
-	state.PriceHr = types.Float64Value(float64(res.Payload.Compute.Instance.PriceHr))
-	state.PublicIPAddress = types.StringValue(res.Payload.Compute.Instance.PublicIPAddress)
-	state.RegionID = types.StringValue(res.Payload.Compute.Instance.RegionID)
-	state.RegionName = types.StringValue(res.Payload.Compute.Instance.RegionName)
-	state.RenewableEnergy = types.BoolValue(res.Payload.Compute.Instance.RenewableEnergy)
+	state.CPUModel = types.StringValue(res.Payload.Instance.CPUModel)
+	state.CreateBy = types.StringValue(res.Payload.Instance.CreateBy)
+	state.DatacenterID = types.StringValue(res.Payload.Instance.DatacenterID)
+	state.GpuModel = types.StringValue(res.Payload.Instance.GpuModel)
+	state.ImageDesc = types.StringValue(res.Payload.Instance.ImageDesc)
+	state.ImageID = types.StringValue(res.Payload.Instance.ImageID)
+	state.ImageName = types.StringValue(res.Payload.Instance.ImageName)
+	state.LcmState = types.StringValue(res.Payload.Instance.LcmState)
+	state.InternalIPAddress = types.StringValue(res.Payload.Instance.InternalIPAddress)
+	state.ExternalIPAddress = types.StringValue(res.Payload.Instance.ExternalIPAddress)
+	state.OneState = types.StringValue(res.Payload.Instance.OneState)
+	state.PriceHr = types.Float64Value(float64(res.Payload.Instance.PriceHr))
+	state.PublicIPAddress = types.StringValue(res.Payload.Instance.PublicIPAddress)
+	state.RegionID = types.StringValue(res.Payload.Instance.RegionID)
+	state.RegionName = types.StringValue(res.Payload.Instance.RegionName)
+	state.RenewableEnergy = types.BoolValue(res.Payload.Instance.RenewableEnergy)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)

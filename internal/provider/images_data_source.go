@@ -26,7 +26,7 @@ type imagesModel struct {
 	Id          types.String `tfsdk:"id"`
 	Name        types.String `tfsdk:"name"`
 	Description types.String `tfsdk:"description"`
-	Size        types.String `tfsdk:"size"`
+	SizeGiB     types.String `tfsdk:"size_gib"`
 }
 
 // ImagesDataSourceModel describes the data source data model.
@@ -66,8 +66,8 @@ func (d *ImagesDataSource) Schema(ctx context.Context, req datasource.SchemaRequ
 							MarkdownDescription: "Image description",
 							Computed:            true,
 						},
-						"size": schema.StringAttribute{
-							MarkdownDescription: "Image size",
+						"size_gib": schema.StringAttribute{
+							MarkdownDescription: "Image size in GiB",
 							Computed:            true,
 						},
 					},
@@ -99,7 +99,7 @@ func (d *ImagesDataSource) Configure(ctx context.Context, req datasource.Configu
 func (d *ImagesDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var state ImagesDataSourceModel
 
-	res, err := d.client.Client.Search.ListOSImages(search.NewListOSImagesParams())
+	res, err := d.client.Client.Search.ListPublicImages(search.NewListPublicImagesParams())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to read images",
@@ -112,10 +112,10 @@ func (d *ImagesDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 
 	for _, image := range res.Payload.Images {
 		imageState := imagesModel{
-			Id:          types.StringValue(image.ID),
-			Name:        types.StringValue(image.Name),
-			Description: types.StringValue(image.Description),
-			Size:        types.StringValue(image.Size),
+			Id:          types.StringValue(*image.ID),
+			Name:        types.StringValue(*image.Name),
+			Description: types.StringValue(*image.Description),
+			SizeGiB:     types.StringValue(fmt.Sprintf("%d", *image.SizeGib)),
 		}
 
 		state.Images = append(state.Images, imageState)

@@ -12,6 +12,7 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // ListRegionsResponse list regions response
@@ -20,6 +21,7 @@ import (
 type ListRegionsResponse struct {
 
 	// regions
+	// Required: true
 	Regions []*Region `json:"regions"`
 }
 
@@ -38,8 +40,9 @@ func (m *ListRegionsResponse) Validate(formats strfmt.Registry) error {
 }
 
 func (m *ListRegionsResponse) validateRegions(formats strfmt.Registry) error {
-	if swag.IsZero(m.Regions) { // not required
-		return nil
+
+	if err := validate.Required("regions", "body", m.Regions); err != nil {
+		return err
 	}
 
 	for i := 0; i < len(m.Regions); i++ {

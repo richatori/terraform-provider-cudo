@@ -14,6 +14,7 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
 )
@@ -190,10 +191,12 @@ type RemoveBillingAccountUserPermissionBody struct {
 	ProjectID string `json:"projectId,omitempty"`
 
 	// role
-	Role *models.Role `json:"role,omitempty"`
+	// Required: true
+	Role *models.Role `json:"role"`
 
 	// user Id
-	UserID string `json:"userId,omitempty"`
+	// Required: true
+	UserID *string `json:"userId"`
 }
 
 // Validate validates this remove billing account user permission body
@@ -204,6 +207,10 @@ func (o *RemoveBillingAccountUserPermissionBody) Validate(formats strfmt.Registr
 		res = append(res, err)
 	}
 
+	if err := o.validateUserID(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
@@ -211,8 +218,13 @@ func (o *RemoveBillingAccountUserPermissionBody) Validate(formats strfmt.Registr
 }
 
 func (o *RemoveBillingAccountUserPermissionBody) validateRole(formats strfmt.Registry) error {
-	if swag.IsZero(o.Role) { // not required
-		return nil
+
+	if err := validate.Required("body"+"."+"role", "body", o.Role); err != nil {
+		return err
+	}
+
+	if err := validate.Required("body"+"."+"role", "body", o.Role); err != nil {
+		return err
 	}
 
 	if o.Role != nil {
@@ -224,6 +236,15 @@ func (o *RemoveBillingAccountUserPermissionBody) validateRole(formats strfmt.Reg
 			}
 			return err
 		}
+	}
+
+	return nil
+}
+
+func (o *RemoveBillingAccountUserPermissionBody) validateUserID(formats strfmt.Registry) error {
+
+	if err := validate.Required("body"+"."+"userId", "body", o.UserID); err != nil {
+		return err
 	}
 
 	return nil

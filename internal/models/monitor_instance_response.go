@@ -12,6 +12,7 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // MonitorInstanceResponse monitor instance response
@@ -20,6 +21,7 @@ import (
 type MonitorInstanceResponse struct {
 
 	// items
+	// Required: true
 	Items []*InstanceMonitoringItem `json:"items"`
 }
 
@@ -38,8 +40,9 @@ func (m *MonitorInstanceResponse) Validate(formats strfmt.Registry) error {
 }
 
 func (m *MonitorInstanceResponse) validateItems(formats strfmt.Registry) error {
-	if swag.IsZero(m.Items) { // not required
-		return nil
+
+	if err := validate.Required("items", "body", m.Items); err != nil {
+		return err
 	}
 
 	for i := 0; i < len(m.Items); i++ {

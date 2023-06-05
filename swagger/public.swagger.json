@@ -246,6 +246,10 @@
             "required": true,
             "schema": {
               "type": "object",
+              "required": [
+                "userEmail",
+                "role"
+              ],
               "properties": {
                 "dataCenterId": {
                   "type": "string"
@@ -299,6 +303,10 @@
             "required": true,
             "schema": {
               "type": "object",
+              "required": [
+                "userId",
+                "role"
+              ],
               "properties": {
                 "dataCenterId": {
                   "type": "string"
@@ -332,18 +340,57 @@
         }
       }
     },
+    "/v1/compute/data-centers": {
+      "get": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "List available data centers",
+        "operationId": "SearchDataCenters",
+        "parameters": [
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi",
+            "name": "regionId",
+            "in": "query"
+          },
+          {
+            "type": "boolean",
+            "name": "renewableEnergy",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/SearchDataCentersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
     "/v1/compute/images": {
       "get": {
         "tags": [
           "Search"
         ],
-        "summary": "List OS images",
-        "operationId": "ListOSImages",
+        "summary": "List Public images",
+        "operationId": "ListPublicImages",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ListOSImagesResponse"
+              "$ref": "#/definitions/ListPublicImagesResponse"
             }
           },
           "default": {
@@ -362,92 +409,6 @@
         ],
         "summary": "Search machines",
         "operationId": "SearchCompute",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "cpuModel",
-            "in": "query"
-          },
-          {
-            "type": "integer",
-            "format": "int32",
-            "name": "gpu",
-            "in": "query"
-          },
-          {
-            "type": "string",
-            "name": "gpuModel",
-            "in": "query"
-          },
-          {
-            "type": "integer",
-            "format": "int32",
-            "name": "memoryGib",
-            "in": "query"
-          },
-          {
-            "type": "string",
-            "name": "orderBy",
-            "in": "query"
-          },
-          {
-            "type": "integer",
-            "format": "int32",
-            "name": "pageNumber",
-            "in": "query"
-          },
-          {
-            "type": "integer",
-            "format": "int32",
-            "name": "pageSize",
-            "in": "query"
-          },
-          {
-            "type": "string",
-            "name": "regionId",
-            "in": "query"
-          },
-          {
-            "type": "integer",
-            "format": "int32",
-            "name": "storageGib",
-            "in": "query"
-          },
-          {
-            "type": "integer",
-            "format": "int32",
-            "name": "vcpu",
-            "in": "query"
-          },
-          {
-            "type": "string",
-            "name": "dataCenterId",
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/SearchComputeResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/Status"
-            }
-          }
-        }
-      }
-    },
-    "/v1/compute/search_v2": {
-      "get": {
-        "tags": [
-          "Search"
-        ],
-        "summary": "Search machines",
-        "operationId": "SearchCompute2",
         "parameters": [
           {
             "type": "string",
@@ -547,6 +508,10 @@
             "required": true,
             "schema": {
               "type": "object",
+              "required": [
+                "userEmail",
+                "role"
+              ],
               "properties": {
                 "billingAccountId": {
                   "type": "string"
@@ -820,6 +785,9 @@
             "required": true,
             "schema": {
               "type": "object",
+              "required": [
+                "billingAccountId"
+              ],
               "properties": {
                 "billingAccountId": {
                   "type": "string"
@@ -873,6 +841,10 @@
             "required": true,
             "schema": {
               "type": "object",
+              "required": [
+                "userEmail",
+                "role"
+              ],
               "properties": {
                 "billingAccountId": {
                   "type": "string"
@@ -954,6 +926,11 @@
           {
             "type": "string",
             "name": "status",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "networkId",
             "in": "query"
           }
         ],
@@ -1237,6 +1214,340 @@
         }
       }
     },
+    "/v1/projects/{projectId}/networks": {
+      "get": {
+        "tags": [
+          "Networks"
+        ],
+        "summary": "List networks",
+        "operationId": "ListNetworks",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "pageNumber",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "pageSize",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListNetworksResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Networks"
+        ],
+        "summary": "Create network",
+        "operationId": "CreateNetwork",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "dataCenterId",
+                "networkId",
+                "cidrPrefix"
+              ],
+              "properties": {
+                "cidrPrefix": {
+                  "type": "string"
+                },
+                "dataCenterId": {
+                  "type": "string"
+                },
+                "networkId": {
+                  "type": "string"
+                },
+                "vrouterSize": {
+                  "$ref": "#/definitions/VrouterSize"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CreateNetworkResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/networks/search": {
+      "get": {
+        "tags": [
+          "Networks"
+        ],
+        "summary": "Search networks available to cluster",
+        "operationId": "SearchNetworks",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "machineType",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "dataCenterId",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/SearchNetworksResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/networks/security-groups": {
+      "get": {
+        "tags": [
+          "Networks"
+        ],
+        "summary": "List security groups",
+        "operationId": "ListSecurityGroups",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "dataCenterId",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "pageNumber",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "pageSize",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListSecurityGroupsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/networks/security-groups/{id}": {
+      "get": {
+        "tags": [
+          "Networks"
+        ],
+        "summary": "Get a security group",
+        "operationId": "GetSecurityGroup",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/GetSecurityGroupResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Networks"
+        ],
+        "summary": "Delete security group",
+        "operationId": "DeleteSecurityGroup",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DeleteSecurityGroupResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/networks/{id}": {
+      "get": {
+        "tags": [
+          "Networks"
+        ],
+        "summary": "Get network",
+        "operationId": "GetNetwork",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/GetNetworkResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/networks/{networkId}": {
+      "delete": {
+        "tags": [
+          "Networks"
+        ],
+        "summary": "Delete network",
+        "operationId": "DeleteNetwork",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "networkId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DeleteNetworkResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
     "/v1/projects/{projectId}/remove-user-permission": {
       "post": {
         "tags": [
@@ -1257,6 +1568,10 @@
             "required": true,
             "schema": {
               "type": "object",
+              "required": [
+                "userId",
+                "role"
+              ],
               "properties": {
                 "billingAccountId": {
                   "type": "string"
@@ -1347,11 +1662,18 @@
             "required": true,
             "schema": {
               "type": "object",
+              "required": [
+                "vmId",
+                "bootDiskImageId"
+              ],
               "properties": {
                 "bootDisk": {
-                  "$ref": "#/definitions/CreateVMRequest.Disk"
+                  "$ref": "#/definitions/Disk"
                 },
                 "bootDiskImageId": {
+                  "type": "string"
+                },
+                "cpuModel": {
                   "type": "string"
                 },
                 "customSshKeys": {
@@ -1363,6 +1685,9 @@
                 "dataCenterId": {
                   "type": "string"
                 },
+                "gpuModel": {
+                  "type": "string"
+                },
                 "gpus": {
                   "type": "integer",
                   "format": "int32"
@@ -1370,15 +1695,32 @@
                 "machineType": {
                   "type": "string"
                 },
+                "maxPriceHr": {
+                  "$ref": "#/definitions/Decimal"
+                },
                 "memoryGib": {
                   "type": "integer",
                   "format": "int32"
                 },
+                "nics": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/definitions/NIC"
+                  }
+                },
                 "password": {
                   "type": "string"
                 },
+                "securityGroupIds": {
+                  "type": "array",
+                  "title": "ignored if any nics are provided",
+                  "items": {
+                    "type": "string"
+                  }
+                },
                 "sshKeySource": {
-                  "$ref": "#/definitions/CreateVMRequest.SshKeySource"
+                  "$ref": "#/definitions/SshKeySource"
                 },
                 "startScript": {
                   "type": "string"
@@ -1399,6 +1741,140 @@
             "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/CreateVMResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{securityGroup.projectId}/networks/security-groups": {
+      "post": {
+        "tags": [
+          "Networks"
+        ],
+        "summary": "Create security group",
+        "operationId": "CreateSecurityGroup",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "securityGroup.projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "dataCenterId",
+                "id"
+              ],
+              "properties": {
+                "securityGroup": {
+                  "type": "object",
+                  "properties": {
+                    "dataCenterId": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "rules": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "$ref": "#/definitions/Rule"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CreateSecurityGroupResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{securityGroup.projectId}/networks/security-groups/{securityGroup.id}": {
+      "patch": {
+        "tags": [
+          "Networks"
+        ],
+        "summary": "Update security group",
+        "operationId": "UpdateSecurityGroup",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "securityGroup.projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "securityGroup.id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "dataCenterId"
+              ],
+              "properties": {
+                "securityGroup": {
+                  "type": "object",
+                  "properties": {
+                    "dataCenterId": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "rules": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "$ref": "#/definitions/Rule"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UpdateSecurityGroupResponse"
             }
           },
           "default": {
@@ -1590,19 +2066,11 @@
         }
       }
     },
-    "ComputeInstance": {
-      "type": "object",
-      "properties": {
-        "instance": {
-          "$ref": "#/definitions/Instance"
-        },
-        "lease": {
-          "$ref": "#/definitions/Lease"
-        }
-      }
-    },
     "CountInstancesResponse": {
       "type": "object",
+      "required": [
+        "count"
+      ],
       "properties": {
         "count": {
           "type": "integer",
@@ -1612,6 +2080,11 @@
     },
     "CpuModelCategory": {
       "type": "object",
+      "required": [
+        "name",
+        "minPriceHr",
+        "countVmAvailable"
+      ],
       "properties": {
         "countVmAvailable": {
           "type": "integer",
@@ -1625,7 +2098,95 @@
         }
       }
     },
-    "CreateVMRequest.Disk": {
+    "CreateNetworkResponse": {
+      "type": "object"
+    },
+    "CreateSecurityGroupResponse": {
+      "type": "object",
+      "required": [
+        "securityGroup"
+      ],
+      "properties": {
+        "securityGroup": {
+          "$ref": "#/definitions/SecurityGroup"
+        }
+      }
+    },
+    "CreateVMResponse": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "DataCenter": {
+      "type": "object",
+      "required": [
+        "id",
+        "regionId",
+        "supplierName",
+        "renewableEnergy"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "regionId": {
+          "type": "string"
+        },
+        "renewableEnergy": {
+          "type": "boolean"
+        },
+        "supplierName": {
+          "type": "string"
+        }
+      }
+    },
+    "DataCenterCategory": {
+      "type": "object",
+      "required": [
+        "id",
+        "minPriceHr",
+        "countVmAvailable",
+        "renewableEnergy"
+      ],
+      "properties": {
+        "countVmAvailable": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "id": {
+          "type": "string"
+        },
+        "minPriceHr": {
+          "$ref": "#/definitions/Decimal"
+        },
+        "renewableEnergy": {
+          "type": "boolean"
+        }
+      }
+    },
+    "Decimal": {
+      "description": "A representation of a decimal value, such as 2.5. Clients may convert values\ninto language-native decimal formats, such as Java's [BigDecimal][] or\nPython's [decimal.Decimal][].\n\n[BigDecimal]:\nhttps://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/math/BigDecimal.html\n[decimal.Decimal]: https://docs.python.org/3/library/decimal.html",
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "The decimal value, as a string.\n\nThe string representation consists of an optional sign, `+` (`U+002B`)\nor `-` (`U+002D`), followed by a sequence of zero or more decimal digits\n(\"the integer\"), optionally followed by a fraction, optionally followed\nby an exponent.\n\nThe fraction consists of a decimal point followed by zero or more decimal\ndigits. The string must contain at least one digit in either the integer\nor the fraction. The number formed by the sign, the integer and the\nfraction is referred to as the significand.\n\nThe exponent consists of the character `e` (`U+0065`) or `E` (`U+0045`)\nfollowed by one or more decimal digits.\n\nServices **should** normalize decimal values before storing them by:\n\n  - Removing an explicitly-provided `+` sign (`+2.5` -\u003e `2.5`).\n  - Replacing a zero-length integer value with `0` (`.5` -\u003e `0.5`).\n  - Coercing the exponent character to lower-case (`2.5E8` -\u003e `2.5e8`).\n  - Removing an explicitly-provided zero exponent (`2.5e0` -\u003e `2.5`).\n\nServices **may** perform additional normalization based on its own needs\nand the internal decimal implementation selected, such as shifting the\ndecimal point and exponent value together (example: `2.5e-1` \u003c-\u003e `0.25`).\nAdditionally, services **may** preserve trailing zeroes in the fraction\nto indicate increased precision, but are not required to do so.\n\nNote that only the `.` character is supported to divide the integer\nand the fraction; `,` **should not** be supported regardless of locale.\nAdditionally, thousand separators **should not** be supported. If a\nservice does support them, values **must** be normalized.\n\nThe ENBF grammar is:\n\n    DecimalString =\n      [Sign] Significand [Exponent];\n\n    Sign = '+' | '-';\n\n    Significand =\n      Digits ['.'] [Digits] | [Digits] '.' Digits;\n\n    Exponent = ('e' | 'E') [Sign] Digits;\n\n    Digits = { '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' };\n\nServices **should** clearly document the range of supported values, the\nmaximum supported precision (total number of digits), and, if applicable,\nthe scale (number of digits after the decimal point), as well as how it\nbehaves when receiving out-of-bounds values.\n\nServices **may** choose to accept values passed as input even when the\nvalue has a higher precision or scale than the service supports, and\n**should** round the value to fit the supported scale. Alternatively, the\nservice **may** error with `400 Bad Request` (`INVALID_ARGUMENT` in gRPC)\nif precision would be lost.\n\nServices **should** error with `400 Bad Request` (`INVALID_ARGUMENT` in\ngRPC) if the service receives a value outside of the supported range.",
+          "type": "string"
+        }
+      }
+    },
+    "DeleteNetworkResponse": {
+      "type": "object"
+    },
+    "DeleteSecurityGroupResponse": {
+      "type": "object"
+    },
+    "Disk": {
       "type": "object",
       "properties": {
         "id": {
@@ -1637,49 +2198,6 @@
         },
         "storageClass": {
           "$ref": "#/definitions/StorageClass"
-        }
-      }
-    },
-    "CreateVMRequest.SshKeySource": {
-      "type": "string",
-      "default": "SSH_KEY_SOURCE_UNKNOWN",
-      "enum": [
-        "SSH_KEY_SOURCE_UNKNOWN",
-        "SSH_KEY_SOURCE_PROJECT",
-        "SSH_KEY_SOURCE_USER",
-        "SSH_KEY_SOURCE_NONE"
-      ]
-    },
-    "CreateVMResponse": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        }
-      }
-    },
-    "DataCenterCategory": {
-      "type": "object",
-      "properties": {
-        "countVmAvailable": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "id": {
-          "type": "string"
-        },
-        "minPriceHr": {
-          "$ref": "#/definitions/Decimal"
-        }
-      }
-    },
-    "Decimal": {
-      "description": "A representation of a decimal value, such as 2.5. Clients may convert values\ninto language-native decimal formats, such as Java's [BigDecimal][] or\nPython's [decimal.Decimal][].\n\n[BigDecimal]:\nhttps://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/math/BigDecimal.html\n[decimal.Decimal]: https://docs.python.org/3/library/decimal.html",
-      "type": "object",
-      "properties": {
-        "value": {
-          "description": "The decimal value, as a string.\n\nThe string representation consists of an optional sign, `+` (`U+002B`)\nor `-` (`U+002D`), followed by a sequence of zero or more decimal digits\n(\"the integer\"), optionally followed by a fraction, optionally followed\nby an exponent.\n\nThe fraction consists of a decimal point followed by zero or more decimal\ndigits. The string must contain at least one digit in either the integer\nor the fraction. The number formed by the sign, the integer and the\nfraction is referred to as the significand.\n\nThe exponent consists of the character `e` (`U+0065`) or `E` (`U+0045`)\nfollowed by one or more decimal digits.\n\nServices **should** normalize decimal values before storing them by:\n\n  - Removing an explicitly-provided `+` sign (`+2.5` -\u003e `2.5`).\n  - Replacing a zero-length integer value with `0` (`.5` -\u003e `0.5`).\n  - Coercing the exponent character to lower-case (`2.5E8` -\u003e `2.5e8`).\n  - Removing an explicitly-provided zero exponent (`2.5e0` -\u003e `2.5`).\n\nServices **may** perform additional normalization based on its own needs\nand the internal decimal implementation selected, such as shifting the\ndecimal point and exponent value together (example: `2.5e-1` \u003c-\u003e `0.25`).\nAdditionally, services **may** preserve trailing zeroes in the fraction\nto indicate increased precision, but are not required to do so.\n\nNote that only the `.` character is supported to divide the integer\nand the fraction; `,` **should not** be supported regardless of locale.\nAdditionally, thousand separators **should not** be supported. If a\nservice does support them, values **must** be normalized.\n\nThe ENBF grammar is:\n\n    DecimalString =\n      [Sign] Significand [Exponent];\n\n    Sign = '+' | '-';\n\n    Significand =\n      Digits ['.'] [Digits] | [Digits] '.' Digits;\n\n    Exponent = ('e' | 'E') [Sign] Digits;\n\n    Digits = { '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' };\n\nServices **should** clearly document the range of supported values, the\nmaximum supported precision (total number of digits), and, if applicable,\nthe scale (number of digits after the decimal point), as well as how it\nbehaves when receiving out-of-bounds values.\n\nServices **may** choose to accept values passed as input even when the\nvalue has a higher precision or scale than the service supports, and\n**should** round the value to fit the supported scale. Alternatively, the\nservice **may** error with `400 Bad Request` (`INVALID_ARGUMENT` in gRPC)\nif precision would be lost.\n\nServices **should** error with `400 Bad Request` (`INVALID_ARGUMENT` in\ngRPC) if the service receives a value outside of the supported range.",
-          "type": "string"
         }
       }
     },
@@ -1697,14 +2215,32 @@
     },
     "GetInstanceResponse": {
       "type": "object",
+      "required": [
+        "instance"
+      ],
       "properties": {
-        "compute": {
-          "$ref": "#/definitions/ComputeInstance"
+        "instance": {
+          "$ref": "#/definitions/Instance"
+        }
+      }
+    },
+    "GetNetworkResponse": {
+      "type": "object",
+      "required": [
+        "network"
+      ],
+      "properties": {
+        "network": {
+          "$ref": "#/definitions/Network"
         }
       }
     },
     "GetProjectSpendDetailsResponse": {
       "type": "object",
+      "required": [
+        "spend",
+        "orders"
+      ],
       "properties": {
         "orders": {
           "type": "array",
@@ -1720,6 +2256,9 @@
     },
     "GetProjectSpendHistoryResponse": {
       "type": "object",
+      "required": [
+        "projectSpendHistory"
+      ],
       "properties": {
         "projectSpendHistory": {
           "type": "array",
@@ -1730,8 +2269,23 @@
         }
       }
     },
+    "GetSecurityGroupResponse": {
+      "type": "object",
+      "required": [
+        "securityGroup"
+      ],
+      "properties": {
+        "securityGroup": {
+          "$ref": "#/definitions/SecurityGroup"
+        }
+      }
+    },
     "GetVncConnectUrlResponse": {
       "type": "object",
+      "required": [
+        "connectUrl",
+        "token"
+      ],
       "properties": {
         "connectUrl": {
           "type": "string"
@@ -1743,6 +2297,11 @@
     },
     "GpuModelCategory": {
       "type": "object",
+      "required": [
+        "name",
+        "minPriceHr",
+        "countVmAvailable"
+      ],
       "properties": {
         "countVmAvailable": {
           "type": "integer",
@@ -1758,6 +2317,24 @@
     },
     "HostConfigCategory": {
       "type": "object",
+      "required": [
+        "id",
+        "cpuModel",
+        "gpuModel",
+        "dataCenterId",
+        "vcpuPriceHr",
+        "totalVcpuPriceHr",
+        "memoryGibPriceHr",
+        "totalMemoryPriceHr",
+        "gpuPriceHr",
+        "totalGpuPriceHr",
+        "storageGibPriceHr",
+        "totalStoragePriceHr",
+        "totalPriceHr",
+        "countVmAvailable",
+        "machineType",
+        "renewableEnergy"
+      ],
       "properties": {
         "countVmAvailable": {
           "type": "integer",
@@ -1783,6 +2360,9 @@
         },
         "memoryGibPriceHr": {
           "$ref": "#/definitions/Decimal"
+        },
+        "renewableEnergy": {
+          "type": "boolean"
         },
         "storageGibPriceHr": {
           "$ref": "#/definitions/Decimal"
@@ -1820,6 +2400,13 @@
     },
     "Image": {
       "type": "object",
+      "required": [
+        "id",
+        "name",
+        "description",
+        "displayName",
+        "sizeGib"
+      ],
       "properties": {
         "description": {
           "type": "string"
@@ -1833,18 +2420,9 @@
         "name": {
           "type": "string"
         },
-        "size": {
-          "type": "string"
-        },
         "sizeGib": {
           "type": "integer",
           "format": "int32"
-        },
-        "tags": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         }
       }
     },
@@ -1866,6 +2444,9 @@
           "type": "string",
           "readOnly": true
         },
+        "externalIpAddress": {
+          "type": "string"
+        },
         "gpuModel": {
           "type": "string"
         },
@@ -1885,15 +2466,22 @@
         "imageName": {
           "type": "string"
         },
-        "lcmState": {
+        "internalIpAddress": {
           "type": "string"
         },
-        "localIpAddress": {
+        "lcmState": {
           "type": "string"
         },
         "memory": {
           "type": "integer",
           "format": "int64"
+        },
+        "nics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/NIC"
+          }
         },
         "oneState": {
           "type": "string"
@@ -1915,6 +2503,13 @@
         },
         "renewableEnergy": {
           "type": "boolean"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/SecurityGroupRule"
+          }
         },
         "vcpus": {
           "type": "integer",
@@ -1962,34 +2557,14 @@
         }
       }
     },
-    "Lease": {
-      "type": "object",
-      "properties": {
-        "createBy": {
-          "type": "string",
-          "readOnly": true
-        },
-        "createTime": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "endTime": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "id": {
-          "type": "string"
-        },
-        "infrastructureType": {
-          "type": "string"
-        },
-        "status": {
-          "type": "string"
-        }
-      }
-    },
     "ListApiKeysResponse": {
       "type": "object",
+      "required": [
+        "apiKeys",
+        "totalCount",
+        "pageNumber",
+        "pageSize"
+      ],
       "properties": {
         "apiKeys": {
           "type": "array",
@@ -2019,25 +2594,46 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/ComputeInstance"
+            "$ref": "#/definitions/Instance"
           }
         }
       }
     },
-    "ListOSImagesResponse": {
+    "ListNetworksResponse": {
       "type": "object",
+      "required": [
+        "networks",
+        "totalCount",
+        "pageNumber",
+        "pageSize"
+      ],
       "properties": {
-        "images": {
+        "networks": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/Image"
+            "$ref": "#/definitions/Network"
           }
+        },
+        "pageNumber": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
     "ListProjectSshKeysResponse": {
       "type": "object",
+      "required": [
+        "sshKeys"
+      ],
       "properties": {
         "sshKeys": {
           "type": "array",
@@ -2050,6 +2646,11 @@
     },
     "ListProjectsResponse": {
       "type": "object",
+      "required": [
+        "projects",
+        "pageToken",
+        "pageSize"
+      ],
       "properties": {
         "pageSize": {
           "type": "integer",
@@ -2067,8 +2668,26 @@
         }
       }
     },
+    "ListPublicImagesResponse": {
+      "type": "object",
+      "required": [
+        "images"
+      ],
+      "properties": {
+        "images": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Image"
+          }
+        }
+      }
+    },
     "ListRegionsResponse": {
       "type": "object",
+      "required": [
+        "regions"
+      ],
       "properties": {
         "regions": {
           "type": "array",
@@ -2079,8 +2698,44 @@
         }
       }
     },
+    "ListSecurityGroupsResponse": {
+      "type": "object",
+      "required": [
+        "securityGroups",
+        "totalCount",
+        "pageNumber",
+        "pageSize"
+      ],
+      "properties": {
+        "pageNumber": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "securityGroups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/SecurityGroup"
+          }
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "ListSshKeysResponse": {
       "type": "object",
+      "required": [
+        "sshKeys",
+        "totalCount",
+        "pageNumber",
+        "pageSize"
+      ],
       "properties": {
         "pageNumber": {
           "type": "integer",
@@ -2105,6 +2760,11 @@
     },
     "ListUserPermissionsResponse": {
       "type": "object",
+      "required": [
+        "projectPermissions",
+        "dataCenterPermissions",
+        "billingAccountPermissions"
+      ],
       "properties": {
         "billingAccountPermissions": {
           "type": "array",
@@ -2131,6 +2791,9 @@
     },
     "MonitorInstanceResponse": {
       "type": "object",
+      "required": [
+        "items"
+      ],
       "properties": {
         "items": {
           "type": "array",
@@ -2141,8 +2804,56 @@
         }
       }
     },
+    "NIC": {
+      "type": "object",
+      "properties": {
+        "assignPublicIp": {
+          "type": "boolean"
+        },
+        "networkId": {
+          "type": "string"
+        },
+        "securityGroupIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Network": {
+      "type": "object",
+      "properties": {
+        "cidrPrefix": {
+          "type": "string"
+        },
+        "dataCenter": {
+          "type": "string"
+        },
+        "gateway": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "size": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "Order": {
       "type": "object",
+      "required": [
+        "uid",
+        "orderId",
+        "spend",
+        "startTime",
+        "endTime",
+        "description",
+        "quantity",
+        "priceHr"
+      ],
       "properties": {
         "description": {
           "type": "string"
@@ -2193,6 +2904,10 @@
     },
     "Project": {
       "type": "object",
+      "required": [
+        "id",
+        "billingAccountId"
+      ],
       "properties": {
         "billingAccountId": {
           "type": "string"
@@ -2233,11 +2948,27 @@
         }
       }
     },
+    "Protocol": {
+      "type": "string",
+      "default": "PROTOCOL_UNKNOWN",
+      "enum": [
+        "PROTOCOL_UNKNOWN",
+        "PROTOCOL_ALL",
+        "PROTOCOL_TCP",
+        "PROTOCOL_UDP",
+        "PROTOCOL_ICMP",
+        "PROTOCOL_ICMPv6",
+        "PROTOCOL_IPSEC"
+      ]
+    },
     "RebootInstanceResponse": {
       "type": "object",
+      "required": [
+        "instance"
+      ],
       "properties": {
-        "compute": {
-          "$ref": "#/definitions/ComputeInstance"
+        "instance": {
+          "$ref": "#/definitions/Instance"
         }
       }
     },
@@ -2260,6 +2991,39 @@
         "OWNER",
         "VIEWER",
         "EDITOR"
+      ]
+    },
+    "Rule": {
+      "type": "object",
+      "properties": {
+        "icmpType": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "ipRangeCidr": {
+          "type": "string",
+          "title": "single IP or CIDR format range to apply rule to"
+        },
+        "ports": {
+          "type": "string"
+        },
+        "protocol": {
+          "$ref": "#/definitions/Protocol"
+        },
+        "ruleType": {
+          "$ref": "#/definitions/RuleType"
+        }
+      }
+    },
+    "RuleType": {
+      "type": "string",
+      "default": "RULE_TYPE_UNKNOWN",
+      "enum": [
+        "RULE_TYPE_UNKNOWN",
+        "RULE_TYPE_INBOUND",
+        "RULE_TYPE_OUTBOUND"
       ]
     },
     "SearchComputeRequest": {
@@ -2308,6 +3072,17 @@
     },
     "SearchComputeResponse": {
       "type": "object",
+      "required": [
+        "request",
+        "maxVcpu",
+        "maxMemoryGib",
+        "maxGpu",
+        "countVmAvailable",
+        "cpuModels",
+        "gpuModels",
+        "dataCenters",
+        "hostConfigs"
+      ],
       "properties": {
         "countVmAvailable": {
           "type": "integer",
@@ -2358,8 +3133,93 @@
         }
       }
     },
+    "SearchDataCentersResponse": {
+      "type": "object",
+      "required": [
+        "dataCenters"
+      ],
+      "properties": {
+        "dataCenters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/DataCenter"
+          }
+        }
+      }
+    },
+    "SearchNetworksResponse": {
+      "type": "object",
+      "required": [
+        "networks"
+      ],
+      "properties": {
+        "networks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Network"
+          }
+        }
+      }
+    },
+    "SecurityGroup": {
+      "type": "object",
+      "required": [
+        "dataCenterId",
+        "id"
+      ],
+      "properties": {
+        "dataCenterId": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "projectId": {
+          "type": "string"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Rule"
+          }
+        }
+      }
+    },
+    "SecurityGroupRule": {
+      "type": "object",
+      "properties": {
+        "icmpType": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "ipRangeCidr": {
+          "type": "string",
+          "title": "single IP or CIDR format range to apply rule to"
+        },
+        "ports": {
+          "type": "string"
+        },
+        "protocol": {
+          "$ref": "#/definitions/Protocol"
+        },
+        "ruleType": {
+          "$ref": "#/definitions/RuleType"
+        }
+      }
+    },
     "SshKey": {
       "type": "object",
+      "required": [
+        "publicKey"
+      ],
       "properties": {
         "comment": {
           "type": "string",
@@ -2386,6 +3246,16 @@
           "readOnly": true
         }
       }
+    },
+    "SshKeySource": {
+      "type": "string",
+      "default": "SSH_KEY_SOURCE_UNKNOWN",
+      "enum": [
+        "SSH_KEY_SOURCE_UNKNOWN",
+        "SSH_KEY_SOURCE_PROJECT",
+        "SSH_KEY_SOURCE_USER",
+        "SSH_KEY_SOURCE_NONE"
+      ]
     },
     "StartInstanceResponse": {
       "type": "object"
@@ -2424,8 +3294,26 @@
     "TerminateInstanceResponse": {
       "type": "object"
     },
+    "UpdateSecurityGroupResponse": {
+      "type": "object",
+      "required": [
+        "securityGroup"
+      ],
+      "properties": {
+        "securityGroup": {
+          "$ref": "#/definitions/SecurityGroup"
+        }
+      }
+    },
     "UserPermission": {
       "type": "object",
+      "required": [
+        "userId",
+        "userEmail",
+        "userPicture",
+        "role",
+        "permissionRole"
+      ],
       "properties": {
         "permissionRole": {
           "$ref": "#/definitions/Role"
@@ -2443,6 +3331,15 @@
           "type": "string"
         }
       }
+    },
+    "VrouterSize": {
+      "type": "string",
+      "default": "VROUTER_INSTANCE_SMALL",
+      "enum": [
+        "VROUTER_INSTANCE_SMALL",
+        "VROUTER_INSTANCE_MEDIUM",
+        "VROUTER_INSTANCE_LARGE"
+      ]
     }
   }
 }

@@ -12,6 +12,7 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // ListProjectsResponse list projects response
@@ -20,18 +21,29 @@ import (
 type ListProjectsResponse struct {
 
 	// page size
-	PageSize int32 `json:"pageSize,omitempty"`
+	// Required: true
+	PageSize *int32 `json:"pageSize"`
 
 	// page token
-	PageToken string `json:"pageToken,omitempty"`
+	// Required: true
+	PageToken *string `json:"pageToken"`
 
 	// projects
+	// Required: true
 	Projects []*Project `json:"projects"`
 }
 
 // Validate validates this list projects response
 func (m *ListProjectsResponse) Validate(formats strfmt.Registry) error {
 	var res []error
+
+	if err := m.validatePageSize(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validatePageToken(formats); err != nil {
+		res = append(res, err)
+	}
 
 	if err := m.validateProjects(formats); err != nil {
 		res = append(res, err)
@@ -43,9 +55,28 @@ func (m *ListProjectsResponse) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *ListProjectsResponse) validatePageSize(formats strfmt.Registry) error {
+
+	if err := validate.Required("pageSize", "body", m.PageSize); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *ListProjectsResponse) validatePageToken(formats strfmt.Registry) error {
+
+	if err := validate.Required("pageToken", "body", m.PageToken); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *ListProjectsResponse) validateProjects(formats strfmt.Registry) error {
-	if swag.IsZero(m.Projects) { // not required
-		return nil
+
+	if err := validate.Required("projects", "body", m.Projects); err != nil {
+		return err
 	}
 
 	for i := 0; i < len(m.Projects); i++ {

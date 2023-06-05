@@ -12,6 +12,7 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // ListAPIKeysResponse list Api keys response
@@ -20,16 +21,20 @@ import (
 type ListAPIKeysResponse struct {
 
 	// api keys
+	// Required: true
 	APIKeys []*APIKey `json:"apiKeys"`
 
 	// page number
-	PageNumber int32 `json:"pageNumber,omitempty"`
+	// Required: true
+	PageNumber *int32 `json:"pageNumber"`
 
 	// page size
-	PageSize int32 `json:"pageSize,omitempty"`
+	// Required: true
+	PageSize *int32 `json:"pageSize"`
 
 	// total count
-	TotalCount int32 `json:"totalCount,omitempty"`
+	// Required: true
+	TotalCount *int32 `json:"totalCount"`
 }
 
 // Validate validates this list Api keys response
@@ -40,6 +45,18 @@ func (m *ListAPIKeysResponse) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validatePageNumber(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validatePageSize(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateTotalCount(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
@@ -47,8 +64,9 @@ func (m *ListAPIKeysResponse) Validate(formats strfmt.Registry) error {
 }
 
 func (m *ListAPIKeysResponse) validateAPIKeys(formats strfmt.Registry) error {
-	if swag.IsZero(m.APIKeys) { // not required
-		return nil
+
+	if err := validate.Required("apiKeys", "body", m.APIKeys); err != nil {
+		return err
 	}
 
 	for i := 0; i < len(m.APIKeys); i++ {
@@ -67,6 +85,33 @@ func (m *ListAPIKeysResponse) validateAPIKeys(formats strfmt.Registry) error {
 			}
 		}
 
+	}
+
+	return nil
+}
+
+func (m *ListAPIKeysResponse) validatePageNumber(formats strfmt.Registry) error {
+
+	if err := validate.Required("pageNumber", "body", m.PageNumber); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *ListAPIKeysResponse) validatePageSize(formats strfmt.Registry) error {
+
+	if err := validate.Required("pageSize", "body", m.PageSize); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *ListAPIKeysResponse) validateTotalCount(formats strfmt.Registry) error {
+
+	if err := validate.Required("totalCount", "body", m.TotalCount); err != nil {
+		return err
 	}
 
 	return nil

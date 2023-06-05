@@ -20,14 +20,16 @@ import (
 type Project struct {
 
 	// billing account Id
-	BillingAccountID string `json:"billingAccountId,omitempty"`
+	// Required: true
+	BillingAccountID *string `json:"billingAccountId"`
 
 	// create by
 	// Read Only: true
 	CreateBy string `json:"createBy,omitempty"`
 
 	// id
-	ID string `json:"id,omitempty"`
+	// Required: true
+	ID *string `json:"id"`
 
 	// resource count
 	// Read Only: true
@@ -36,6 +38,37 @@ type Project struct {
 
 // Validate validates this project
 func (m *Project) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validateBillingAccountID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *Project) validateBillingAccountID(formats strfmt.Registry) error {
+
+	if err := validate.Required("billingAccountId", "body", m.BillingAccountID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Project) validateID(formats strfmt.Registry) error {
+
+	if err := validate.Required("id", "body", m.ID); err != nil {
+		return err
+	}
+
 	return nil
 }
 

@@ -11,6 +11,7 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // HostConfigCategory host config category
@@ -19,60 +20,107 @@ import (
 type HostConfigCategory struct {
 
 	// count Vm available
-	CountVMAvailable int32 `json:"countVmAvailable,omitempty"`
+	// Required: true
+	CountVMAvailable *int32 `json:"countVmAvailable"`
 
 	// cpu model
-	CPUModel string `json:"cpuModel,omitempty"`
+	// Required: true
+	CPUModel *string `json:"cpuModel"`
 
 	// data center Id
-	DataCenterID string `json:"dataCenterId,omitempty"`
+	// Required: true
+	DataCenterID *string `json:"dataCenterId"`
 
 	// gpu model
-	GpuModel string `json:"gpuModel,omitempty"`
+	// Required: true
+	GpuModel *string `json:"gpuModel"`
 
 	// gpu price hr
-	GpuPriceHr *Decimal `json:"gpuPriceHr,omitempty"`
+	// Required: true
+	GpuPriceHr *Decimal `json:"gpuPriceHr"`
 
 	// id
-	ID string `json:"id,omitempty"`
+	// Required: true
+	ID *string `json:"id"`
 
 	// machine type
-	MachineType string `json:"machineType,omitempty"`
+	// Required: true
+	MachineType *string `json:"machineType"`
 
 	// memory gib price hr
-	MemoryGibPriceHr *Decimal `json:"memoryGibPriceHr,omitempty"`
+	// Required: true
+	MemoryGibPriceHr *Decimal `json:"memoryGibPriceHr"`
+
+	// renewable energy
+	// Required: true
+	RenewableEnergy *bool `json:"renewableEnergy"`
 
 	// storage gib price hr
-	StorageGibPriceHr *Decimal `json:"storageGibPriceHr,omitempty"`
+	// Required: true
+	StorageGibPriceHr *Decimal `json:"storageGibPriceHr"`
 
 	// total gpu price hr
-	TotalGpuPriceHr *Decimal `json:"totalGpuPriceHr,omitempty"`
+	// Required: true
+	TotalGpuPriceHr *Decimal `json:"totalGpuPriceHr"`
 
 	// total memory price hr
-	TotalMemoryPriceHr *Decimal `json:"totalMemoryPriceHr,omitempty"`
+	// Required: true
+	TotalMemoryPriceHr *Decimal `json:"totalMemoryPriceHr"`
 
 	// total price hr
-	TotalPriceHr *Decimal `json:"totalPriceHr,omitempty"`
+	// Required: true
+	TotalPriceHr *Decimal `json:"totalPriceHr"`
 
 	// total storage price hr
-	TotalStoragePriceHr *Decimal `json:"totalStoragePriceHr,omitempty"`
+	// Required: true
+	TotalStoragePriceHr *Decimal `json:"totalStoragePriceHr"`
 
 	// total vcpu price hr
-	TotalVcpuPriceHr *Decimal `json:"totalVcpuPriceHr,omitempty"`
+	// Required: true
+	TotalVcpuPriceHr *Decimal `json:"totalVcpuPriceHr"`
 
 	// vcpu price hr
-	VcpuPriceHr *Decimal `json:"vcpuPriceHr,omitempty"`
+	// Required: true
+	VcpuPriceHr *Decimal `json:"vcpuPriceHr"`
 }
 
 // Validate validates this host config category
 func (m *HostConfigCategory) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.validateCountVMAvailable(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateCPUModel(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateDataCenterID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateGpuModel(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateGpuPriceHr(formats); err != nil {
 		res = append(res, err)
 	}
 
+	if err := m.validateID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateMachineType(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateMemoryGibPriceHr(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateRenewableEnergy(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -110,9 +158,46 @@ func (m *HostConfigCategory) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *HostConfigCategory) validateCountVMAvailable(formats strfmt.Registry) error {
+
+	if err := validate.Required("countVmAvailable", "body", m.CountVMAvailable); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *HostConfigCategory) validateCPUModel(formats strfmt.Registry) error {
+
+	if err := validate.Required("cpuModel", "body", m.CPUModel); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *HostConfigCategory) validateDataCenterID(formats strfmt.Registry) error {
+
+	if err := validate.Required("dataCenterId", "body", m.DataCenterID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *HostConfigCategory) validateGpuModel(formats strfmt.Registry) error {
+
+	if err := validate.Required("gpuModel", "body", m.GpuModel); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *HostConfigCategory) validateGpuPriceHr(formats strfmt.Registry) error {
-	if swag.IsZero(m.GpuPriceHr) { // not required
-		return nil
+
+	if err := validate.Required("gpuPriceHr", "body", m.GpuPriceHr); err != nil {
+		return err
 	}
 
 	if m.GpuPriceHr != nil {
@@ -129,9 +214,28 @@ func (m *HostConfigCategory) validateGpuPriceHr(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *HostConfigCategory) validateID(formats strfmt.Registry) error {
+
+	if err := validate.Required("id", "body", m.ID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *HostConfigCategory) validateMachineType(formats strfmt.Registry) error {
+
+	if err := validate.Required("machineType", "body", m.MachineType); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *HostConfigCategory) validateMemoryGibPriceHr(formats strfmt.Registry) error {
-	if swag.IsZero(m.MemoryGibPriceHr) { // not required
-		return nil
+
+	if err := validate.Required("memoryGibPriceHr", "body", m.MemoryGibPriceHr); err != nil {
+		return err
 	}
 
 	if m.MemoryGibPriceHr != nil {
@@ -148,9 +252,19 @@ func (m *HostConfigCategory) validateMemoryGibPriceHr(formats strfmt.Registry) e
 	return nil
 }
 
+func (m *HostConfigCategory) validateRenewableEnergy(formats strfmt.Registry) error {
+
+	if err := validate.Required("renewableEnergy", "body", m.RenewableEnergy); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *HostConfigCategory) validateStorageGibPriceHr(formats strfmt.Registry) error {
-	if swag.IsZero(m.StorageGibPriceHr) { // not required
-		return nil
+
+	if err := validate.Required("storageGibPriceHr", "body", m.StorageGibPriceHr); err != nil {
+		return err
 	}
 
 	if m.StorageGibPriceHr != nil {
@@ -168,8 +282,9 @@ func (m *HostConfigCategory) validateStorageGibPriceHr(formats strfmt.Registry) 
 }
 
 func (m *HostConfigCategory) validateTotalGpuPriceHr(formats strfmt.Registry) error {
-	if swag.IsZero(m.TotalGpuPriceHr) { // not required
-		return nil
+
+	if err := validate.Required("totalGpuPriceHr", "body", m.TotalGpuPriceHr); err != nil {
+		return err
 	}
 
 	if m.TotalGpuPriceHr != nil {
@@ -187,8 +302,9 @@ func (m *HostConfigCategory) validateTotalGpuPriceHr(formats strfmt.Registry) er
 }
 
 func (m *HostConfigCategory) validateTotalMemoryPriceHr(formats strfmt.Registry) error {
-	if swag.IsZero(m.TotalMemoryPriceHr) { // not required
-		return nil
+
+	if err := validate.Required("totalMemoryPriceHr", "body", m.TotalMemoryPriceHr); err != nil {
+		return err
 	}
 
 	if m.TotalMemoryPriceHr != nil {
@@ -206,8 +322,9 @@ func (m *HostConfigCategory) validateTotalMemoryPriceHr(formats strfmt.Registry)
 }
 
 func (m *HostConfigCategory) validateTotalPriceHr(formats strfmt.Registry) error {
-	if swag.IsZero(m.TotalPriceHr) { // not required
-		return nil
+
+	if err := validate.Required("totalPriceHr", "body", m.TotalPriceHr); err != nil {
+		return err
 	}
 
 	if m.TotalPriceHr != nil {
@@ -225,8 +342,9 @@ func (m *HostConfigCategory) validateTotalPriceHr(formats strfmt.Registry) error
 }
 
 func (m *HostConfigCategory) validateTotalStoragePriceHr(formats strfmt.Registry) error {
-	if swag.IsZero(m.TotalStoragePriceHr) { // not required
-		return nil
+
+	if err := validate.Required("totalStoragePriceHr", "body", m.TotalStoragePriceHr); err != nil {
+		return err
 	}
 
 	if m.TotalStoragePriceHr != nil {
@@ -244,8 +362,9 @@ func (m *HostConfigCategory) validateTotalStoragePriceHr(formats strfmt.Registry
 }
 
 func (m *HostConfigCategory) validateTotalVcpuPriceHr(formats strfmt.Registry) error {
-	if swag.IsZero(m.TotalVcpuPriceHr) { // not required
-		return nil
+
+	if err := validate.Required("totalVcpuPriceHr", "body", m.TotalVcpuPriceHr); err != nil {
+		return err
 	}
 
 	if m.TotalVcpuPriceHr != nil {
@@ -263,8 +382,9 @@ func (m *HostConfigCategory) validateTotalVcpuPriceHr(formats strfmt.Registry) e
 }
 
 func (m *HostConfigCategory) validateVcpuPriceHr(formats strfmt.Registry) error {
-	if swag.IsZero(m.VcpuPriceHr) { // not required
-		return nil
+
+	if err := validate.Required("vcpuPriceHr", "body", m.VcpuPriceHr); err != nil {
+		return err
 	}
 
 	if m.VcpuPriceHr != nil {

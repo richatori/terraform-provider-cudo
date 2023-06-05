@@ -12,6 +12,7 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // ListProjectSSHKeysResponse list project Ssh keys response
@@ -20,6 +21,7 @@ import (
 type ListProjectSSHKeysResponse struct {
 
 	// ssh keys
+	// Required: true
 	SSHKeys []*SSHKey `json:"sshKeys"`
 }
 
@@ -38,8 +40,9 @@ func (m *ListProjectSSHKeysResponse) Validate(formats strfmt.Registry) error {
 }
 
 func (m *ListProjectSSHKeysResponse) validateSSHKeys(formats strfmt.Registry) error {
-	if swag.IsZero(m.SSHKeys) { // not required
-		return nil
+
+	if err := validate.Required("sshKeys", "body", m.SSHKeys); err != nil {
+		return err
 	}
 
 	for i := 0; i < len(m.SSHKeys); i++ {

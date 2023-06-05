@@ -12,6 +12,7 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // GetProjectSpendDetailsResponse get project spend details response
@@ -20,10 +21,12 @@ import (
 type GetProjectSpendDetailsResponse struct {
 
 	// orders
+	// Required: true
 	Orders []*Order `json:"orders"`
 
 	// spend
-	Spend *ProjectSpend `json:"spend,omitempty"`
+	// Required: true
+	Spend *ProjectSpend `json:"spend"`
 }
 
 // Validate validates this get project spend details response
@@ -45,8 +48,9 @@ func (m *GetProjectSpendDetailsResponse) Validate(formats strfmt.Registry) error
 }
 
 func (m *GetProjectSpendDetailsResponse) validateOrders(formats strfmt.Registry) error {
-	if swag.IsZero(m.Orders) { // not required
-		return nil
+
+	if err := validate.Required("orders", "body", m.Orders); err != nil {
+		return err
 	}
 
 	for i := 0; i < len(m.Orders); i++ {
@@ -71,8 +75,9 @@ func (m *GetProjectSpendDetailsResponse) validateOrders(formats strfmt.Registry)
 }
 
 func (m *GetProjectSpendDetailsResponse) validateSpend(formats strfmt.Registry) error {
-	if swag.IsZero(m.Spend) { // not required
-		return nil
+
+	if err := validate.Required("spend", "body", m.Spend); err != nil {
+		return err
 	}
 
 	if m.Spend != nil {

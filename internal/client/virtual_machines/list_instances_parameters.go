@@ -61,6 +61,9 @@ ListInstancesParams contains all the parameters to send to the API endpoint
 */
 type ListInstancesParams struct {
 
+	// NetworkID.
+	NetworkID *string
+
 	// ProjectID.
 	ProjectID string
 
@@ -120,6 +123,17 @@ func (o *ListInstancesParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
+// WithNetworkID adds the networkID to the list instances params
+func (o *ListInstancesParams) WithNetworkID(networkID *string) *ListInstancesParams {
+	o.SetNetworkID(networkID)
+	return o
+}
+
+// SetNetworkID adds the networkId to the list instances params
+func (o *ListInstancesParams) SetNetworkID(networkID *string) {
+	o.NetworkID = networkID
+}
+
 // WithProjectID adds the projectID to the list instances params
 func (o *ListInstancesParams) WithProjectID(projectID string) *ListInstancesParams {
 	o.SetProjectID(projectID)
@@ -149,6 +163,23 @@ func (o *ListInstancesParams) WriteToRequest(r runtime.ClientRequest, reg strfmt
 		return err
 	}
 	var res []error
+
+	if o.NetworkID != nil {
+
+		// query param networkId
+		var qrNetworkID string
+
+		if o.NetworkID != nil {
+			qrNetworkID = *o.NetworkID
+		}
+		qNetworkID := qrNetworkID
+		if qNetworkID != "" {
+
+			if err := r.SetQueryParam("networkId", qNetworkID); err != nil {
+				return err
+			}
+		}
+	}
 
 	// path param projectId
 	if err := r.SetPathParam("projectId", o.ProjectID); err != nil {

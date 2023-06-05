@@ -49,6 +49,8 @@ resource "cudo_vm" "test-vm" {
 					resource.TestCheckResourceAttr("cudo_vm.test-vm", "one_state", "INIT"),
 					resource.TestCheckResourceAttrSet("cudo_vm.test-vm", "price_hr"),
 					resource.TestCheckResourceAttrSet("cudo_vm.test-vm", "public_ip_address"),
+					resource.TestCheckResourceAttrSet("cudo_vm.test-vm", "external_ip_address"),
+					resource.TestCheckResourceAttrSet("cudo_vm.test-vm", "internal_address"),
 					resource.TestCheckResourceAttr("cudo_vm.test-vm", "region_id", "gb-bournemouth"),
 					resource.TestCheckResourceAttr("cudo_vm.test-vm", "region_name", "Bournemouth, United Kingdom"),
 					resource.TestCheckResourceAttr("cudo_vm.test-vm", "renewable_energy", "true"),

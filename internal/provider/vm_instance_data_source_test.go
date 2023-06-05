@@ -44,7 +44,7 @@ resource "cudo_vm" "my-vm" {
 			ins, err := cl.VirtualMachines.GetInstance(getParams)
 
 			if err == nil {
-				return fmt.Errorf("vm resource not destroyed %s , %s,  %s, %s", ins.Payload.Compute.Lease.Status, ins.Payload.Compute.Instance.ID, ins.Payload.Compute.Instance.OneState, ins.Payload.Compute.Instance.LcmState)
+				return fmt.Errorf("vm resource not destroyed %s , %s,  %s", ins.Payload.Instance.ID, ins.Payload.Instance.LcmState, ins.Payload.Instance.OneState)
 			}
 			return nil
 		},

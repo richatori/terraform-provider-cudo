@@ -11,6 +11,7 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // UserPermission user permission
@@ -19,19 +20,24 @@ import (
 type UserPermission struct {
 
 	// permission role
-	PermissionRole *Role `json:"permissionRole,omitempty"`
+	// Required: true
+	PermissionRole *Role `json:"permissionRole"`
 
 	// role
-	Role string `json:"role,omitempty"`
+	// Required: true
+	Role *string `json:"role"`
 
 	// user email
-	UserEmail string `json:"userEmail,omitempty"`
+	// Required: true
+	UserEmail *string `json:"userEmail"`
 
 	// user Id
-	UserID string `json:"userId,omitempty"`
+	// Required: true
+	UserID *string `json:"userId"`
 
 	// user picture
-	UserPicture string `json:"userPicture,omitempty"`
+	// Required: true
+	UserPicture *string `json:"userPicture"`
 }
 
 // Validate validates this user permission
@@ -42,6 +48,22 @@ func (m *UserPermission) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateRole(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateUserEmail(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateUserID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateUserPicture(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
@@ -49,8 +71,13 @@ func (m *UserPermission) Validate(formats strfmt.Registry) error {
 }
 
 func (m *UserPermission) validatePermissionRole(formats strfmt.Registry) error {
-	if swag.IsZero(m.PermissionRole) { // not required
-		return nil
+
+	if err := validate.Required("permissionRole", "body", m.PermissionRole); err != nil {
+		return err
+	}
+
+	if err := validate.Required("permissionRole", "body", m.PermissionRole); err != nil {
+		return err
 	}
 
 	if m.PermissionRole != nil {
@@ -62,6 +89,42 @@ func (m *UserPermission) validatePermissionRole(formats strfmt.Registry) error {
 			}
 			return err
 		}
+	}
+
+	return nil
+}
+
+func (m *UserPermission) validateRole(formats strfmt.Registry) error {
+
+	if err := validate.Required("role", "body", m.Role); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *UserPermission) validateUserEmail(formats strfmt.Registry) error {
+
+	if err := validate.Required("userEmail", "body", m.UserEmail); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *UserPermission) validateUserID(formats strfmt.Registry) error {
+
+	if err := validate.Required("userId", "body", m.UserID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *UserPermission) validateUserPicture(formats strfmt.Registry) error {
+
+	if err := validate.Required("userPicture", "body", m.UserPicture); err != nil {
+		return err
 	}
 
 	return nil

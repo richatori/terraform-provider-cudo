@@ -8,8 +8,10 @@ package models
 import (
 	"context"
 
+	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // Image image
@@ -18,29 +20,98 @@ import (
 type Image struct {
 
 	// description
-	Description string `json:"description,omitempty"`
+	// Required: true
+	Description *string `json:"description"`
 
 	// display name
-	DisplayName string `json:"displayName,omitempty"`
+	// Required: true
+	DisplayName *string `json:"displayName"`
 
 	// id
-	ID string `json:"id,omitempty"`
+	// Required: true
+	ID *string `json:"id"`
 
 	// name
-	Name string `json:"name,omitempty"`
-
-	// size
-	Size string `json:"size,omitempty"`
+	// Required: true
+	Name *string `json:"name"`
 
 	// size gib
-	SizeGib int32 `json:"sizeGib,omitempty"`
-
-	// tags
-	Tags []string `json:"tags"`
+	// Required: true
+	SizeGib *int32 `json:"sizeGib"`
 }
 
 // Validate validates this image
 func (m *Image) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validateDescription(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateDisplayName(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateName(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateSizeGib(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *Image) validateDescription(formats strfmt.Registry) error {
+
+	if err := validate.Required("description", "body", m.Description); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Image) validateDisplayName(formats strfmt.Registry) error {
+
+	if err := validate.Required("displayName", "body", m.DisplayName); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Image) validateID(formats strfmt.Registry) error {
+
+	if err := validate.Required("id", "body", m.ID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Image) validateName(formats strfmt.Registry) error {
+
+	if err := validate.Required("name", "body", m.Name); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Image) validateSizeGib(formats strfmt.Registry) error {
+
+	if err := validate.Required("sizeGib", "body", m.SizeGib); err != nil {
+		return err
+	}
+
 	return nil
 }
 

@@ -7,6 +7,7 @@ package models
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -33,6 +34,9 @@ type Instance struct {
 	// Read Only: true
 	DatacenterID string `json:"datacenterId,omitempty"`
 
+	// external Ip address
+	ExternalIPAddress string `json:"externalIpAddress,omitempty"`
+
 	// gpu model
 	GpuModel string `json:"gpuModel,omitempty"`
 
@@ -51,14 +55,17 @@ type Instance struct {
 	// image name
 	ImageName string `json:"imageName,omitempty"`
 
+	// internal Ip address
+	InternalIPAddress string `json:"internalIpAddress,omitempty"`
+
 	// lcm state
 	LcmState string `json:"lcmState,omitempty"`
 
-	// local Ip address
-	LocalIPAddress string `json:"localIpAddress,omitempty"`
-
 	// memory
 	Memory int64 `json:"memory,omitempty"`
+
+	// nics
+	Nics []*NIC `json:"nics"`
 
 	// one state
 	OneState string `json:"oneState,omitempty"`
@@ -80,12 +87,80 @@ type Instance struct {
 	// renewable energy
 	RenewableEnergy bool `json:"renewableEnergy,omitempty"`
 
+	// rules
+	Rules []*SecurityGroupRule `json:"rules"`
+
 	// vcpus
 	Vcpus int64 `json:"vcpus,omitempty"`
 }
 
 // Validate validates this instance
 func (m *Instance) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validateNics(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateRules(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *Instance) validateNics(formats strfmt.Registry) error {
+	if swag.IsZero(m.Nics) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.Nics); i++ {
+		if swag.IsZero(m.Nics[i]) { // not required
+			continue
+		}
+
+		if m.Nics[i] != nil {
+			if err := m.Nics[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("nics" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("nics" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (m *Instance) validateRules(formats strfmt.Registry) error {
+	if swag.IsZero(m.Rules) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.Rules); i++ {
+		if swag.IsZero(m.Rules[i]) { // not required
+			continue
+		}
+
+		if m.Rules[i] != nil {
+			if err := m.Rules[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("rules" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("rules" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
 	return nil
 }
 
@@ -101,11 +176,19 @@ func (m *Instance) ContextValidate(ctx context.Context, formats strfmt.Registry)
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateNics(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateRegionID(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
 	if err := m.contextValidateRegionName(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateRules(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -133,6 +216,26 @@ func (m *Instance) contextValidateDatacenterID(ctx context.Context, formats strf
 	return nil
 }
 
+func (m *Instance) contextValidateNics(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.Nics); i++ {
+
+		if m.Nics[i] != nil {
+			if err := m.Nics[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("nics" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("nics" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
 func (m *Instance) contextValidateRegionID(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "regionId", "body", string(m.RegionID)); err != nil {
@@ -146,6 +249,26 @@ func (m *Instance) contextValidateRegionName(ctx context.Context, formats strfmt
 
 	if err := validate.ReadOnly(ctx, "regionName", "body", string(m.RegionName)); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (m *Instance) contextValidateRules(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.Rules); i++ {
+
+		if m.Rules[i] != nil {
+			if err := m.Rules[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("rules" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("rules" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
 	}
 
 	return nil

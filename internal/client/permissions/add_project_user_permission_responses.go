@@ -14,6 +14,7 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
 )
@@ -190,10 +191,12 @@ type AddProjectUserPermissionBody struct {
 	DataCenterID string `json:"dataCenterId,omitempty"`
 
 	// role
-	Role *models.Role `json:"role,omitempty"`
+	// Required: true
+	Role *models.Role `json:"role"`
 
 	// user email
-	UserEmail string `json:"userEmail,omitempty"`
+	// Required: true
+	UserEmail *string `json:"userEmail"`
 }
 
 // Validate validates this add project user permission body
@@ -204,6 +207,10 @@ func (o *AddProjectUserPermissionBody) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := o.validateUserEmail(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
@@ -211,8 +218,13 @@ func (o *AddProjectUserPermissionBody) Validate(formats strfmt.Registry) error {
 }
 
 func (o *AddProjectUserPermissionBody) validateRole(formats strfmt.Registry) error {
-	if swag.IsZero(o.Role) { // not required
-		return nil
+
+	if err := validate.Required("body"+"."+"role", "body", o.Role); err != nil {
+		return err
+	}
+
+	if err := validate.Required("body"+"."+"role", "body", o.Role); err != nil {
+		return err
 	}
 
 	if o.Role != nil {
@@ -224,6 +236,15 @@ func (o *AddProjectUserPermissionBody) validateRole(formats strfmt.Registry) err
 			}
 			return err
 		}
+	}
+
+	return nil
+}
+
+func (o *AddProjectUserPermissionBody) validateUserEmail(formats strfmt.Registry) error {
+
+	if err := validate.Required("body"+"."+"userEmail", "body", o.UserEmail); err != nil {
+		return err
 	}
 
 	return nil

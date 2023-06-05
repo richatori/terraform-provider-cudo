@@ -24,26 +24,27 @@ type VMInstanceDataSource struct {
 }
 
 type VMModel struct {
-	Id              types.String  `tfsdk:"id"`
-	BootDiskSizeGib types.Int64   `tfsdk:"boot_disk_size_gib"`
-	CPUModel        types.String  `tfsdk:"cpu_model"`
-	CreateBy        types.String  `tfsdk:"create_by"`
-	DatacenterID    types.String  `tfsdk:"datacenter_id"`
-	GpuModel        types.String  `tfsdk:"gpu_model"`
-	GpuQuantity     types.Int64   `tfsdk:"gpu_quantity"`
-	ImageDesc       types.String  `tfsdk:"image_desc"`
-	ImageID         types.String  `tfsdk:"image_id"`
-	ImageName       types.String  `tfsdk:"image_name"`
-	LcmState        types.String  `tfsdk:"lcm_state"`
-	LocalIPAddress  types.String  `tfsdk:"local_ip_address"`
-	Memory          types.Int64   `tfsdk:"memory_gib"`
-	OneState        types.String  `tfsdk:"one_state"`
-	PriceHr         types.Float64 `tfsdk:"price_hr"`
-	PublicIPAddress types.String  `tfsdk:"public_ip_address"`
-	RegionID        types.String  `tfsdk:"region_id"`
-	RegionName      types.String  `tfsdk:"region_name"`
-	RenewableEnergy types.Bool    `tfsdk:"renewable_energy"`
-	Vcpus           types.Int64   `tfsdk:"vcpus"`
+	Id                types.String  `tfsdk:"id"`
+	BootDiskSizeGib   types.Int64   `tfsdk:"boot_disk_size_gib"`
+	CPUModel          types.String  `tfsdk:"cpu_model"`
+	CreateBy          types.String  `tfsdk:"create_by"`
+	DatacenterID      types.String  `tfsdk:"datacenter_id"`
+	GpuModel          types.String  `tfsdk:"gpu_model"`
+	GpuQuantity       types.Int64   `tfsdk:"gpu_quantity"`
+	ImageDesc         types.String  `tfsdk:"image_desc"`
+	ImageID           types.String  `tfsdk:"image_id"`
+	ImageName         types.String  `tfsdk:"image_name"`
+	LcmState          types.String  `tfsdk:"lcm_state"`
+	InternalIPAddress types.String  `tfsdk:"internal_ip_address"`
+	ExternalIPAddress types.String  `tfsdk:"external_ip_address"`
+	Memory            types.Int64   `tfsdk:"memory_gib"`
+	OneState          types.String  `tfsdk:"one_state"`
+	PriceHr           types.Float64 `tfsdk:"price_hr"`
+	PublicIPAddress   types.String  `tfsdk:"public_ip_address"`
+	RegionID          types.String  `tfsdk:"region_id"`
+	RegionName        types.String  `tfsdk:"region_name"`
+	RenewableEnergy   types.Bool    `tfsdk:"renewable_energy"`
+	Vcpus             types.Int64   `tfsdk:"vcpus"`
 }
 
 type LeaseModel struct {
@@ -129,8 +130,12 @@ func (d *VMInstanceDataSource) Schema(ctx context.Context, req datasource.Schema
 							MarkdownDescription: "The state of the VM instance in the LCM.",
 							Computed:            true,
 						},
-						"local_ip_address": schema.StringAttribute{
-							MarkdownDescription: "The local IP address of the VM instance.",
+						"internal_ip_address": schema.StringAttribute{
+							MarkdownDescription: "The internal IP address of the VM instance.",
+							Computed:            true,
+						},
+						"external_ip_address": schema.StringAttribute{
+							MarkdownDescription: "The external IP address of the VM instance.",
 							Computed:            true,
 						},
 						"memory_gib": schema.Int64Attribute{
@@ -212,26 +217,27 @@ func (d *VMInstanceDataSource) Read(ctx context.Context, req datasource.ReadRequ
 
 	for _, i := range res.Payload.Instances {
 		vmState := VMModel{
-			Id:              types.StringValue(i.Instance.ID),
-			BootDiskSizeGib: types.Int64Value(i.Instance.BootDiskSizeGib),
-			CPUModel:        types.StringValue(i.Instance.CPUModel),
-			CreateBy:        types.StringValue(i.Instance.CreateBy),
-			DatacenterID:    types.StringValue(i.Instance.DatacenterID),
-			GpuModel:        types.StringValue(i.Instance.GpuModel),
-			GpuQuantity:     types.Int64Value(i.Instance.GpuQuantity),
-			ImageDesc:       types.StringValue(i.Instance.ImageDesc),
-			ImageID:         types.StringValue(i.Instance.ImageID),
-			ImageName:       types.StringValue(i.Instance.ImageName),
-			LcmState:        types.StringValue(i.Instance.LcmState),
-			LocalIPAddress:  types.StringValue(i.Instance.LocalIPAddress),
-			Memory:          types.Int64Value(i.Instance.Memory),
-			OneState:        types.StringValue(i.Instance.OneState),
-			PriceHr:         types.Float64Value(float64(i.Instance.PriceHr)),
-			PublicIPAddress: types.StringValue(i.Instance.PublicIPAddress),
-			RegionID:        types.StringValue(i.Instance.RegionID),
-			RegionName:      types.StringValue(i.Instance.RegionName),
-			RenewableEnergy: types.BoolValue(i.Instance.RenewableEnergy),
-			Vcpus:           types.Int64Value(i.Instance.Vcpus),
+			Id:                types.StringValue(i.ID),
+			BootDiskSizeGib:   types.Int64Value(i.BootDiskSizeGib),
+			CPUModel:          types.StringValue(i.CPUModel),
+			CreateBy:          types.StringValue(i.CreateBy),
+			DatacenterID:      types.StringValue(i.DatacenterID),
+			GpuModel:          types.StringValue(i.GpuModel),
+			GpuQuantity:       types.Int64Value(i.GpuQuantity),
+			ImageDesc:         types.StringValue(i.ImageDesc),
+			ImageID:           types.StringValue(i.ImageID),
+			ImageName:         types.StringValue(i.ImageName),
+			LcmState:          types.StringValue(i.LcmState),
+			InternalIPAddress: types.StringValue(i.InternalIPAddress),
+			ExternalIPAddress: types.StringValue(i.ExternalIPAddress),
+			Memory:            types.Int64Value(i.Memory),
+			OneState:          types.StringValue(i.OneState),
+			PriceHr:           types.Float64Value(float64(i.PriceHr)),
+			PublicIPAddress:   types.StringValue(i.PublicIPAddress),
+			RegionID:          types.StringValue(i.RegionID),
+			RegionName:        types.StringValue(i.RegionName),
+			RenewableEnergy:   types.BoolValue(i.RenewableEnergy),
+			Vcpus:             types.Int64Value(i.Vcpus),
 		}
 
 		state.Instances = append(state.Instances, vmState)

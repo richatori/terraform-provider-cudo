@@ -12,6 +12,7 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // ListUserPermissionsResponse list user permissions response
@@ -20,12 +21,15 @@ import (
 type ListUserPermissionsResponse struct {
 
 	// billing account permissions
+	// Required: true
 	BillingAccountPermissions []*UserPermission `json:"billingAccountPermissions"`
 
 	// data center permissions
+	// Required: true
 	DataCenterPermissions []*UserPermission `json:"dataCenterPermissions"`
 
 	// project permissions
+	// Required: true
 	ProjectPermissions []*UserPermission `json:"projectPermissions"`
 }
 
@@ -52,8 +56,9 @@ func (m *ListUserPermissionsResponse) Validate(formats strfmt.Registry) error {
 }
 
 func (m *ListUserPermissionsResponse) validateBillingAccountPermissions(formats strfmt.Registry) error {
-	if swag.IsZero(m.BillingAccountPermissions) { // not required
-		return nil
+
+	if err := validate.Required("billingAccountPermissions", "body", m.BillingAccountPermissions); err != nil {
+		return err
 	}
 
 	for i := 0; i < len(m.BillingAccountPermissions); i++ {
@@ -78,8 +83,9 @@ func (m *ListUserPermissionsResponse) validateBillingAccountPermissions(formats 
 }
 
 func (m *ListUserPermissionsResponse) validateDataCenterPermissions(formats strfmt.Registry) error {
-	if swag.IsZero(m.DataCenterPermissions) { // not required
-		return nil
+
+	if err := validate.Required("dataCenterPermissions", "body", m.DataCenterPermissions); err != nil {
+		return err
 	}
 
 	for i := 0; i < len(m.DataCenterPermissions); i++ {
@@ -104,8 +110,9 @@ func (m *ListUserPermissionsResponse) validateDataCenterPermissions(formats strf
 }
 
 func (m *ListUserPermissionsResponse) validateProjectPermissions(formats strfmt.Registry) error {
-	if swag.IsZero(m.ProjectPermissions) { // not required
-		return nil
+
+	if err := validate.Required("projectPermissions", "body", m.ProjectPermissions); err != nil {
+		return err
 	}
 
 	for i := 0; i < len(m.ProjectPermissions); i++ {

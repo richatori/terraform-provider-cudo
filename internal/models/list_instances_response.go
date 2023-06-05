@@ -20,7 +20,7 @@ import (
 type ListInstancesResponse struct {
 
 	// instances
-	Instances []*ComputeInstance `json:"instances"`
+	Instances []*Instance `json:"instances"`
 }
 
 // Validate validates this list instances response

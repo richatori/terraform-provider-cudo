@@ -8,8 +8,10 @@ package models
 import (
 	"context"
 
+	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // CreateVMResponse create VM response
@@ -18,11 +20,30 @@ import (
 type CreateVMResponse struct {
 
 	// id
-	ID string `json:"id,omitempty"`
+	// Required: true
+	ID *string `json:"id"`
 }
 
 // Validate validates this create VM response
 func (m *CreateVMResponse) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validateID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *CreateVMResponse) validateID(formats strfmt.Registry) error {
+
+	if err := validate.Required("id", "body", m.ID); err != nil {
+		return err
+	}
+
 	return nil
 }
 

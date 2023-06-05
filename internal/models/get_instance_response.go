@@ -11,6 +11,7 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // GetInstanceResponse get instance response
@@ -18,15 +19,16 @@ import (
 // swagger:model GetInstanceResponse
 type GetInstanceResponse struct {
 
-	// compute
-	Compute *ComputeInstance `json:"compute,omitempty"`
+	// instance
+	// Required: true
+	Instance *Instance `json:"instance"`
 }
 
 // Validate validates this get instance response
 func (m *GetInstanceResponse) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateCompute(formats); err != nil {
+	if err := m.validateInstance(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -36,17 +38,18 @@ func (m *GetInstanceResponse) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *GetInstanceResponse) validateCompute(formats strfmt.Registry) error {
-	if swag.IsZero(m.Compute) { // not required
-		return nil
+func (m *GetInstanceResponse) validateInstance(formats strfmt.Registry) error {
+
+	if err := validate.Required("instance", "body", m.Instance); err != nil {
+		return err
 	}
 
-	if m.Compute != nil {
-		if err := m.Compute.Validate(formats); err != nil {
+	if m.Instance != nil {
+		if err := m.Instance.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("compute")
+				return ve.ValidateName("instance")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("compute")
+				return ce.ValidateName("instance")
 			}
 			return err
 		}
@@ -59,7 +62,7 @@ func (m *GetInstanceResponse) validateCompute(formats strfmt.Registry) error {
 func (m *GetInstanceResponse) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.contextValidateCompute(ctx, formats); err != nil {
+	if err := m.contextValidateInstance(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -69,14 +72,14 @@ func (m *GetInstanceResponse) ContextValidate(ctx context.Context, formats strfm
 	return nil
 }
 
-func (m *GetInstanceResponse) contextValidateCompute(ctx context.Context, formats strfmt.Registry) error {
+func (m *GetInstanceResponse) contextValidateInstance(ctx context.Context, formats strfmt.Registry) error {
 
-	if m.Compute != nil {
-		if err := m.Compute.ContextValidate(ctx, formats); err != nil {
+	if m.Instance != nil {
+		if err := m.Instance.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("compute")
+				return ve.ValidateName("instance")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("compute")
+				return ce.ValidateName("instance")
 			}
 			return err
 		}

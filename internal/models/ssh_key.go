@@ -37,7 +37,8 @@ type SSHKey struct {
 	ID string `json:"id,omitempty"`
 
 	// public key
-	PublicKey string `json:"publicKey,omitempty"`
+	// Required: true
+	PublicKey *string `json:"publicKey"`
 
 	// type
 	// Read Only: true
@@ -49,6 +50,10 @@ func (m *SSHKey) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateCreateTime(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validatePublicKey(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -64,6 +69,15 @@ func (m *SSHKey) validateCreateTime(formats strfmt.Registry) error {
 	}
 
 	if err := validate.FormatOf("createTime", "body", "date-time", m.CreateTime.String(), formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *SSHKey) validatePublicKey(formats strfmt.Registry) error {
+
+	if err := validate.Required("publicKey", "body", m.PublicKey); err != nil {
 		return err
 	}
 

@@ -28,34 +28,34 @@ type ClientOption func(*runtime.ClientOperation)
 
 // ClientService is the interface for Client methods
 type ClientService interface {
-	ListOSImages(params *ListOSImagesParams, opts ...ClientOption) (*ListOSImagesOK, error)
+	ListPublicImages(params *ListPublicImagesParams, opts ...ClientOption) (*ListPublicImagesOK, error)
 
 	ListRegions(params *ListRegionsParams, opts ...ClientOption) (*ListRegionsOK, error)
 
 	SearchCompute(params *SearchComputeParams, opts ...ClientOption) (*SearchComputeOK, error)
 
-	SearchCompute2(params *SearchCompute2Params, opts ...ClientOption) (*SearchCompute2OK, error)
+	SearchDataCenters(params *SearchDataCentersParams, opts ...ClientOption) (*SearchDataCentersOK, error)
 
 	SetTransport(transport runtime.ClientTransport)
 }
 
 /*
-ListOSImages lists o s images
+ListPublicImages lists public images
 */
-func (a *Client) ListOSImages(params *ListOSImagesParams, opts ...ClientOption) (*ListOSImagesOK, error) {
+func (a *Client) ListPublicImages(params *ListPublicImagesParams, opts ...ClientOption) (*ListPublicImagesOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
-		params = NewListOSImagesParams()
+		params = NewListPublicImagesParams()
 	}
 	op := &runtime.ClientOperation{
-		ID:                 "ListOSImages",
+		ID:                 "ListPublicImages",
 		Method:             "GET",
 		PathPattern:        "/v1/compute/images",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"https"},
 		Params:             params,
-		Reader:             &ListOSImagesReader{formats: a.formats},
+		Reader:             &ListPublicImagesReader{formats: a.formats},
 		Context:            params.Context,
 		Client:             params.HTTPClient,
 	}
@@ -67,12 +67,12 @@ func (a *Client) ListOSImages(params *ListOSImagesParams, opts ...ClientOption) 
 	if err != nil {
 		return nil, err
 	}
-	success, ok := result.(*ListOSImagesOK)
+	success, ok := result.(*ListPublicImagesOK)
 	if ok {
 		return success, nil
 	}
 	// unexpected success response
-	unexpectedSuccess := result.(*ListOSImagesDefault)
+	unexpectedSuccess := result.(*ListPublicImagesDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
@@ -151,22 +151,22 @@ func (a *Client) SearchCompute(params *SearchComputeParams, opts ...ClientOption
 }
 
 /*
-SearchCompute2 searches machines
+SearchDataCenters lists available data centers
 */
-func (a *Client) SearchCompute2(params *SearchCompute2Params, opts ...ClientOption) (*SearchCompute2OK, error) {
+func (a *Client) SearchDataCenters(params *SearchDataCentersParams, opts ...ClientOption) (*SearchDataCentersOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
-		params = NewSearchCompute2Params()
+		params = NewSearchDataCentersParams()
 	}
 	op := &runtime.ClientOperation{
-		ID:                 "SearchCompute2",
+		ID:                 "SearchDataCenters",
 		Method:             "GET",
-		PathPattern:        "/v1/compute/search_v2",
+		PathPattern:        "/v1/compute/data-centers",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"https"},
 		Params:             params,
-		Reader:             &SearchCompute2Reader{formats: a.formats},
+		Reader:             &SearchDataCentersReader{formats: a.formats},
 		Context:            params.Context,
 		Client:             params.HTTPClient,
 	}
@@ -178,12 +178,12 @@ func (a *Client) SearchCompute2(params *SearchCompute2Params, opts ...ClientOpti
 	if err != nil {
 		return nil, err
 	}
-	success, ok := result.(*SearchCompute2OK)
+	success, ok := result.(*SearchDataCentersOK)
 	if ok {
 		return success, nil
 	}
 	// unexpected success response
-	unexpectedSuccess := result.(*SearchCompute2Default)
+	unexpectedSuccess := result.(*SearchDataCentersDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

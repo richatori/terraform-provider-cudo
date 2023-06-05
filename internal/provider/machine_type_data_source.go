@@ -234,7 +234,7 @@ func (d *MachineTypeDataSource) Read(ctx context.Context, req datasource.ReadReq
 
 	resp.Diagnostics.Append(req.Config.Get(ctx, &state)...)
 
-	params := search.NewSearchCompute2Params()
+	params := search.NewSearchComputeParams()
 
 	if state.SearchParams == nil {
 		state.SearchParams = &SearchParamsModel{}
@@ -280,7 +280,7 @@ func (d *MachineTypeDataSource) Read(ctx context.Context, req datasource.ReadReq
 	}
 	params.Vcpu = &vcpus
 
-	res, err := d.client.Client.Search.SearchCompute2(params)
+	res, err := d.client.Client.Search.SearchCompute(params)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to read machine_types",
@@ -300,12 +300,12 @@ func (d *MachineTypeDataSource) Read(ctx context.Context, req datasource.ReadReq
 			totalGpuPriceHr = cfg.TotalGpuPriceHr.Value
 		}
 		machineTypeState := MachineTypeModel{
-			Id:                  types.StringValue(cfg.MachineType),
-			CpuModel:            types.StringValue(cfg.CPUModel),
-			DataCenterId:        types.StringValue(cfg.DataCenterID),
-			GpuModel:            types.StringValue(cfg.GpuModel),
+			Id:                  types.StringValue(*cfg.MachineType),
+			CpuModel:            types.StringValue(*cfg.CPUModel),
+			DataCenterId:        types.StringValue(*cfg.DataCenterID),
+			GpuModel:            types.StringValue(*cfg.GpuModel),
 			GpuPriceHr:          types.StringValue(gpuPriceHr),
-			MachineType:         types.StringValue(cfg.MachineType),
+			MachineType:         types.StringValue(*cfg.MachineType),
 			MemoryGibPriceHr:    types.StringValue(cfg.MemoryGibPriceHr.Value),
 			StorageGibPriceHr:   types.StringValue(cfg.StorageGibPriceHr.Value),
 			TotalGpuPriceHr:     types.StringValue(totalGpuPriceHr),
@@ -314,7 +314,7 @@ func (d *MachineTypeDataSource) Read(ctx context.Context, req datasource.ReadReq
 			TotalStoragePriceHr: types.StringValue(cfg.TotalStoragePriceHr.Value),
 			TotalVcpuPriceHr:    types.StringValue(cfg.TotalVcpuPriceHr.Value),
 			VcpuPriceHr:         types.StringValue(cfg.VcpuPriceHr.Value),
-			CountVmAvailable:    types.Int64Value(int64(cfg.CountVMAvailable)),
+			CountVmAvailable:    types.Int64Value(int64(*cfg.CountVMAvailable)),
 		}
 
 		state.MachineType = append(state.MachineType, machineTypeState)

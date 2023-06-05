@@ -8,8 +8,10 @@ package models
 import (
 	"context"
 
+	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // CountInstancesResponse count instances response
@@ -18,11 +20,30 @@ import (
 type CountInstancesResponse struct {
 
 	// count
-	Count int32 `json:"count,omitempty"`
+	// Required: true
+	Count *int32 `json:"count"`
 }
 
 // Validate validates this count instances response
 func (m *CountInstancesResponse) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validateCount(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *CountInstancesResponse) validateCount(formats strfmt.Registry) error {
+
+	if err := validate.Required("count", "body", m.Count); err != nil {
+		return err
+	}
+
 	return nil
 }
 

@@ -12,6 +12,7 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // ListSSHKeysResponse list Ssh keys response
@@ -20,23 +21,39 @@ import (
 type ListSSHKeysResponse struct {
 
 	// page number
-	PageNumber int32 `json:"pageNumber,omitempty"`
+	// Required: true
+	PageNumber *int32 `json:"pageNumber"`
 
 	// page size
-	PageSize int32 `json:"pageSize,omitempty"`
+	// Required: true
+	PageSize *int32 `json:"pageSize"`
 
 	// ssh keys
+	// Required: true
 	SSHKeys []*SSHKey `json:"sshKeys"`
 
 	// total count
-	TotalCount int32 `json:"totalCount,omitempty"`
+	// Required: true
+	TotalCount *int32 `json:"totalCount"`
 }
 
 // Validate validates this list Ssh keys response
 func (m *ListSSHKeysResponse) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.validatePageNumber(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validatePageSize(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateSSHKeys(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateTotalCount(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -46,9 +63,28 @@ func (m *ListSSHKeysResponse) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *ListSSHKeysResponse) validatePageNumber(formats strfmt.Registry) error {
+
+	if err := validate.Required("pageNumber", "body", m.PageNumber); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *ListSSHKeysResponse) validatePageSize(formats strfmt.Registry) error {
+
+	if err := validate.Required("pageSize", "body", m.PageSize); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *ListSSHKeysResponse) validateSSHKeys(formats strfmt.Registry) error {
-	if swag.IsZero(m.SSHKeys) { // not required
-		return nil
+
+	if err := validate.Required("sshKeys", "body", m.SSHKeys); err != nil {
+		return err
 	}
 
 	for i := 0; i < len(m.SSHKeys); i++ {
@@ -67,6 +103,15 @@ func (m *ListSSHKeysResponse) validateSSHKeys(formats strfmt.Registry) error {
 			}
 		}
 
+	}
+
+	return nil
+}
+
+func (m *ListSSHKeysResponse) validateTotalCount(formats strfmt.Registry) error {
+
+	if err := validate.Required("totalCount", "body", m.TotalCount); err != nil {
+		return err
 	}
 
 	return nil

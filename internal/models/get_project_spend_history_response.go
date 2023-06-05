@@ -12,6 +12,7 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // GetProjectSpendHistoryResponse get project spend history response
@@ -20,6 +21,7 @@ import (
 type GetProjectSpendHistoryResponse struct {
 
 	// project spend history
+	// Required: true
 	ProjectSpendHistory []*ProjectSpend `json:"projectSpendHistory"`
 }
 
@@ -38,8 +40,9 @@ func (m *GetProjectSpendHistoryResponse) Validate(formats strfmt.Registry) error
 }
 
 func (m *GetProjectSpendHistoryResponse) validateProjectSpendHistory(formats strfmt.Registry) error {
-	if swag.IsZero(m.ProjectSpendHistory) { // not required
-		return nil
+
+	if err := validate.Required("projectSpendHistory", "body", m.ProjectSpendHistory); err != nil {
+		return err
 	}
 
 	for i := 0; i < len(m.ProjectSpendHistory); i++ {
