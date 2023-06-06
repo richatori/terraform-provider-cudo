@@ -57,7 +57,7 @@ func (r *SecurityGroupResource) Schema(ctx context.Context, req resource.SchemaR
 		MarkdownDescription: "Security group resource",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				MarkdownDescription: "placeholder",
+				MarkdownDescription: "Security Group ID",
 				Required:            true,
 				Validators: []validator.String{stringvalidator.RegexMatches(
 					regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
