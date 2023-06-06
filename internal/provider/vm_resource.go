@@ -130,7 +130,6 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				MarkdownDescription: "The name of the user who created the VM instance.",
 				Computed:            true,
 			},
-
 			"datacenter_id": schema.StringAttribute{
 				MarkdownDescription: "The unique identifier of the datacenter where the VM instance is located.",
 				Required:            true,
