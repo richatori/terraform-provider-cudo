@@ -29,7 +29,7 @@ type SecurityGroupsDataSourceModel struct {
 }
 
 func (d *SecurityGroupsDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = "cudo_images"
+	resp.TypeName = "cudo_security_groups"
 }
 
 func (d *SecurityGroupsDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
