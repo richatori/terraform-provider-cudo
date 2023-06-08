@@ -11,6 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"regexp"
 	"strconv"
@@ -99,9 +100,9 @@ func (r *SecurityGroupResource) Schema(ctx context.Context, req resource.SchemaR
 							Validators:  []validator.String{portListValidator{}},
 						},
 						"protocol": schema.StringAttribute{
-							Description: "Protocol for rule, use one of: all, tcp, udp, icmp, icmpv6 or ipsec",
+							Description: "Protocol for rule, use one of: tcp or udp", //all, tcp, udp, icmp, icmpv6 or ipsec", // these supported later ??
 							Required:    true,
-							Validators:  []validator.String{stringvalidator.OneOf("all", "tcp", "udp", "icmp", "icmpv6", "ipsec")},
+							Validators:  []validator.String{stringvalidator.OneOf("tcp", "udp")}, //"all", "tcp", "udp", "icmp", "icmpv6", "ipsec")},
 						},
 						"rule_type": schema.StringAttribute{
 							Description: "Type for rule either 'inbound' or 'outbound'",
@@ -135,6 +136,17 @@ func (r *SecurityGroupResource) Configure(ctx context.Context, req resource.Conf
 	r.client = client
 }
 
+func getNullableString(value string) basetypes.StringValue {
+	var result = basetypes.StringValue{}
+	if value != "" {
+		result = types.StringValue(value)
+	} else {
+		result = types.StringNull()
+	}
+
+	return result
+}
+
 func getRuleModels(rules []*models.Rule) []RuleModel {
 	var ruleModels []RuleModel
 	for _, rule := range rules {
@@ -165,11 +177,11 @@ func getRuleModels(rules []*models.Rule) []RuleModel {
 
 		ruleModel := RuleModel{
 			Id:          types.StringValue(rule.ID),
-			IcmpType:    types.StringValue(rule.IcmpType),
-			IpRangeCidr: types.StringValue(rule.IPRangeCidr),
-			Ports:       types.StringValue(rule.Ports),
-			Protocol:    types.StringValue(protocol),
-			RuleType:    types.StringValue(ruleType),
+			IcmpType:    getNullableString(rule.IcmpType),
+			IpRangeCidr: getNullableString(rule.IPRangeCidr),
+			Ports:       getNullableString(rule.Ports),
+			Protocol:    getNullableString(protocol),
+			RuleType:    getNullableString(ruleType),
 		}
 
 		ruleModels = append(ruleModels, ruleModel)
