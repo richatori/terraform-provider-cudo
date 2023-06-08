@@ -4,45 +4,62 @@ import (
 	"context"
 	"fmt"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/networks"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"regexp"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ datasource.DataSource = &NetworkDataSource{}
+var _ datasource.DataSource = &NetworkSearchDataSource{}
 
-func NewNetworkDataSource() datasource.DataSource {
-	return &NetworkDataSource{}
+func NewNetworkSearchDataSource() datasource.DataSource {
+	return &NetworkSearchDataSource{}
 }
 
-// NetworkDataSource defines the data source implementation.
-type NetworkDataSource struct {
+// NetworkSearchDataSource defines the data source implementation.
+type NetworkSearchDataSource struct {
 	client *CudoClientData
 }
 
-// NetworkDataSourceModel describes the data source data model.
-type NetworkDataSourceModel struct {
-	Network []NetworkResourceModel `tfsdk:"networks"`
-	ID      types.String           `tfsdk:"id"`
+// NetworkSearchDataSourceModel describes the data source data model.
+type NetworkSearchDataSourceModel struct {
+	ID           types.String           `tfsdk:"id"`
+	Network      []NetworkResourceModel `tfsdk:"networks"`
+	DataCenterId types.String           `tfsdk:"datacenter_id"`
+	MachineType  types.String           `tfsdk:"machine_type"`
 }
 
-func (d *NetworkDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = "cudo_networks"
+func (d *NetworkSearchDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+	resp.TypeName = "cudo_network_search"
 }
 
-func (d *NetworkDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *NetworkSearchDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "Network data source",
-		Description:         "Fetches the list of networks",
+		MarkdownDescription: "Network search data source",
+		Description:         "Searches networks available to cluster",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: "Placeholder identifier attribute.",
 				Computed:    true,
 			},
+			"machine_type": schema.StringAttribute{
+				Description: "Filter search by machine type",
+				Optional:    true,
+				Validators: []validator.String{stringvalidator.RegexMatches(
+					regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
+			},
+			"datacenter_id": schema.StringAttribute{
+				MarkdownDescription: "The unique identifier of the datacenter where the network is located.",
+				Optional:            true,
+				Validators: []validator.String{stringvalidator.RegexMatches(
+					regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
+			},
 			"networks": schema.ListNestedAttribute{
-				Description: "List of networks.",
+				Description: "Networks search results",
 				Computed:    true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -72,7 +89,7 @@ func (d *NetworkDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 	}
 }
 
-func (d *NetworkDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
+func (d *NetworkSearchDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -91,16 +108,24 @@ func (d *NetworkDataSource) Configure(ctx context.Context, req datasource.Config
 	d.client = client
 }
 
-func (d *NetworkDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var state NetworkDataSourceModel
+func (d *NetworkSearchDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+	var state NetworkSearchDataSourceModel
 
-	params := networks.NewListNetworksParams()
+	resp.Diagnostics.Append(req.Config.Get(ctx, &state)...)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	params := networks.NewSearchNetworksParams()
 	params.ProjectID = d.client.DefaultProjectID
+	params.MachineType = state.MachineType.ValueStringPointer()
+	params.DataCenterID = state.DataCenterId.ValueStringPointer()
 
-	res, err := d.client.Client.Networks.ListNetworks(params)
+	res, err := d.client.Client.Networks.SearchNetworks(params)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Unable to read networks",
+			"Unable to read network_search",
 			err.Error(),
 		)
 		return
