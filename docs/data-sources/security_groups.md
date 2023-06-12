@@ -17,7 +17,7 @@ Security groups data source
 
 ### Required
 
-- `datacenter_id` (String) Datacenter ID to request security groups from
+- `data_center_id` (String) Datacenter ID to request security groups from
 
 ### Read-Only
 
@@ -29,7 +29,7 @@ Security groups data source
 
 Read-Only:
 
-- `datacenter_id` (String) Datacenter ID
+- `data_center_id` (String) Datacenter ID
 - `description` (String) Security group description
 - `id` (String) Image identifier
 - `rules` (Attributes List) List of rules in security group (see [below for nested schema](#nestedatt--security_groups--rules))

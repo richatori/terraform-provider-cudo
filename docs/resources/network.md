@@ -18,7 +18,7 @@ Network resource
 ### Required
 
 - `cidr_prefix` (String) CIDR prefix i.e. 192.168.0.0/24
-- `datacenter_id` (String) The unique identifier of the datacenter where the network is located.
+- `data_center_id` (String) The unique identifier of the datacenter where the network is located.
 - `id` (String) Network ID
 
 ### Read-Only

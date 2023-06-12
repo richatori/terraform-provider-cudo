@@ -22,11 +22,11 @@ func TestAccVMInstanceDataSource(t *testing.T) {
 	resourcesConfig := fmt.Sprintf(`
 resource "cudo_vm" "my-vm" {
    machine_type       = "standard"
-   datacenter_id      = "black-mesa"
-   vcpu_quantity      = 1
-   boot_disk_size_gib = 50
-   image_id           = "ubuntu-minimal-2004"
-   memory_gib         = 4
+   data_center_id     = "black-mesa"
+   vcpus              = 1
+   boot_disk_size_gib = 1
+   image_id           = "alpine-linux-317"
+   memory_gib         = 2
    vm_id              = "%s"
    boot_disk_class    = "network"
  }`, name)

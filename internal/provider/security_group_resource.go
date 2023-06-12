@@ -44,7 +44,7 @@ type RuleModel struct {
 // SecurityGroupResourceModel describes the resource data model.
 type SecurityGroupResourceModel struct {
 	Id           types.String `tfsdk:"id"`
-	DataCenterId types.String `tfsdk:"datacenter_id"`
+	DataCenterId types.String `tfsdk:"data_center_id"`
 	Description  types.String `tfsdk:"description"`
 	Rules        []RuleModel  `tfsdk:"rules"`
 }
@@ -64,7 +64,7 @@ func (r *SecurityGroupResource) Schema(ctx context.Context, req resource.SchemaR
 				Validators: []validator.String{stringvalidator.RegexMatches(
 					regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
 			},
-			"datacenter_id": schema.StringAttribute{
+			"data_center_id": schema.StringAttribute{
 				MarkdownDescription: "The unique identifier of the datacenter where the network is located.",
 				Required:            true,
 				Validators: []validator.String{stringvalidator.RegexMatches(

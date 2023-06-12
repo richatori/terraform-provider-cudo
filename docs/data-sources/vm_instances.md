@@ -28,18 +28,16 @@ Read-Only:
 - `boot_disk_size_gib` (Number) The size of the boot disk in gibibytes (GiB).
 - `cpu_model` (String) The model of the CPU.
 - `create_by` (String) The name of the user who created the VM instance.
-- `datacenter_id` (String) The unique identifier of the datacenter where the VM instance is located.
+- `data_center_id` (String) The unique identifier of the datacenter where the VM instance is located.
 - `external_ip_address` (String) The external IP address of the VM instance.
 - `gpu_model` (String) The model of the GPU.
-- `gpu_quantity` (Number) The number of GPUs attached to the VM instance.
+- `gpus` (Number) The number of GPUs attached to the VM instance.
 - `id` (String) The unique identifier of the VM instance.
 - `image_id` (String) The unique identifier of the image used to create the VM instance.
 - `internal_ip_address` (String) The internal IP address of the VM instance.
 - `lcm_state` (String) The state of the VM instance in the LCM.
 - `memory_gib` (Number) The amount of memory allocated to the VM instance.
-- `one_state` (String) The state of the VM instance in OpenNebula.
 - `price_hr` (Number) The price per hour for the VM instance.
-- `public_ip_address` (String) The public IP address of the VM instance.
 - `region_id` (String) The unique identifier of the region where the VM instance is located.
 - `region_name` (String) The name of the region where the VM instance is located.
 - `renewable_energy` (Boolean) Whether the VM instance is powered by renewable energy

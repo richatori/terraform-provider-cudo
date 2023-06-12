@@ -29,7 +29,7 @@ type NetworkSearchDataSource struct {
 type NetworkSearchDataSourceModel struct {
 	ID           types.String           `tfsdk:"id"`
 	Network      []NetworkResourceModel `tfsdk:"networks"`
-	DataCenterId types.String           `tfsdk:"datacenter_id"`
+	DataCenterId types.String           `tfsdk:"data_center_id"`
 	MachineType  types.String           `tfsdk:"machine_type"`
 }
 
@@ -53,7 +53,7 @@ func (d *NetworkSearchDataSource) Schema(ctx context.Context, req datasource.Sch
 				Validators: []validator.String{stringvalidator.RegexMatches(
 					regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
 			},
-			"datacenter_id": schema.StringAttribute{
+			"data_center_id": schema.StringAttribute{
 				MarkdownDescription: "The unique identifier of the datacenter where the network is located.",
 				Optional:            true,
 				Validators: []validator.String{stringvalidator.RegexMatches(
@@ -68,7 +68,7 @@ func (d *NetworkSearchDataSource) Schema(ctx context.Context, req datasource.Sch
 							MarkdownDescription: "Network ID",
 							Computed:            true,
 						},
-						"datacenter_id": schema.StringAttribute{
+						"data_center_id": schema.StringAttribute{
 							MarkdownDescription: "The unique identifier of the datacenter where the network is located.",
 							Computed:            true,
 						},

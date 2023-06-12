@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/networks"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
@@ -25,7 +26,7 @@ type SecurityGroupsDataSource struct {
 type SecurityGroupsDataSourceModel struct {
 	SecurityGroupModels []SecurityGroupResourceModel `tfsdk:"security_groups"`
 	ID                  types.String                 `tfsdk:"id"`
-	DataCenterId        types.String                 `tfsdk:"datacenter_id"`
+	DataCenterId        types.String                 `tfsdk:"data_center_id"`
 }
 
 func (d *SecurityGroupsDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -42,7 +43,7 @@ func (d *SecurityGroupsDataSource) Schema(ctx context.Context, req datasource.Sc
 				Description: "Placeholder identifier attribute.",
 				Computed:    true,
 			},
-			"datacenter_id": schema.StringAttribute{
+			"data_center_id": schema.StringAttribute{
 				MarkdownDescription: "Datacenter ID to request security groups from",
 				Required:            true,
 			},
@@ -55,7 +56,7 @@ func (d *SecurityGroupsDataSource) Schema(ctx context.Context, req datasource.Sc
 							MarkdownDescription: "Image identifier",
 							Computed:            true,
 						},
-						"datacenter_id": schema.StringAttribute{
+						"data_center_id": schema.StringAttribute{
 							MarkdownDescription: "Datacenter ID",
 							Computed:            true,
 						},

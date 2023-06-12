@@ -36,11 +36,11 @@ type VMResourceModel struct {
 	BootDiskClass types.String   `tfsdk:"boot_disk_class"`
 	BootDiskSize  types.Int64    `tfsdk:"boot_disk_size_gib"`
 	MachineType   types.String   `tfsdk:"machine_type"`
-	GPUs          types.Int64    `tfsdk:"gpu_quantity"`
+	GPUs          types.Int64    `tfsdk:"gpus"`
 	ImageID       types.String   `tfsdk:"image_id"`
 	Memory        types.Int64    `tfsdk:"memory_gib"`
 	Password      types.String   `tfsdk:"password"`
-	VCPUs         types.Int64    `tfsdk:"vcpu_quantity"`
+	VCPUs         types.Int64    `tfsdk:"vcpus"`
 	ID            types.String   `tfsdk:"vm_id"`
 	SSHKeySource  types.String   `tfsdk:"ssh_key_source"`
 	SSHKeysCustom []types.String `tfsdk:"ssh_keys_custom"`
@@ -48,14 +48,12 @@ type VMResourceModel struct {
 	// Response
 	CPUModel          types.String  `tfsdk:"cpu_model"`
 	CreateBy          types.String  `tfsdk:"create_by"`
-	DatacenterID      types.String  `tfsdk:"datacenter_id"`
+	DatacenterID      types.String  `tfsdk:"data_center_id"`
 	GpuModel          types.String  `tfsdk:"gpu_model"`
 	LcmState          types.String  `tfsdk:"lcm_state"`
 	InternalIPAddress types.String  `tfsdk:"internal_ip_address"`
 	ExternalIPAddress types.String  `tfsdk:"external_ip_address"`
-	OneState          types.String  `tfsdk:"one_state"`
 	PriceHr           types.Float64 `tfsdk:"price_hr"`
-	PublicIPAddress   types.String  `tfsdk:"public_ip_address"`
 	RegionID          types.String  `tfsdk:"region_id"`
 	RegionName        types.String  `tfsdk:"region_name"`
 	RenewableEnergy   types.Bool    `tfsdk:"renewable_energy"`
@@ -89,7 +87,7 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				Required:            true,
 				Validators:          []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
 			},
-			"gpu_quantity": schema.Int64Attribute{
+			"gpus": schema.Int64Attribute{
 				MarkdownDescription: "Number of GPUs",
 				Optional:            true,
 				Validators:          []validator.Int64{int64validator.AtLeast(0), int64validator.AtMost(10)},
@@ -109,7 +107,7 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				Optional:            true,
 				Validators:          []validator.String{stringvalidator.LengthBetween(6, 64)},
 			},
-			"vcpu_quantity": schema.Int64Attribute{
+			"vcpus": schema.Int64Attribute{
 				MarkdownDescription: "Number of VCPUs",
 				Required:            true,
 				Validators:          []validator.Int64{int64validator.AtLeast(1), int64validator.AtMost(100)},
@@ -127,7 +125,7 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				MarkdownDescription: "The name of the user who created the VM instance.",
 				Computed:            true,
 			},
-			"datacenter_id": schema.StringAttribute{
+			"data_center_id": schema.StringAttribute{
 				MarkdownDescription: "The unique identifier of the datacenter where the VM instance is located.",
 				Required:            true,
 				Validators:          []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
@@ -148,16 +146,8 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				MarkdownDescription: "The external IP address of the VM instance.",
 				Computed:            true,
 			},
-			"one_state": schema.StringAttribute{
-				MarkdownDescription: "The state of the VM instance in OpenNebula.",
-				Computed:            true,
-			},
 			"price_hr": schema.Float64Attribute{
 				MarkdownDescription: "The price per hour for the VM instance.",
-				Computed:            true,
-			},
-			"public_ip_address": schema.StringAttribute{
-				MarkdownDescription: "The public IP address of the VM instance.",
 				Computed:            true,
 			},
 			"region_id": schema.StringAttribute{
@@ -173,9 +163,9 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				Computed:            true,
 			},
 			"ssh_key_source": schema.StringAttribute{
-				MarkdownDescription: "Which SSH keys to add to the VM: user (default), project or custom",
+				MarkdownDescription: "Which SSH keys to add to the VM: project (default), user or custom",
 				Optional:            true,
-				Validators:          []validator.String{stringvalidator.OneOf("user", "project", "custom")},
+				Validators:          []validator.String{stringvalidator.OneOf("project", "user", "custom")},
 			},
 			"ssh_keys_custom": schema.ListAttribute{
 				ElementType:         types.StringType,
@@ -297,9 +287,7 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 	state.LcmState = types.StringValue(res.Payload.VM.LcmState)
 	state.InternalIPAddress = types.StringValue(res.Payload.VM.InternalIPAddress)
 	state.ExternalIPAddress = types.StringValue(res.Payload.VM.ExternalIPAddress)
-	state.OneState = types.StringValue(res.Payload.VM.OneState)
 	state.PriceHr = types.Float64Value(float64(res.Payload.VM.PriceHr))
-	state.PublicIPAddress = types.StringValue(res.Payload.VM.PublicIPAddress)
 	state.RegionID = types.StringValue(res.Payload.VM.RegionID)
 	state.RegionName = types.StringValue(res.Payload.VM.RegionName)
 	state.RenewableEnergy = types.BoolValue(res.Payload.VM.RenewableEnergy)
@@ -342,9 +330,7 @@ func (r *VMResource) Read(ctx context.Context, req resource.ReadRequest, resp *r
 	state.LcmState = types.StringValue(res.Payload.VM.LcmState)
 	state.InternalIPAddress = types.StringValue(res.Payload.VM.InternalIPAddress)
 	state.ExternalIPAddress = types.StringValue(res.Payload.VM.ExternalIPAddress)
-	state.OneState = types.StringValue(res.Payload.VM.OneState)
 	state.PriceHr = types.Float64Value(float64(res.Payload.VM.PriceHr))
-	state.PublicIPAddress = types.StringValue(res.Payload.VM.PublicIPAddress)
 	state.RegionID = types.StringValue(res.Payload.VM.RegionID)
 	state.RegionName = types.StringValue(res.Payload.VM.RegionName)
 	state.RenewableEnergy = types.BoolValue(res.Payload.VM.RenewableEnergy)
@@ -387,9 +373,7 @@ func (r *VMResource) Update(ctx context.Context, req resource.UpdateRequest, res
 	state.LcmState = types.StringValue(res.Payload.VM.LcmState)
 	state.InternalIPAddress = types.StringValue(res.Payload.VM.InternalIPAddress)
 	state.ExternalIPAddress = types.StringValue(res.Payload.VM.ExternalIPAddress)
-	state.OneState = types.StringValue(res.Payload.VM.OneState)
 	state.PriceHr = types.Float64Value(float64(res.Payload.VM.PriceHr))
-	state.PublicIPAddress = types.StringValue(res.Payload.VM.PublicIPAddress)
 	state.RegionID = types.StringValue(res.Payload.VM.RegionID)
 	state.RegionName = types.StringValue(res.Payload.VM.RegionName)
 	state.RenewableEnergy = types.BoolValue(res.Payload.VM.RenewableEnergy)

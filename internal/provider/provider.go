@@ -2,12 +2,14 @@ package provider
 
 import (
 	"context"
+
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 
+	"os"
+
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
-	"os"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
@@ -24,20 +26,25 @@ type CudoProvider struct {
 	// version is set to the provider version on release, "dev" when the
 	// provider is built and ran locally, and "test" when running acceptance
 	// testing.
-	version string
+	version           string
+	defaultRemoteAddr string
 }
 
 // CudoProviderModel describes the provider data model.
 type CudoProviderModel struct {
-	Endpoint   types.String `tfsdk:"endpoint"`
-	APIKey     types.String `tfsdk:"api_key"`
-	DisableTLS types.Bool   `tfsdk:"disable_tls"`
-	ProjectID  types.String `tfsdk:"project_id"`
+	APIKey           types.String `tfsdk:"api_key"`
+	DisableTLS       types.Bool   `tfsdk:"disable_tls"`
+	RemoteAddr       types.String `tfsdk:"remote_addr"`
+	ProjectID        types.String `tfsdk:"project_id"`
+	DataCenterID     types.String `tfsdk:"data_center_id"`
+	BillingAccountID types.String `tfsdk:"billing_account_id"`
 }
 
 type CudoClientData struct {
-	Client           *client.CudoComputeService
-	DefaultProjectID string
+	Client                  *client.CudoComputeService
+	DefaultBillingAccountID string
+	DefaultDataCenterID     string
+	DefaultProjectID        string
 }
 
 func (p *CudoProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
@@ -48,20 +55,28 @@ func (p *CudoProvider) Metadata(ctx context.Context, req provider.MetadataReques
 func (p *CudoProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
-			"endpoint": schema.StringAttribute{
-				MarkdownDescription: "API endpoint",
-				Optional:            true,
-			},
 			"api_key": schema.StringAttribute{
 				MarkdownDescription: "Your API key",
 				Optional:            true,
 			},
-			"disable_tls": schema.BoolAttribute{
-				MarkdownDescription: "Whether to connect using TLS",
+			"data_center_id": schema.StringAttribute{
+				MarkdownDescription: "Which data center id to use for resources",
+				Optional:            true,
+			},
+			"billing_account_id": schema.StringAttribute{
+				MarkdownDescription: "Which billinag account id to create resources in",
 				Optional:            true,
 			},
 			"project_id": schema.StringAttribute{
 				MarkdownDescription: "Which project id to use",
+				Optional:            true,
+			},
+			"remote_addr": schema.StringAttribute{
+				MarkdownDescription: "API endpoint",
+				Optional:            true,
+			},
+			"disable_tls": schema.BoolAttribute{
+				MarkdownDescription: "Whether to connect using TLS",
 				Optional:            true,
 			},
 		},
@@ -77,66 +92,66 @@ func (p *CudoProvider) Configure(ctx context.Context, req provider.ConfigureRequ
 		return
 	}
 
-	// API Key checks
-	api_key := os.Getenv("CUDO_API_KEY")
-
-	if config.APIKey.ValueString() != "" {
-		api_key = config.APIKey.ValueString()
+	apiKey := config.APIKey.ValueString()
+	if apiKey == "" {
+		apiKey = os.Getenv("CUDO_API_KEY")
 	}
-
-	if api_key == "" {
+	if apiKey == "" {
 		resp.Diagnostics.AddAttributeError(
 			path.Root("api_key"),
 			"Missing Cudo API Key",
-			"The provider cannot create the client without an API KEY please pass it or set the CUDO_API_KEY environment variable.",
+			"The provider cannot create the client without an API KEY please configure it, use the CUDO_API_KEY environment variable or set it in your cudo config file.",
 		)
 	}
 
 	// Endpoint checks
-
-	endpoint := os.Getenv("CUDO_ENDPOINT")
-
-	if config.Endpoint.ValueString() != "" {
-		endpoint = config.Endpoint.ValueString()
+	remoteAddr := config.RemoteAddr.ValueString()
+	if remoteAddr == "" {
+		remoteAddr = os.Getenv("CUDO_REMOTE_ADDR")
 	}
-
-	if endpoint == "" {
-		endpoint = "rest.compute.cudo.org"
+	if remoteAddr == "" {
+		remoteAddr = p.defaultRemoteAddr
 	}
-
-	disable_tls := config.DisableTLS.ValueBool()
 
 	// Project
-
-	project_id := os.Getenv("CUDO_PROJECT_ID")
-
-	if config.ProjectID.ValueString() != "" {
-		project_id = config.ProjectID.ValueString()
+	projectID := config.ProjectID.ValueString()
+	if projectID == "" {
+		projectID = os.Getenv("CUDO_PROJECT_ID")
 	}
-
-	if project_id == "" {
+	if projectID == "" {
 		resp.Diagnostics.AddAttributeError(
 			path.Root("project_id"),
 			"Missing Cudo project ID",
-			"The provider cannot create the client without a project_id please pass it or set the CUDO_PROJECT_ID environment variable.",
+			"The provider cannot create the client without a project_id please pass it or set the CUDO_PROJECT_ID environment variable or set it in your cudo config file.",
 		)
 	}
 
-	var scheme []string
+	dataCenterID := config.DataCenterID.ValueString()
+	if dataCenterID == "" {
+		dataCenterID = os.Getenv("CUDO_DATA_CENTER_ID")
+	}
 
-	if disable_tls {
+	billingAccountID := config.DataCenterID.ValueString()
+	if billingAccountID == "" {
+		billingAccountID = os.Getenv("CUDO_BILLING_ACCOUNT_ID")
+	}
+
+	var scheme []string
+	if config.DisableTLS.ValueBool() {
 		scheme = []string{"https"}
 	} else {
 		scheme = client.DefaultSchemes
 	}
 
-	tx := httptransport.New(endpoint, client.DefaultBasePath, scheme)
-	tx.DefaultAuthentication = httptransport.BearerToken(api_key)
+	tx := httptransport.New(remoteAddr, client.DefaultBasePath, scheme)
+	tx.DefaultAuthentication = httptransport.BearerToken(apiKey)
 	clientx := client.New(tx, strfmt.Default)
 
 	ccd := &CudoClientData{
-		Client:           clientx,
-		DefaultProjectID: project_id,
+		Client:                  clientx,
+		DefaultProjectID:        projectID,
+		DefaultDataCenterID:     dataCenterID,
+		DefaultBillingAccountID: billingAccountID,
 	}
 	resp.DataSourceData = ccd
 	resp.ResourceData = ccd
@@ -163,10 +178,11 @@ func (p *CudoProvider) DataSources(ctx context.Context) []func() datasource.Data
 	}
 }
 
-func New(version string) func() provider.Provider {
+func New(version string, defaultRemoteAddr string) func() provider.Provider {
 	return func() provider.Provider {
 		return &CudoProvider{
-			version: version,
+			version:           version,
+			defaultRemoteAddr: defaultRemoteAddr,
 		}
 	}
 }

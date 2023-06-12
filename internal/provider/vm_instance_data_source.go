@@ -29,18 +29,16 @@ type VMModel struct {
 	BootDiskSizeGib   types.Int64   `tfsdk:"boot_disk_size_gib"`
 	CPUModel          types.String  `tfsdk:"cpu_model"`
 	CreateBy          types.String  `tfsdk:"create_by"`
-	DatacenterID      types.String  `tfsdk:"datacenter_id"`
+	DatacenterID      types.String  `tfsdk:"data+center_id"`
 	GpuModel          types.String  `tfsdk:"gpu_model"`
-	GpuQuantity       types.Int64   `tfsdk:"gpu_quantity"`
+	Gpus              types.Int64   `tfsdk:"gpus"`
 	PrivateImageID    types.String  `tfsdk:"private_image_id"`
 	PublicImageID     types.String  `tfsdk:"public_image_id"`
 	LcmState          types.String  `tfsdk:"lcm_state"`
 	InternalIPAddress types.String  `tfsdk:"internal_ip_address"`
 	ExternalIPAddress types.String  `tfsdk:"external_ip_address"`
 	Memory            types.Int64   `tfsdk:"memory_gib"`
-	OneState          types.String  `tfsdk:"one_state"`
 	PriceHr           types.Float64 `tfsdk:"price_hr"`
-	PublicIPAddress   types.String  `tfsdk:"public_ip_address"`
 	RegionID          types.String  `tfsdk:"region_id"`
 	RegionName        types.String  `tfsdk:"region_name"`
 	RenewableEnergy   types.Bool    `tfsdk:"renewable_energy"`
@@ -102,7 +100,7 @@ func (d *VMInstanceDataSource) Schema(ctx context.Context, req datasource.Schema
 							MarkdownDescription: "The name of the user who created the VM instance.",
 							Computed:            true,
 						},
-						"datacenter_id": schema.StringAttribute{
+						"data_center_id": schema.StringAttribute{
 							MarkdownDescription: "The unique identifier of the datacenter where the VM instance is located.",
 							Computed:            true,
 						},
@@ -110,7 +108,7 @@ func (d *VMInstanceDataSource) Schema(ctx context.Context, req datasource.Schema
 							MarkdownDescription: "The model of the GPU.",
 							Computed:            true,
 						},
-						"gpu_quantity": schema.Int64Attribute{
+						"gpus": schema.Int64Attribute{
 							MarkdownDescription: "The number of GPUs attached to the VM instance.",
 							Computed:            true,
 						},
@@ -134,16 +132,8 @@ func (d *VMInstanceDataSource) Schema(ctx context.Context, req datasource.Schema
 							MarkdownDescription: "The amount of memory allocated to the VM instance.",
 							Computed:            true,
 						},
-						"one_state": schema.StringAttribute{
-							MarkdownDescription: "The state of the VM instance in OpenNebula.",
-							Computed:            true,
-						},
 						"price_hr": schema.Float64Attribute{
 							MarkdownDescription: "The price per hour for the VM instance.",
-							Computed:            true,
-						},
-						"public_ip_address": schema.StringAttribute{
-							MarkdownDescription: "The public IP address of the VM instance.",
 							Computed:            true,
 						},
 						"region_id": schema.StringAttribute{
@@ -215,16 +205,14 @@ func (d *VMInstanceDataSource) Read(ctx context.Context, req datasource.ReadRequ
 			CreateBy:          types.StringValue(i.CreateBy),
 			DatacenterID:      types.StringValue(i.DatacenterID),
 			GpuModel:          types.StringValue(i.GpuModel),
-			GpuQuantity:       types.Int64Value(i.GpuQuantity),
+			Gpus:              types.Int64Value(i.GpuQuantity),
 			PrivateImageID:    types.StringValue(i.PrivateImageID),
 			PublicImageID:     types.StringValue(i.PublicImageID),
 			LcmState:          types.StringValue(i.LcmState),
 			InternalIPAddress: types.StringValue(i.InternalIPAddress),
 			ExternalIPAddress: types.StringValue(i.ExternalIPAddress),
 			Memory:            types.Int64Value(i.Memory),
-			OneState:          types.StringValue(i.OneState),
 			PriceHr:           types.Float64Value(float64(i.PriceHr)),
-			PublicIPAddress:   types.StringValue(i.PublicIPAddress),
 			RegionID:          types.StringValue(i.RegionID),
 			RegionName:        types.StringValue(i.RegionName),
 			RenewableEnergy:   types.BoolValue(i.RenewableEnergy),

@@ -6,24 +6,20 @@ terraform {
   }
 }
 
-
 provider "cudo" {
-  api_key    = "api-key"
-  project_id = "my-project"
+  api_key        = "api-key"
+  project_id     = "my-project"
+  data_center_id = "gb-london-1"
 }
 
 data "cudo_regions" "reg1" {
-
 }
 
 output "regions" {
   value = data.cudo_regions.reg1
 }
 
-
-
 data "cudo_images" "img1" {
-
 }
 
 output "images" {
@@ -41,7 +37,6 @@ output "configs" {
 }
 
 data "cudo_vm_instances" "ins" {
-
 }
 
 output "instances" {
@@ -50,7 +45,7 @@ output "instances" {
 
 resource "cudo_vm" "my-vm" {
   config_id          = data.cudo_vm_configs.cfgs.vm_configs[0].id
-  vcpu_quantity      = 1
+  vcpus              = 1
   boot_disk_size_gib = 50
   image_id           = "ubuntu-minimal-2004"
   memory_gib         = 2

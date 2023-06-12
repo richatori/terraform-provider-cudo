@@ -51,7 +51,7 @@ func (d *NetworksDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 							MarkdownDescription: "Network ID",
 							Computed:            true,
 						},
-						"datacenter_id": schema.StringAttribute{
+						"data_center_id": schema.StringAttribute{
 							MarkdownDescription: "The unique identifier of the datacenter where the network is located.",
 							Computed:            true,
 						},

@@ -14,9 +14,9 @@ Security group resource
 
 ```terraform
 resource "cudo_security_group" "my-sg" {
-  id            = "my-sg"
-  datacenter_id = "gb-london-1"
-  description   = "security group for a purpose"
+  id             = "my-sg"
+  data_center_id = "gb-london-1"
+  description    = "security group for a purpose"
   rules = [
     {
       ports     = "22,80,443"
@@ -37,7 +37,7 @@ resource "cudo_security_group" "my-sg" {
 
 ### Required
 
-- `datacenter_id` (String) The unique identifier of the datacenter where the network is located.
+- `data_center_id` (String) The unique identifier of the datacenter where the network is located.
 - `id` (String) Security Group ID
 - `rules` (Attributes List) List of security group rules (see [below for nested schema](#nestedatt--rules))
 

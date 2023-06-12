@@ -16,7 +16,7 @@ VM resource
 resource "cudo_vm" "my-vm" {
   machine_type       = "standard"
   datacenter         = "gb-bournemouth-1"
-  vcpu_quantity      = 1
+  vcpus              = 1
   boot_disk_size_gib = 50
   image_id           = "ubuntu-minimal-2004"
   memory_gib         = 2
@@ -38,18 +38,18 @@ resource "cudo_vm" "my-vm" {
 
 - `boot_disk_class` (String) Storage class for boot disk, either 'local' or 'network'
 - `boot_disk_size_gib` (Number) Size of the boot disk in GiB
-- `datacenter_id` (String) The unique identifier of the datacenter where the VM instance is located.
+- `data_center_id` (String) The unique identifier of the datacenter where the VM instance is located.
 - `image_id` (String) OS image ID on boot disk
 - `machine_type` (String) VM machine type, from machine type data source
 - `memory_gib` (Number) Amount of VM memory in GiB
-- `vcpu_quantity` (Number) Number of VCPUs
+- `vcpus` (Number) Number of VCPUs
 - `vm_id` (String) Your chosen VM identifier
 
 ### Optional
 
-- `gpu_quantity` (Number) Number of GPUs
+- `gpus` (Number) Number of GPUs
 - `password` (String) VM password
-- `ssh_key_source` (String) Which SSH keys to add to the VM: user (default), project or custom
+- `ssh_key_source` (String) Which SSH keys to add to the VM: project (default), user or custom
 - `ssh_keys_custom` (List of String) List of custom SSH keys to add to the VM, ssh_key_source must be set to custom
 - `start_script` (String) A script to run when VM boots
 
@@ -62,9 +62,7 @@ resource "cudo_vm" "my-vm" {
 - `id` (String) placeholder
 - `internal_ip_address` (String) The internal IP address of the VM instance.
 - `lcm_state` (String) The state of the VM instance in the LCM.
-- `one_state` (String) The state of the VM instance in OpenNebula.
 - `price_hr` (Number) The price per hour for the VM instance.
-- `public_ip_address` (String) The public IP address of the VM instance.
 - `region_id` (String) The unique identifier of the region where the VM instance is located.
 - `region_name` (String) The name of the region where the VM instance is located.
 - `renewable_energy` (Boolean) Whether the VM instance is powered by renewable energy
