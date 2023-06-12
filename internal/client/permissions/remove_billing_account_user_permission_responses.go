@@ -51,7 +51,7 @@ func NewRemoveBillingAccountUserPermissionOK() *RemoveBillingAccountUserPermissi
 }
 
 /*
-	RemoveBillingAccountUserPermissionOK describes a response with status code 200, with default header values.
+RemoveBillingAccountUserPermissionOK describes a response with status code 200, with default header values.
 
 A successful response.
 */
@@ -84,6 +84,11 @@ func (o *RemoveBillingAccountUserPermissionOK) IsCode(code int) bool {
 	return code == 200
 }
 
+// Code gets the status code for the remove billing account user permission o k response
+func (o *RemoveBillingAccountUserPermissionOK) Code() int {
+	return 200
+}
+
 func (o *RemoveBillingAccountUserPermissionOK) Error() string {
 	return fmt.Sprintf("[POST /v1/billing-accounts/{billingAccountId}/remove-user-permission][%d] removeBillingAccountUserPermissionOK  %+v", 200, o.Payload)
 }
@@ -114,7 +119,7 @@ func NewRemoveBillingAccountUserPermissionDefault(code int) *RemoveBillingAccoun
 }
 
 /*
-	RemoveBillingAccountUserPermissionDefault describes a response with status code -1, with default header values.
+RemoveBillingAccountUserPermissionDefault describes a response with status code -1, with default header values.
 
 An unexpected error response.
 */
@@ -122,11 +127,6 @@ type RemoveBillingAccountUserPermissionDefault struct {
 	_statusCode int
 
 	Payload *models.Status
-}
-
-// Code gets the status code for the remove billing account user permission default response
-func (o *RemoveBillingAccountUserPermissionDefault) Code() int {
-	return o._statusCode
 }
 
 // IsSuccess returns true when this remove billing account user permission default response has a 2xx status code
@@ -152,6 +152,11 @@ func (o *RemoveBillingAccountUserPermissionDefault) IsServerError() bool {
 // IsCode returns true when this remove billing account user permission default response a status code equal to that given
 func (o *RemoveBillingAccountUserPermissionDefault) IsCode(code int) bool {
 	return o._statusCode == code
+}
+
+// Code gets the status code for the remove billing account user permission default response
+func (o *RemoveBillingAccountUserPermissionDefault) Code() int {
+	return o._statusCode
 }
 
 func (o *RemoveBillingAccountUserPermissionDefault) Error() string {
@@ -267,6 +272,7 @@ func (o *RemoveBillingAccountUserPermissionBody) ContextValidate(ctx context.Con
 func (o *RemoveBillingAccountUserPermissionBody) contextValidateRole(ctx context.Context, formats strfmt.Registry) error {
 
 	if o.Role != nil {
+
 		if err := o.Role.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("body" + "." + "role")

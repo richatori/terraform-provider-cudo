@@ -51,7 +51,7 @@ func NewAddDataCenterUserPermissionOK() *AddDataCenterUserPermissionOK {
 }
 
 /*
-	AddDataCenterUserPermissionOK describes a response with status code 200, with default header values.
+AddDataCenterUserPermissionOK describes a response with status code 200, with default header values.
 
 A successful response.
 */
@@ -84,6 +84,11 @@ func (o *AddDataCenterUserPermissionOK) IsCode(code int) bool {
 	return code == 200
 }
 
+// Code gets the status code for the add data center user permission o k response
+func (o *AddDataCenterUserPermissionOK) Code() int {
+	return 200
+}
+
 func (o *AddDataCenterUserPermissionOK) Error() string {
 	return fmt.Sprintf("[POST /v1/data-centers/{dataCenterId}/add-user-permission][%d] addDataCenterUserPermissionOK  %+v", 200, o.Payload)
 }
@@ -114,7 +119,7 @@ func NewAddDataCenterUserPermissionDefault(code int) *AddDataCenterUserPermissio
 }
 
 /*
-	AddDataCenterUserPermissionDefault describes a response with status code -1, with default header values.
+AddDataCenterUserPermissionDefault describes a response with status code -1, with default header values.
 
 An unexpected error response.
 */
@@ -122,11 +127,6 @@ type AddDataCenterUserPermissionDefault struct {
 	_statusCode int
 
 	Payload *models.Status
-}
-
-// Code gets the status code for the add data center user permission default response
-func (o *AddDataCenterUserPermissionDefault) Code() int {
-	return o._statusCode
 }
 
 // IsSuccess returns true when this add data center user permission default response has a 2xx status code
@@ -152,6 +152,11 @@ func (o *AddDataCenterUserPermissionDefault) IsServerError() bool {
 // IsCode returns true when this add data center user permission default response a status code equal to that given
 func (o *AddDataCenterUserPermissionDefault) IsCode(code int) bool {
 	return o._statusCode == code
+}
+
+// Code gets the status code for the add data center user permission default response
+func (o *AddDataCenterUserPermissionDefault) Code() int {
+	return o._statusCode
 }
 
 func (o *AddDataCenterUserPermissionDefault) Error() string {
@@ -267,6 +272,7 @@ func (o *AddDataCenterUserPermissionBody) ContextValidate(ctx context.Context, f
 func (o *AddDataCenterUserPermissionBody) contextValidateRole(ctx context.Context, formats strfmt.Registry) error {
 
 	if o.Role != nil {
+
 		if err := o.Role.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("body" + "." + "role")

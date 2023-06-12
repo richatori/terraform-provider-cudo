@@ -51,7 +51,7 @@ func NewUpdateSecurityGroupOK() *UpdateSecurityGroupOK {
 }
 
 /*
-	UpdateSecurityGroupOK describes a response with status code 200, with default header values.
+UpdateSecurityGroupOK describes a response with status code 200, with default header values.
 
 A successful response.
 */
@@ -82,6 +82,11 @@ func (o *UpdateSecurityGroupOK) IsServerError() bool {
 // IsCode returns true when this update security group o k response a status code equal to that given
 func (o *UpdateSecurityGroupOK) IsCode(code int) bool {
 	return code == 200
+}
+
+// Code gets the status code for the update security group o k response
+func (o *UpdateSecurityGroupOK) Code() int {
+	return 200
 }
 
 func (o *UpdateSecurityGroupOK) Error() string {
@@ -116,7 +121,7 @@ func NewUpdateSecurityGroupDefault(code int) *UpdateSecurityGroupDefault {
 }
 
 /*
-	UpdateSecurityGroupDefault describes a response with status code -1, with default header values.
+UpdateSecurityGroupDefault describes a response with status code -1, with default header values.
 
 An unexpected error response.
 */
@@ -124,11 +129,6 @@ type UpdateSecurityGroupDefault struct {
 	_statusCode int
 
 	Payload *models.Status
-}
-
-// Code gets the status code for the update security group default response
-func (o *UpdateSecurityGroupDefault) Code() int {
-	return o._statusCode
 }
 
 // IsSuccess returns true when this update security group default response has a 2xx status code
@@ -154,6 +154,11 @@ func (o *UpdateSecurityGroupDefault) IsServerError() bool {
 // IsCode returns true when this update security group default response a status code equal to that given
 func (o *UpdateSecurityGroupDefault) IsCode(code int) bool {
 	return o._statusCode == code
+}
+
+// Code gets the status code for the update security group default response
+func (o *UpdateSecurityGroupDefault) Code() int {
+	return o._statusCode
 }
 
 func (o *UpdateSecurityGroupDefault) Error() string {
@@ -240,6 +245,11 @@ func (o *UpdateSecurityGroupBody) ContextValidate(ctx context.Context, formats s
 func (o *UpdateSecurityGroupBody) contextValidateSecurityGroup(ctx context.Context, formats strfmt.Registry) error {
 
 	if o.SecurityGroup != nil {
+
+		if swag.IsZero(o.SecurityGroup) { // not required
+			return nil
+		}
+
 		if err := o.SecurityGroup.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("body" + "." + "securityGroup")
@@ -346,6 +356,11 @@ func (o *UpdateSecurityGroupParamsBodySecurityGroup) contextValidateRules(ctx co
 	for i := 0; i < len(o.Rules); i++ {
 
 		if o.Rules[i] != nil {
+
+			if swag.IsZero(o.Rules[i]) { // not required
+				return nil
+			}
+
 			if err := o.Rules[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("body" + "." + "securityGroup" + "." + "rules" + "." + strconv.Itoa(i))

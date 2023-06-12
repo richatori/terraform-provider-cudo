@@ -51,7 +51,7 @@ func NewAddProjectUserPermissionOK() *AddProjectUserPermissionOK {
 }
 
 /*
-	AddProjectUserPermissionOK describes a response with status code 200, with default header values.
+AddProjectUserPermissionOK describes a response with status code 200, with default header values.
 
 A successful response.
 */
@@ -84,6 +84,11 @@ func (o *AddProjectUserPermissionOK) IsCode(code int) bool {
 	return code == 200
 }
 
+// Code gets the status code for the add project user permission o k response
+func (o *AddProjectUserPermissionOK) Code() int {
+	return 200
+}
+
 func (o *AddProjectUserPermissionOK) Error() string {
 	return fmt.Sprintf("[POST /v1/projects/{projectId}/add-user-permission][%d] addProjectUserPermissionOK  %+v", 200, o.Payload)
 }
@@ -114,7 +119,7 @@ func NewAddProjectUserPermissionDefault(code int) *AddProjectUserPermissionDefau
 }
 
 /*
-	AddProjectUserPermissionDefault describes a response with status code -1, with default header values.
+AddProjectUserPermissionDefault describes a response with status code -1, with default header values.
 
 An unexpected error response.
 */
@@ -122,11 +127,6 @@ type AddProjectUserPermissionDefault struct {
 	_statusCode int
 
 	Payload *models.Status
-}
-
-// Code gets the status code for the add project user permission default response
-func (o *AddProjectUserPermissionDefault) Code() int {
-	return o._statusCode
 }
 
 // IsSuccess returns true when this add project user permission default response has a 2xx status code
@@ -152,6 +152,11 @@ func (o *AddProjectUserPermissionDefault) IsServerError() bool {
 // IsCode returns true when this add project user permission default response a status code equal to that given
 func (o *AddProjectUserPermissionDefault) IsCode(code int) bool {
 	return o._statusCode == code
+}
+
+// Code gets the status code for the add project user permission default response
+func (o *AddProjectUserPermissionDefault) Code() int {
+	return o._statusCode
 }
 
 func (o *AddProjectUserPermissionDefault) Error() string {
@@ -267,6 +272,7 @@ func (o *AddProjectUserPermissionBody) ContextValidate(ctx context.Context, form
 func (o *AddProjectUserPermissionBody) contextValidateRole(ctx context.Context, formats strfmt.Registry) error {
 
 	if o.Role != nil {
+
 		if err := o.Role.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("body" + "." + "role")

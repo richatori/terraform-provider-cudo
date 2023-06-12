@@ -44,8 +44,6 @@ type ClientService interface {
 
 	ListSecurityGroups(params *ListSecurityGroupsParams, opts ...ClientOption) (*ListSecurityGroupsOK, error)
 
-	SearchNetworks(params *SearchNetworksParams, opts ...ClientOption) (*SearchNetworksOK, error)
-
 	UpdateSecurityGroup(params *UpdateSecurityGroupParams, opts ...ClientOption) (*UpdateSecurityGroupOK, error)
 
 	SetTransport(transport runtime.ClientTransport)
@@ -344,43 +342,6 @@ func (a *Client) ListSecurityGroups(params *ListSecurityGroupsParams, opts ...Cl
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*ListSecurityGroupsDefault)
-	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
-}
-
-/*
-SearchNetworks searches networks available to cluster
-*/
-func (a *Client) SearchNetworks(params *SearchNetworksParams, opts ...ClientOption) (*SearchNetworksOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewSearchNetworksParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "SearchNetworks",
-		Method:             "GET",
-		PathPattern:        "/v1/projects/{projectId}/networks/search",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &SearchNetworksReader{formats: a.formats},
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*SearchNetworksOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	unexpectedSuccess := result.(*SearchNetworksDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

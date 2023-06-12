@@ -47,7 +47,7 @@ func NewGetProjectOK() *GetProjectOK {
 }
 
 /*
-	GetProjectOK describes a response with status code 200, with default header values.
+GetProjectOK describes a response with status code 200, with default header values.
 
 A successful response.
 */
@@ -78,6 +78,11 @@ func (o *GetProjectOK) IsServerError() bool {
 // IsCode returns true when this get project o k response a status code equal to that given
 func (o *GetProjectOK) IsCode(code int) bool {
 	return code == 200
+}
+
+// Code gets the status code for the get project o k response
+func (o *GetProjectOK) Code() int {
+	return 200
 }
 
 func (o *GetProjectOK) Error() string {
@@ -112,7 +117,7 @@ func NewGetProjectDefault(code int) *GetProjectDefault {
 }
 
 /*
-	GetProjectDefault describes a response with status code -1, with default header values.
+GetProjectDefault describes a response with status code -1, with default header values.
 
 An unexpected error response.
 */
@@ -120,11 +125,6 @@ type GetProjectDefault struct {
 	_statusCode int
 
 	Payload *models.Status
-}
-
-// Code gets the status code for the get project default response
-func (o *GetProjectDefault) Code() int {
-	return o._statusCode
 }
 
 // IsSuccess returns true when this get project default response has a 2xx status code
@@ -150,6 +150,11 @@ func (o *GetProjectDefault) IsServerError() bool {
 // IsCode returns true when this get project default response a status code equal to that given
 func (o *GetProjectDefault) IsCode(code int) bool {
 	return o._statusCode == code
+}
+
+// Code gets the status code for the get project default response
+func (o *GetProjectDefault) Code() int {
+	return o._statusCode
 }
 
 func (o *GetProjectDefault) Error() string {

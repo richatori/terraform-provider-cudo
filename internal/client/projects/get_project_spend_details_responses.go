@@ -47,7 +47,7 @@ func NewGetProjectSpendDetailsOK() *GetProjectSpendDetailsOK {
 }
 
 /*
-	GetProjectSpendDetailsOK describes a response with status code 200, with default header values.
+GetProjectSpendDetailsOK describes a response with status code 200, with default header values.
 
 A successful response.
 */
@@ -78,6 +78,11 @@ func (o *GetProjectSpendDetailsOK) IsServerError() bool {
 // IsCode returns true when this get project spend details o k response a status code equal to that given
 func (o *GetProjectSpendDetailsOK) IsCode(code int) bool {
 	return code == 200
+}
+
+// Code gets the status code for the get project spend details o k response
+func (o *GetProjectSpendDetailsOK) Code() int {
+	return 200
 }
 
 func (o *GetProjectSpendDetailsOK) Error() string {
@@ -112,7 +117,7 @@ func NewGetProjectSpendDetailsDefault(code int) *GetProjectSpendDetailsDefault {
 }
 
 /*
-	GetProjectSpendDetailsDefault describes a response with status code -1, with default header values.
+GetProjectSpendDetailsDefault describes a response with status code -1, with default header values.
 
 An unexpected error response.
 */
@@ -120,11 +125,6 @@ type GetProjectSpendDetailsDefault struct {
 	_statusCode int
 
 	Payload *models.Status
-}
-
-// Code gets the status code for the get project spend details default response
-func (o *GetProjectSpendDetailsDefault) Code() int {
-	return o._statusCode
 }
 
 // IsSuccess returns true when this get project spend details default response has a 2xx status code
@@ -150,6 +150,11 @@ func (o *GetProjectSpendDetailsDefault) IsServerError() bool {
 // IsCode returns true when this get project spend details default response a status code equal to that given
 func (o *GetProjectSpendDetailsDefault) IsCode(code int) bool {
 	return o._statusCode == code
+}
+
+// Code gets the status code for the get project spend details default response
+func (o *GetProjectSpendDetailsDefault) Code() int {
+	return o._statusCode
 }
 
 func (o *GetProjectSpendDetailsDefault) Error() string {

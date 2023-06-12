@@ -3,7 +3,8 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/CudoVentures/terraform-provider-cudo/internal/client/projects"
+	"regexp"
+
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/virtual_machines"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
@@ -14,7 +15,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"regexp"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -41,18 +41,15 @@ type VMResourceModel struct {
 	Memory        types.Int64    `tfsdk:"memory_gib"`
 	Password      types.String   `tfsdk:"password"`
 	VCPUs         types.Int64    `tfsdk:"vcpu_quantity"`
-	VMId          types.String   `tfsdk:"vm_id"`
+	ID            types.String   `tfsdk:"vm_id"`
 	SSHKeySource  types.String   `tfsdk:"ssh_key_source"`
 	SSHKeysCustom []types.String `tfsdk:"ssh_keys_custom"`
 	StartScript   types.String   `tfsdk:"start_script"`
 	// Response
-	CPUModel     types.String `tfsdk:"cpu_model"`
-	CreateBy     types.String `tfsdk:"create_by"`
-	DatacenterID types.String `tfsdk:"datacenter_id"`
-	GpuModel     types.String `tfsdk:"gpu_model"`
-	ImageDesc    types.String `tfsdk:"image_desc"`
-
-	ImageName         types.String  `tfsdk:"image_name"`
+	CPUModel          types.String  `tfsdk:"cpu_model"`
+	CreateBy          types.String  `tfsdk:"create_by"`
+	DatacenterID      types.String  `tfsdk:"datacenter_id"`
+	GpuModel          types.String  `tfsdk:"gpu_model"`
 	LcmState          types.String  `tfsdk:"lcm_state"`
 	InternalIPAddress types.String  `tfsdk:"internal_ip_address"`
 	ExternalIPAddress types.String  `tfsdk:"external_ip_address"`
@@ -255,9 +252,9 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		customKeys = append(customKeys, key.ValueString())
 	}
 
-	params := projects.NewCreateVMParams()
+	params := virtual_machines.NewCreateVMParams()
 	params.ProjectID = r.client.DefaultProjectID
-	params.Body = projects.CreateVMBody{
+	params.Body = virtual_machines.CreateVMBody{
 		BootDisk: &models.Disk{
 			SizeGib:      int32(state.BootDiskSize.ValueInt64()),
 			StorageClass: bootDiskClass,
@@ -269,13 +266,13 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		BootDiskImageID: state.ImageID.ValueStringPointer(),
 		Password:        state.Password.ValueString(),
 		Vcpus:           int32(state.VCPUs.ValueInt64()),
-		VMID:            state.VMId.ValueStringPointer(),
+		VMID:            state.ID.ValueStringPointer(),
 		SSHKeySource:    &ks,
 		CustomSSHKeys:   customKeys,
 		StartScript:     state.StartScript.ValueString(),
 	}
 
-	_, err := r.client.Client.Projects.CreateVM(params)
+	_, err := r.client.Client.VirtualMachines.CreateVM(params)
 
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -285,11 +282,11 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		return
 	}
 
-	paramsGet := virtual_machines.NewGetInstanceParams()
+	paramsGet := virtual_machines.NewGetVMParams()
 	paramsGet.ProjectID = r.client.DefaultProjectID
-	paramsGet.InstanceID = state.VMId.ValueString()
+	paramsGet.ID = state.ID.ValueString()
 
-	res, err := r.client.Client.VirtualMachines.GetInstance(paramsGet)
+	res, err := r.client.Client.VirtualMachines.GetVM(paramsGet)
 
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -300,22 +297,20 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 	}
 
 	state.Id = types.StringValue("placeholder")
-	state.CPUModel = types.StringValue(res.Payload.Instance.CPUModel)
-	state.CreateBy = types.StringValue(res.Payload.Instance.CreateBy)
-	state.DatacenterID = types.StringValue(res.Payload.Instance.DatacenterID)
-	state.GpuModel = types.StringValue(res.Payload.Instance.GpuModel)
-	state.ImageDesc = types.StringValue(res.Payload.Instance.ImageDesc)
-	state.ImageID = types.StringValue(res.Payload.Instance.ImageID)
-	state.ImageName = types.StringValue(res.Payload.Instance.ImageName)
-	state.LcmState = types.StringValue(res.Payload.Instance.LcmState)
-	state.InternalIPAddress = types.StringValue(res.Payload.Instance.InternalIPAddress)
-	state.ExternalIPAddress = types.StringValue(res.Payload.Instance.ExternalIPAddress)
-	state.OneState = types.StringValue(res.Payload.Instance.OneState)
-	state.PriceHr = types.Float64Value(float64(res.Payload.Instance.PriceHr))
-	state.PublicIPAddress = types.StringValue(res.Payload.Instance.PublicIPAddress)
-	state.RegionID = types.StringValue(res.Payload.Instance.RegionID)
-	state.RegionName = types.StringValue(res.Payload.Instance.RegionName)
-	state.RenewableEnergy = types.BoolValue(res.Payload.Instance.RenewableEnergy)
+	state.CPUModel = types.StringValue(res.Payload.VM.CPUModel)
+	state.CreateBy = types.StringValue(res.Payload.VM.CreateBy)
+	state.DatacenterID = types.StringValue(res.Payload.VM.DatacenterID)
+	state.GpuModel = types.StringValue(res.Payload.VM.GpuModel)
+	state.ImageID = types.StringValue(res.Payload.VM.ImageID)
+	state.LcmState = types.StringValue(res.Payload.VM.LcmState)
+	state.InternalIPAddress = types.StringValue(res.Payload.VM.InternalIPAddress)
+	state.ExternalIPAddress = types.StringValue(res.Payload.VM.ExternalIPAddress)
+	state.OneState = types.StringValue(res.Payload.VM.OneState)
+	state.PriceHr = types.Float64Value(float64(res.Payload.VM.PriceHr))
+	state.PublicIPAddress = types.StringValue(res.Payload.VM.PublicIPAddress)
+	state.RegionID = types.StringValue(res.Payload.VM.RegionID)
+	state.RegionName = types.StringValue(res.Payload.VM.RegionName)
+	state.RenewableEnergy = types.BoolValue(res.Payload.VM.RenewableEnergy)
 
 	tflog.Trace(ctx, "created a vm")
 
@@ -332,11 +327,11 @@ func (r *VMResource) Read(ctx context.Context, req resource.ReadRequest, resp *r
 		return
 	}
 
-	params := virtual_machines.NewGetInstanceParams()
+	params := virtual_machines.NewGetVMParams()
 	params.ProjectID = r.client.DefaultProjectID
-	params.InstanceID = state.VMId.ValueString()
+	params.ID = state.ID.ValueString()
 
-	res, err := r.client.Client.VirtualMachines.GetInstance(params)
+	res, err := r.client.Client.VirtualMachines.GetVM(params)
 
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -347,22 +342,20 @@ func (r *VMResource) Read(ctx context.Context, req resource.ReadRequest, resp *r
 	}
 
 	state.Id = types.StringValue("placeholder")
-	state.CPUModel = types.StringValue(res.Payload.Instance.CPUModel)
-	state.CreateBy = types.StringValue(res.Payload.Instance.CreateBy)
-	state.DatacenterID = types.StringValue(res.Payload.Instance.DatacenterID)
-	state.GpuModel = types.StringValue(res.Payload.Instance.GpuModel)
-	state.ImageDesc = types.StringValue(res.Payload.Instance.ImageDesc)
-	state.ImageID = types.StringValue(res.Payload.Instance.ImageID)
-	state.ImageName = types.StringValue(res.Payload.Instance.ImageName)
-	state.LcmState = types.StringValue(res.Payload.Instance.LcmState)
-	state.InternalIPAddress = types.StringValue(res.Payload.Instance.InternalIPAddress)
-	state.ExternalIPAddress = types.StringValue(res.Payload.Instance.ExternalIPAddress)
-	state.OneState = types.StringValue(res.Payload.Instance.OneState)
-	state.PriceHr = types.Float64Value(float64(res.Payload.Instance.PriceHr))
-	state.PublicIPAddress = types.StringValue(res.Payload.Instance.PublicIPAddress)
-	state.RegionID = types.StringValue(res.Payload.Instance.RegionID)
-	state.RegionName = types.StringValue(res.Payload.Instance.RegionName)
-	state.RenewableEnergy = types.BoolValue(res.Payload.Instance.RenewableEnergy)
+	state.CPUModel = types.StringValue(res.Payload.VM.CPUModel)
+	state.CreateBy = types.StringValue(res.Payload.VM.CreateBy)
+	state.DatacenterID = types.StringValue(res.Payload.VM.DatacenterID)
+	state.GpuModel = types.StringValue(res.Payload.VM.GpuModel)
+	state.ImageID = types.StringValue(res.Payload.VM.ImageID)
+	state.LcmState = types.StringValue(res.Payload.VM.LcmState)
+	state.InternalIPAddress = types.StringValue(res.Payload.VM.InternalIPAddress)
+	state.ExternalIPAddress = types.StringValue(res.Payload.VM.ExternalIPAddress)
+	state.OneState = types.StringValue(res.Payload.VM.OneState)
+	state.PriceHr = types.Float64Value(float64(res.Payload.VM.PriceHr))
+	state.PublicIPAddress = types.StringValue(res.Payload.VM.PublicIPAddress)
+	state.RegionID = types.StringValue(res.Payload.VM.RegionID)
+	state.RegionName = types.StringValue(res.Payload.VM.RegionName)
+	state.RenewableEnergy = types.BoolValue(res.Payload.VM.RenewableEnergy)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
@@ -378,12 +371,12 @@ func (r *VMResource) Update(ctx context.Context, req resource.UpdateRequest, res
 		return
 	}
 
-	params := virtual_machines.NewGetInstanceParams()
+	params := virtual_machines.NewGetVMParams()
 
 	params.ProjectID = r.client.DefaultProjectID
-	params.InstanceID = state.VMId.ValueString()
+	params.ID = state.ID.ValueString()
 
-	res, err := r.client.Client.VirtualMachines.GetInstance(params)
+	res, err := r.client.Client.VirtualMachines.GetVM(params)
 
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -394,22 +387,20 @@ func (r *VMResource) Update(ctx context.Context, req resource.UpdateRequest, res
 	}
 
 	state.Id = types.StringValue("placeholder")
-	state.CPUModel = types.StringValue(res.Payload.Instance.CPUModel)
-	state.CreateBy = types.StringValue(res.Payload.Instance.CreateBy)
-	state.DatacenterID = types.StringValue(res.Payload.Instance.DatacenterID)
-	state.GpuModel = types.StringValue(res.Payload.Instance.GpuModel)
-	state.ImageDesc = types.StringValue(res.Payload.Instance.ImageDesc)
-	state.ImageID = types.StringValue(res.Payload.Instance.ImageID)
-	state.ImageName = types.StringValue(res.Payload.Instance.ImageName)
-	state.LcmState = types.StringValue(res.Payload.Instance.LcmState)
-	state.InternalIPAddress = types.StringValue(res.Payload.Instance.InternalIPAddress)
-	state.ExternalIPAddress = types.StringValue(res.Payload.Instance.ExternalIPAddress)
-	state.OneState = types.StringValue(res.Payload.Instance.OneState)
-	state.PriceHr = types.Float64Value(float64(res.Payload.Instance.PriceHr))
-	state.PublicIPAddress = types.StringValue(res.Payload.Instance.PublicIPAddress)
-	state.RegionID = types.StringValue(res.Payload.Instance.RegionID)
-	state.RegionName = types.StringValue(res.Payload.Instance.RegionName)
-	state.RenewableEnergy = types.BoolValue(res.Payload.Instance.RenewableEnergy)
+	state.CPUModel = types.StringValue(res.Payload.VM.CPUModel)
+	state.CreateBy = types.StringValue(res.Payload.VM.CreateBy)
+	state.DatacenterID = types.StringValue(res.Payload.VM.DatacenterID)
+	state.GpuModel = types.StringValue(res.Payload.VM.GpuModel)
+	state.ImageID = types.StringValue(res.Payload.VM.ImageID)
+	state.LcmState = types.StringValue(res.Payload.VM.LcmState)
+	state.InternalIPAddress = types.StringValue(res.Payload.VM.InternalIPAddress)
+	state.ExternalIPAddress = types.StringValue(res.Payload.VM.ExternalIPAddress)
+	state.OneState = types.StringValue(res.Payload.VM.OneState)
+	state.PriceHr = types.Float64Value(float64(res.Payload.VM.PriceHr))
+	state.PublicIPAddress = types.StringValue(res.Payload.VM.PublicIPAddress)
+	state.RegionID = types.StringValue(res.Payload.VM.RegionID)
+	state.RegionName = types.StringValue(res.Payload.VM.RegionName)
+	state.RenewableEnergy = types.BoolValue(res.Payload.VM.RenewableEnergy)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
@@ -419,11 +410,11 @@ func (r *VMResource) Delete(ctx context.Context, req resource.DeleteRequest, res
 	var state *VMResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 
-	params := virtual_machines.NewTerminateInstanceParams()
+	params := virtual_machines.NewTerminateVMParams()
 	params.ProjectID = r.client.DefaultProjectID
-	params.InstanceID = state.VMId.ValueString()
+	params.ID = state.ID.ValueString()
 
-	_, err := r.client.Client.VirtualMachines.TerminateInstance(params)
+	_, err := r.client.Client.VirtualMachines.TerminateVM(params)
 
 	if err != nil {
 		resp.Diagnostics.AddError(

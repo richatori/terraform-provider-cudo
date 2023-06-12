@@ -35,6 +35,10 @@ type Image struct {
 	// Required: true
 	Name *string `json:"name"`
 
+	// platform
+	// Required: true
+	Platform *string `json:"platform"`
+
 	// size gib
 	// Required: true
 	SizeGib *int32 `json:"sizeGib"`
@@ -57,6 +61,10 @@ func (m *Image) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateName(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validatePlatform(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -100,6 +108,15 @@ func (m *Image) validateID(formats strfmt.Registry) error {
 func (m *Image) validateName(formats strfmt.Registry) error {
 
 	if err := validate.Required("name", "body", m.Name); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Image) validatePlatform(formats strfmt.Registry) error {
+
+	if err := validate.Required("platform", "body", m.Platform); err != nil {
 		return err
 	}
 

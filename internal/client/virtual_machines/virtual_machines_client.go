@@ -28,44 +28,60 @@ type ClientOption func(*runtime.ClientOperation)
 
 // ClientService is the interface for Client methods
 type ClientService interface {
-	CountInstances(params *CountInstancesParams, opts ...ClientOption) (*CountInstancesOK, error)
+	ConnectVM(params *ConnectVMParams, opts ...ClientOption) (*ConnectVMOK, error)
 
-	GetInstance(params *GetInstanceParams, opts ...ClientOption) (*GetInstanceOK, error)
+	CountVMs(params *CountVMsParams, opts ...ClientOption) (*CountVMsOK, error)
 
-	GetVncConnectURL(params *GetVncConnectURLParams, opts ...ClientOption) (*GetVncConnectURLOK, error)
+	CreatePrivateVMImage(params *CreatePrivateVMImageParams, opts ...ClientOption) (*CreatePrivateVMImageOK, error)
 
-	ListInstances(params *ListInstancesParams, opts ...ClientOption) (*ListInstancesOK, error)
+	CreateVM(params *CreateVMParams, opts ...ClientOption) (*CreateVMOK, error)
 
-	MonitorInstance(params *MonitorInstanceParams, opts ...ClientOption) (*MonitorInstanceOK, error)
+	DeletePrivateVMImage(params *DeletePrivateVMImageParams, opts ...ClientOption) (*DeletePrivateVMImageOK, error)
 
-	RebootInstance(params *RebootInstanceParams, opts ...ClientOption) (*RebootInstanceOK, error)
+	GetVM(params *GetVMParams, opts ...ClientOption) (*GetVMOK, error)
 
-	StartInstance(params *StartInstanceParams, opts ...ClientOption) (*StartInstanceOK, error)
+	ListPrivateVMImages(params *ListPrivateVMImagesParams, opts ...ClientOption) (*ListPrivateVMImagesOK, error)
 
-	StopInstance(params *StopInstanceParams, opts ...ClientOption) (*StopInstanceOK, error)
+	ListPublicVMImages(params *ListPublicVMImagesParams, opts ...ClientOption) (*ListPublicVMImagesOK, error)
 
-	TerminateInstance(params *TerminateInstanceParams, opts ...ClientOption) (*TerminateInstanceOK, error)
+	ListVMDataCenters(params *ListVMDataCentersParams, opts ...ClientOption) (*ListVMDataCentersOK, error)
+
+	ListVMMachineTypes(params *ListVMMachineTypesParams, opts ...ClientOption) (*ListVMMachineTypesOK, error)
+
+	ListVMs(params *ListVMsParams, opts ...ClientOption) (*ListVMsOK, error)
+
+	MonitorVM(params *MonitorVMParams, opts ...ClientOption) (*MonitorVMOK, error)
+
+	RebootVM(params *RebootVMParams, opts ...ClientOption) (*RebootVMOK, error)
+
+	StartVM(params *StartVMParams, opts ...ClientOption) (*StartVMOK, error)
+
+	StopVM(params *StopVMParams, opts ...ClientOption) (*StopVMOK, error)
+
+	TerminateVM(params *TerminateVMParams, opts ...ClientOption) (*TerminateVMOK, error)
+
+	UpdatePrivateVMImage(params *UpdatePrivateVMImageParams, opts ...ClientOption) (*UpdatePrivateVMImageOK, error)
 
 	SetTransport(transport runtime.ClientTransport)
 }
 
 /*
-CountInstances counts
+ConnectVM connects via v n c
 */
-func (a *Client) CountInstances(params *CountInstancesParams, opts ...ClientOption) (*CountInstancesOK, error) {
+func (a *Client) ConnectVM(params *ConnectVMParams, opts ...ClientOption) (*ConnectVMOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
-		params = NewCountInstancesParams()
+		params = NewConnectVMParams()
 	}
 	op := &runtime.ClientOperation{
-		ID:                 "CountInstances",
+		ID:                 "ConnectVM",
 		Method:             "GET",
-		PathPattern:        "/v1/projects/{projectId}/instance-count",
+		PathPattern:        "/v1/projects/{projectId}/vms/{id}/connect",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"https"},
 		Params:             params,
-		Reader:             &CountInstancesReader{formats: a.formats},
+		Reader:             &ConnectVMReader{formats: a.formats},
 		Context:            params.Context,
 		Client:             params.HTTPClient,
 	}
@@ -77,32 +93,32 @@ func (a *Client) CountInstances(params *CountInstancesParams, opts ...ClientOpti
 	if err != nil {
 		return nil, err
 	}
-	success, ok := result.(*CountInstancesOK)
+	success, ok := result.(*ConnectVMOK)
 	if ok {
 		return success, nil
 	}
 	// unexpected success response
-	unexpectedSuccess := result.(*CountInstancesDefault)
+	unexpectedSuccess := result.(*ConnectVMDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
 /*
-GetInstance gets
+CountVMs counts
 */
-func (a *Client) GetInstance(params *GetInstanceParams, opts ...ClientOption) (*GetInstanceOK, error) {
+func (a *Client) CountVMs(params *CountVMsParams, opts ...ClientOption) (*CountVMsOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
-		params = NewGetInstanceParams()
+		params = NewCountVMsParams()
 	}
 	op := &runtime.ClientOperation{
-		ID:                 "GetInstance",
+		ID:                 "CountVMs",
 		Method:             "GET",
-		PathPattern:        "/v1/projects/{projectId}/instances/{instanceId}",
+		PathPattern:        "/v1/projects/{projectId}/count-vms",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"https"},
 		Params:             params,
-		Reader:             &GetInstanceReader{formats: a.formats},
+		Reader:             &CountVMsReader{formats: a.formats},
 		Context:            params.Context,
 		Client:             params.HTTPClient,
 	}
@@ -114,180 +130,32 @@ func (a *Client) GetInstance(params *GetInstanceParams, opts ...ClientOption) (*
 	if err != nil {
 		return nil, err
 	}
-	success, ok := result.(*GetInstanceOK)
+	success, ok := result.(*CountVMsOK)
 	if ok {
 		return success, nil
 	}
 	// unexpected success response
-	unexpectedSuccess := result.(*GetInstanceDefault)
+	unexpectedSuccess := result.(*CountVMsDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
 /*
-GetVncConnectURL vs n c
+CreatePrivateVMImage creates private image
 */
-func (a *Client) GetVncConnectURL(params *GetVncConnectURLParams, opts ...ClientOption) (*GetVncConnectURLOK, error) {
+func (a *Client) CreatePrivateVMImage(params *CreatePrivateVMImageParams, opts ...ClientOption) (*CreatePrivateVMImageOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
-		params = NewGetVncConnectURLParams()
+		params = NewCreatePrivateVMImageParams()
 	}
 	op := &runtime.ClientOperation{
-		ID:                 "GetVncConnectUrl",
-		Method:             "GET",
-		PathPattern:        "/v1/projects/{projectId}/instances/{instanceId}/vnc",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &GetVncConnectURLReader{formats: a.formats},
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*GetVncConnectURLOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	unexpectedSuccess := result.(*GetVncConnectURLDefault)
-	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
-}
-
-/*
-ListInstances lists
-*/
-func (a *Client) ListInstances(params *ListInstancesParams, opts ...ClientOption) (*ListInstancesOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewListInstancesParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "ListInstances",
-		Method:             "GET",
-		PathPattern:        "/v1/projects/{projectId}/instances",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &ListInstancesReader{formats: a.formats},
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*ListInstancesOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	unexpectedSuccess := result.(*ListInstancesDefault)
-	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
-}
-
-/*
-MonitorInstance monitors
-*/
-func (a *Client) MonitorInstance(params *MonitorInstanceParams, opts ...ClientOption) (*MonitorInstanceOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewMonitorInstanceParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "MonitorInstance",
-		Method:             "GET",
-		PathPattern:        "/v1/projects/{projectId}/instances/{instanceId}/monitor",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &MonitorInstanceReader{formats: a.formats},
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*MonitorInstanceOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	unexpectedSuccess := result.(*MonitorInstanceDefault)
-	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
-}
-
-/*
-RebootInstance reboots
-*/
-func (a *Client) RebootInstance(params *RebootInstanceParams, opts ...ClientOption) (*RebootInstanceOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewRebootInstanceParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "RebootInstance",
-		Method:             "PUT",
-		PathPattern:        "/v1/projects/{projectId}/instances/{instanceId}/reboot",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &RebootInstanceReader{formats: a.formats},
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*RebootInstanceOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	unexpectedSuccess := result.(*RebootInstanceDefault)
-	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
-}
-
-/*
-StartInstance starts
-*/
-func (a *Client) StartInstance(params *StartInstanceParams, opts ...ClientOption) (*StartInstanceOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewStartInstanceParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "StartInstance",
+		ID:                 "CreatePrivateVMImage",
 		Method:             "POST",
-		PathPattern:        "/v1/projects/{projectId}/instances/{instanceId}/start",
+		PathPattern:        "/v1/projects/{projectId}/images",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"https"},
 		Params:             params,
-		Reader:             &StartInstanceReader{formats: a.formats},
+		Reader:             &CreatePrivateVMImageReader{formats: a.formats},
 		Context:            params.Context,
 		Client:             params.HTTPClient,
 	}
@@ -299,32 +167,32 @@ func (a *Client) StartInstance(params *StartInstanceParams, opts ...ClientOption
 	if err != nil {
 		return nil, err
 	}
-	success, ok := result.(*StartInstanceOK)
+	success, ok := result.(*CreatePrivateVMImageOK)
 	if ok {
 		return success, nil
 	}
 	// unexpected success response
-	unexpectedSuccess := result.(*StartInstanceDefault)
+	unexpectedSuccess := result.(*CreatePrivateVMImageDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
 /*
-StopInstance stops
+CreateVM creates virtual machine
 */
-func (a *Client) StopInstance(params *StopInstanceParams, opts ...ClientOption) (*StopInstanceOK, error) {
+func (a *Client) CreateVM(params *CreateVMParams, opts ...ClientOption) (*CreateVMOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
-		params = NewStopInstanceParams()
+		params = NewCreateVMParams()
 	}
 	op := &runtime.ClientOperation{
-		ID:                 "StopInstance",
+		ID:                 "CreateVM",
 		Method:             "POST",
-		PathPattern:        "/v1/projects/{projectId}/instances/{instanceId}/stop",
+		PathPattern:        "/v1/projects/{projectId}/vm",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"https"},
 		Params:             params,
-		Reader:             &StopInstanceReader{formats: a.formats},
+		Reader:             &CreateVMReader{formats: a.formats},
 		Context:            params.Context,
 		Client:             params.HTTPClient,
 	}
@@ -336,32 +204,32 @@ func (a *Client) StopInstance(params *StopInstanceParams, opts ...ClientOption) 
 	if err != nil {
 		return nil, err
 	}
-	success, ok := result.(*StopInstanceOK)
+	success, ok := result.(*CreateVMOK)
 	if ok {
 		return success, nil
 	}
 	// unexpected success response
-	unexpectedSuccess := result.(*StopInstanceDefault)
+	unexpectedSuccess := result.(*CreateVMDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
 /*
-TerminateInstance terminates
+DeletePrivateVMImage deletes private image
 */
-func (a *Client) TerminateInstance(params *TerminateInstanceParams, opts ...ClientOption) (*TerminateInstanceOK, error) {
+func (a *Client) DeletePrivateVMImage(params *DeletePrivateVMImageParams, opts ...ClientOption) (*DeletePrivateVMImageOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
-		params = NewTerminateInstanceParams()
+		params = NewDeletePrivateVMImageParams()
 	}
 	op := &runtime.ClientOperation{
-		ID:                 "TerminateInstance",
-		Method:             "POST",
-		PathPattern:        "/v1/projects/{projectId}/instances/{instanceId}/terminate",
+		ID:                 "DeletePrivateVMImage",
+		Method:             "DELETE",
+		PathPattern:        "/v1/projects/{projectId}/images/{id}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"https"},
 		Params:             params,
-		Reader:             &TerminateInstanceReader{formats: a.formats},
+		Reader:             &DeletePrivateVMImageReader{formats: a.formats},
 		Context:            params.Context,
 		Client:             params.HTTPClient,
 	}
@@ -373,12 +241,456 @@ func (a *Client) TerminateInstance(params *TerminateInstanceParams, opts ...Clie
 	if err != nil {
 		return nil, err
 	}
-	success, ok := result.(*TerminateInstanceOK)
+	success, ok := result.(*DeletePrivateVMImageOK)
 	if ok {
 		return success, nil
 	}
 	// unexpected success response
-	unexpectedSuccess := result.(*TerminateInstanceDefault)
+	unexpectedSuccess := result.(*DeletePrivateVMImageDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+GetVM gets
+*/
+func (a *Client) GetVM(params *GetVMParams, opts ...ClientOption) (*GetVMOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGetVMParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "GetVM",
+		Method:             "GET",
+		PathPattern:        "/v1/projects/{projectId}/vms/{id}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &GetVMReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*GetVMOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*GetVMDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+ListPrivateVMImages lists private images
+*/
+func (a *Client) ListPrivateVMImages(params *ListPrivateVMImagesParams, opts ...ClientOption) (*ListPrivateVMImagesOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewListPrivateVMImagesParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "ListPrivateVMImages",
+		Method:             "GET",
+		PathPattern:        "/v1/projects/{projectId}/images",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &ListPrivateVMImagesReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ListPrivateVMImagesOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*ListPrivateVMImagesDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+ListPublicVMImages lists public images
+*/
+func (a *Client) ListPublicVMImages(params *ListPublicVMImagesParams, opts ...ClientOption) (*ListPublicVMImagesOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewListPublicVMImagesParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "ListPublicVMImages",
+		Method:             "GET",
+		PathPattern:        "/v1/vms/public-images",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &ListPublicVMImagesReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ListPublicVMImagesOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*ListPublicVMImagesDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+ListVMDataCenters lists available data centers
+*/
+func (a *Client) ListVMDataCenters(params *ListVMDataCentersParams, opts ...ClientOption) (*ListVMDataCentersOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewListVMDataCentersParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "ListVMDataCenters",
+		Method:             "GET",
+		PathPattern:        "/v1/vms/data-centers",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &ListVMDataCentersReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ListVMDataCentersOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*ListVMDataCentersDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+ListVMMachineTypes lists suitable virtual machine types
+*/
+func (a *Client) ListVMMachineTypes(params *ListVMMachineTypesParams, opts ...ClientOption) (*ListVMMachineTypesOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewListVMMachineTypesParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "ListVMMachineTypes",
+		Method:             "GET",
+		PathPattern:        "/v1/vms/machine-types",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &ListVMMachineTypesReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ListVMMachineTypesOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*ListVMMachineTypesDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+ListVMs lists
+*/
+func (a *Client) ListVMs(params *ListVMsParams, opts ...ClientOption) (*ListVMsOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewListVMsParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "ListVMs",
+		Method:             "GET",
+		PathPattern:        "/v1/projects/{projectId}/vms",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &ListVMsReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ListVMsOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*ListVMsDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+MonitorVM monitors
+*/
+func (a *Client) MonitorVM(params *MonitorVMParams, opts ...ClientOption) (*MonitorVMOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewMonitorVMParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "MonitorVM",
+		Method:             "GET",
+		PathPattern:        "/v1/projects/{projectId}/vms/{id}/monitor",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &MonitorVMReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*MonitorVMOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*MonitorVMDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+RebootVM reboots
+*/
+func (a *Client) RebootVM(params *RebootVMParams, opts ...ClientOption) (*RebootVMOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewRebootVMParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "RebootVM",
+		Method:             "POST",
+		PathPattern:        "/v1/projects/{projectId}/vms/{id}/reboot",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &RebootVMReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*RebootVMOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*RebootVMDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+StartVM starts
+*/
+func (a *Client) StartVM(params *StartVMParams, opts ...ClientOption) (*StartVMOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewStartVMParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "StartVM",
+		Method:             "POST",
+		PathPattern:        "/v1/projects/{projectId}/vms/{id}/start",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &StartVMReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*StartVMOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*StartVMDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+StopVM stops
+*/
+func (a *Client) StopVM(params *StopVMParams, opts ...ClientOption) (*StopVMOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewStopVMParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "StopVM",
+		Method:             "POST",
+		PathPattern:        "/v1/projects/{projectId}/vms/{id}/stop",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &StopVMReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*StopVMOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*StopVMDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+TerminateVM terminates
+*/
+func (a *Client) TerminateVM(params *TerminateVMParams, opts ...ClientOption) (*TerminateVMOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewTerminateVMParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "TerminateVM",
+		Method:             "POST",
+		PathPattern:        "/v1/projects/{projectId}/vms/{id}/terminate",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &TerminateVMReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*TerminateVMOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*TerminateVMDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+UpdatePrivateVMImage updates private image
+*/
+func (a *Client) UpdatePrivateVMImage(params *UpdatePrivateVMImageParams, opts ...ClientOption) (*UpdatePrivateVMImageOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewUpdatePrivateVMImageParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "UpdatePrivateVMImage",
+		Method:             "POST",
+		PathPattern:        "/v1/projects/{projectId}/images/{id}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &UpdatePrivateVMImageReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*UpdatePrivateVMImageOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*UpdatePrivateVMImageDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

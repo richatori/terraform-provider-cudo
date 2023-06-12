@@ -47,7 +47,7 @@ func NewGetSecurityGroupOK() *GetSecurityGroupOK {
 }
 
 /*
-	GetSecurityGroupOK describes a response with status code 200, with default header values.
+GetSecurityGroupOK describes a response with status code 200, with default header values.
 
 A successful response.
 */
@@ -78,6 +78,11 @@ func (o *GetSecurityGroupOK) IsServerError() bool {
 // IsCode returns true when this get security group o k response a status code equal to that given
 func (o *GetSecurityGroupOK) IsCode(code int) bool {
 	return code == 200
+}
+
+// Code gets the status code for the get security group o k response
+func (o *GetSecurityGroupOK) Code() int {
+	return 200
 }
 
 func (o *GetSecurityGroupOK) Error() string {
@@ -112,7 +117,7 @@ func NewGetSecurityGroupDefault(code int) *GetSecurityGroupDefault {
 }
 
 /*
-	GetSecurityGroupDefault describes a response with status code -1, with default header values.
+GetSecurityGroupDefault describes a response with status code -1, with default header values.
 
 An unexpected error response.
 */
@@ -120,11 +125,6 @@ type GetSecurityGroupDefault struct {
 	_statusCode int
 
 	Payload *models.Status
-}
-
-// Code gets the status code for the get security group default response
-func (o *GetSecurityGroupDefault) Code() int {
-	return o._statusCode
 }
 
 // IsSuccess returns true when this get security group default response has a 2xx status code
@@ -150,6 +150,11 @@ func (o *GetSecurityGroupDefault) IsServerError() bool {
 // IsCode returns true when this get security group default response a status code equal to that given
 func (o *GetSecurityGroupDefault) IsCode(code int) bool {
 	return o._statusCode == code
+}
+
+// Code gets the status code for the get security group default response
+func (o *GetSecurityGroupDefault) Code() int {
+	return o._statusCode
 }
 
 func (o *GetSecurityGroupDefault) Error() string {

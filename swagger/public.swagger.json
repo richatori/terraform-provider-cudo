@@ -340,154 +340,6 @@
         }
       }
     },
-    "/v1/compute/data-centers": {
-      "get": {
-        "tags": [
-          "Search"
-        ],
-        "summary": "List available data centers",
-        "operationId": "SearchDataCenters",
-        "parameters": [
-          {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "collectionFormat": "multi",
-            "name": "regionId",
-            "in": "query"
-          },
-          {
-            "type": "boolean",
-            "name": "renewableEnergy",
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/SearchDataCentersResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/Status"
-            }
-          }
-        }
-      }
-    },
-    "/v1/compute/images": {
-      "get": {
-        "tags": [
-          "Search"
-        ],
-        "summary": "List Public images",
-        "operationId": "ListPublicImages",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/ListPublicImagesResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/Status"
-            }
-          }
-        }
-      }
-    },
-    "/v1/compute/search": {
-      "get": {
-        "tags": [
-          "Search"
-        ],
-        "summary": "Search machines",
-        "operationId": "SearchCompute",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "cpuModel",
-            "in": "query"
-          },
-          {
-            "type": "integer",
-            "format": "int32",
-            "name": "gpu",
-            "in": "query"
-          },
-          {
-            "type": "string",
-            "name": "gpuModel",
-            "in": "query"
-          },
-          {
-            "type": "integer",
-            "format": "int32",
-            "name": "memoryGib",
-            "in": "query"
-          },
-          {
-            "type": "string",
-            "name": "orderBy",
-            "in": "query"
-          },
-          {
-            "type": "integer",
-            "format": "int32",
-            "name": "pageNumber",
-            "in": "query"
-          },
-          {
-            "type": "integer",
-            "format": "int32",
-            "name": "pageSize",
-            "in": "query"
-          },
-          {
-            "type": "string",
-            "name": "regionId",
-            "in": "query"
-          },
-          {
-            "type": "integer",
-            "format": "int32",
-            "name": "storageGib",
-            "in": "query"
-          },
-          {
-            "type": "integer",
-            "format": "int32",
-            "name": "vcpu",
-            "in": "query"
-          },
-          {
-            "type": "string",
-            "name": "dataCenterId",
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/SearchComputeResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/Status"
-            }
-          }
-        }
-      }
-    },
     "/v1/data-centers/{dataCenterId}/add-user-permission": {
       "post": {
         "tags": [
@@ -878,13 +730,13 @@
         }
       }
     },
-    "/v1/projects/{projectId}/instance-count": {
+    "/v1/projects/{projectId}/count-vms": {
       "get": {
         "tags": [
           "Virtual machines"
         ],
         "summary": "Count",
-        "operationId": "CountInstances",
+        "operationId": "CountVMs",
         "parameters": [
           {
             "type": "string",
@@ -897,7 +749,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/CountInstancesResponse"
+              "$ref": "#/definitions/CountVMsResponse"
             }
           },
           "default": {
@@ -909,13 +761,13 @@
         }
       }
     },
-    "/v1/projects/{projectId}/instances": {
+    "/v1/projects/{projectId}/images": {
       "get": {
         "tags": [
           "Virtual machines"
         ],
-        "summary": "List",
-        "operationId": "ListInstances",
+        "summary": "List private images",
+        "operationId": "ListPrivateVMImages",
         "parameters": [
           {
             "type": "string",
@@ -924,277 +776,15 @@
             "required": true
           },
           {
-            "type": "string",
-            "name": "status",
+            "type": "integer",
+            "format": "int32",
+            "name": "pageNumber",
             "in": "query"
           },
           {
-            "type": "string",
-            "name": "networkId",
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/ListInstancesResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/Status"
-            }
-          }
-        }
-      }
-    },
-    "/v1/projects/{projectId}/instances/{instanceId}": {
-      "get": {
-        "tags": [
-          "Virtual machines"
-        ],
-        "summary": "Get",
-        "operationId": "GetInstance",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "projectId",
-            "in": "path",
-            "required": true
-          },
-          {
-            "type": "string",
-            "name": "instanceId",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/GetInstanceResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/Status"
-            }
-          }
-        }
-      }
-    },
-    "/v1/projects/{projectId}/instances/{instanceId}/monitor": {
-      "get": {
-        "tags": [
-          "Virtual machines"
-        ],
-        "summary": "Monitor",
-        "operationId": "MonitorInstance",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "projectId",
-            "in": "path",
-            "required": true
-          },
-          {
-            "type": "string",
-            "name": "instanceId",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/MonitorInstanceResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/Status"
-            }
-          }
-        }
-      }
-    },
-    "/v1/projects/{projectId}/instances/{instanceId}/reboot": {
-      "put": {
-        "tags": [
-          "Virtual machines"
-        ],
-        "summary": "Reboot",
-        "operationId": "RebootInstance",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "projectId",
-            "in": "path",
-            "required": true
-          },
-          {
-            "type": "string",
-            "name": "instanceId",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/RebootInstanceResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/Status"
-            }
-          }
-        }
-      }
-    },
-    "/v1/projects/{projectId}/instances/{instanceId}/start": {
-      "post": {
-        "tags": [
-          "Virtual machines"
-        ],
-        "summary": "Start",
-        "operationId": "StartInstance",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "projectId",
-            "in": "path",
-            "required": true
-          },
-          {
-            "type": "string",
-            "name": "instanceId",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/StartInstanceResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/Status"
-            }
-          }
-        }
-      }
-    },
-    "/v1/projects/{projectId}/instances/{instanceId}/stop": {
-      "post": {
-        "tags": [
-          "Virtual machines"
-        ],
-        "summary": "Stop",
-        "operationId": "StopInstance",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "projectId",
-            "in": "path",
-            "required": true
-          },
-          {
-            "type": "string",
-            "name": "instanceId",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/StopInstanceResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/Status"
-            }
-          }
-        }
-      }
-    },
-    "/v1/projects/{projectId}/instances/{instanceId}/terminate": {
-      "post": {
-        "tags": [
-          "Virtual machines"
-        ],
-        "summary": "Terminate",
-        "operationId": "TerminateInstance",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "projectId",
-            "in": "path",
-            "required": true
-          },
-          {
-            "type": "string",
-            "name": "instanceId",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/TerminateInstanceResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/Status"
-            }
-          }
-        }
-      }
-    },
-    "/v1/projects/{projectId}/instances/{instanceId}/vnc": {
-      "get": {
-        "tags": [
-          "Virtual machines"
-        ],
-        "summary": "VNC",
-        "operationId": "GetVncConnectUrl",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "projectId",
-            "in": "path",
-            "required": true
-          },
-          {
-            "type": "string",
-            "name": "instanceId",
-            "in": "path",
-            "required": true
-          },
-          {
-            "type": "string",
-            "name": "connectionId",
+            "type": "integer",
+            "format": "int32",
+            "name": "pageSize",
             "in": "query"
           }
         ],
@@ -1202,7 +792,130 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/GetVncConnectUrlResponse"
+              "$ref": "#/definitions/ListPrivateVMImagesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Virtual machines"
+        ],
+        "summary": "Create private image",
+        "operationId": "CreatePrivateVMImage",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "vmId",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "id",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "description",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CreatePrivateVMImageResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/images/{id}": {
+      "post": {
+        "tags": [
+          "Virtual machines"
+        ],
+        "summary": "Update private image",
+        "operationId": "UpdatePrivateVMImage",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "description",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UpdatePrivateVMImageResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Virtual machines"
+        ],
+        "summary": "Delete private image",
+        "operationId": "DeletePrivateVMImage",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DeletePrivateVMImageResponse"
             }
           },
           "default": {
@@ -1291,7 +1004,7 @@
                   "type": "string"
                 },
                 "vrouterSize": {
-                  "$ref": "#/definitions/VrouterSize"
+                  "$ref": "#/definitions/VRouterSize"
                 }
               }
             }
@@ -1302,47 +1015,6 @@
             "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/CreateNetworkResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/Status"
-            }
-          }
-        }
-      }
-    },
-    "/v1/projects/{projectId}/networks/search": {
-      "get": {
-        "tags": [
-          "Networks"
-        ],
-        "summary": "Search networks available to cluster",
-        "operationId": "SearchNetworks",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "projectId",
-            "in": "path",
-            "required": true
-          },
-          {
-            "type": "string",
-            "name": "machineType",
-            "in": "query"
-          },
-          {
-            "type": "string",
-            "name": "dataCenterId",
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/SearchNetworksResponse"
             }
           },
           "default": {
@@ -1645,7 +1317,7 @@
     "/v1/projects/{projectId}/vm": {
       "post": {
         "tags": [
-          "Projects"
+          "Virtual Machines"
         ],
         "summary": "Create virtual machine",
         "operationId": "CreateVM",
@@ -1706,7 +1378,7 @@
                   "type": "array",
                   "items": {
                     "type": "object",
-                    "$ref": "#/definitions/NIC"
+                    "$ref": "#/definitions/CreateVMRequest.NIC"
                   }
                 },
                 "password": {
@@ -1741,6 +1413,311 @@
             "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/CreateVMResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/vms": {
+      "get": {
+        "tags": [
+          "Virtual machines"
+        ],
+        "summary": "List",
+        "operationId": "ListVMs",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "networkId",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListVMsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/vms/{id}": {
+      "get": {
+        "tags": [
+          "Virtual machines"
+        ],
+        "summary": "Get",
+        "operationId": "GetVM",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/GetVMResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/vms/{id}/connect": {
+      "get": {
+        "tags": [
+          "Virtual machines"
+        ],
+        "summary": "Connect via VNC",
+        "operationId": "ConnectVM",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "connectionId",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ConnectVMResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/vms/{id}/monitor": {
+      "get": {
+        "tags": [
+          "Virtual machines"
+        ],
+        "summary": "Monitor",
+        "operationId": "MonitorVM",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/MonitorVMResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/vms/{id}/reboot": {
+      "post": {
+        "tags": [
+          "Virtual machines"
+        ],
+        "summary": "Reboot",
+        "operationId": "RebootVM",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/RebootVMResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/vms/{id}/start": {
+      "post": {
+        "tags": [
+          "Virtual machines"
+        ],
+        "summary": "Start",
+        "operationId": "StartVM",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/StartVMResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/vms/{id}/stop": {
+      "post": {
+        "tags": [
+          "Virtual machines"
+        ],
+        "summary": "Stop",
+        "operationId": "StopVM",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/StopVMResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/vms/{id}/terminate": {
+      "post": {
+        "tags": [
+          "Virtual machines"
+        ],
+        "summary": "Terminate",
+        "operationId": "TerminateVM",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/TerminateVMResponse"
             }
           },
           "default": {
@@ -2036,6 +2013,156 @@
           }
         }
       }
+    },
+    "/v1/vms/data-centers": {
+      "get": {
+        "tags": [
+          "Virtual machines"
+        ],
+        "summary": "List available data centers",
+        "operationId": "ListVMDataCenters",
+        "parameters": [
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi",
+            "name": "regionId",
+            "in": "query"
+          },
+          {
+            "type": "boolean",
+            "name": "renewableEnergy",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListVMDataCentersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/vms/machine-types": {
+      "get": {
+        "tags": [
+          "Virtual machines"
+        ],
+        "summary": "List suitable virtual machine types",
+        "operationId": "ListVMMachineTypes",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "cpuModel",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "gpu",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "gpuModel",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "memoryGib",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "orderBy",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "pageNumber",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "pageSize",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "regionId",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "storageGib",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "vcpu",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "dataCenterId",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListVMMachineTypesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/vms/public-images": {
+      "get": {
+        "tags": [
+          "Virtual machines"
+        ],
+        "summary": "List Public images",
+        "operationId": "ListPublicVMImages",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListPublicVMImagesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -2066,7 +2193,22 @@
         }
       }
     },
-    "CountInstancesResponse": {
+    "ConnectVMResponse": {
+      "type": "object",
+      "required": [
+        "connectUrl",
+        "token"
+      ],
+      "properties": {
+        "connectUrl": {
+          "type": "string"
+        },
+        "token": {
+          "type": "string"
+        }
+      }
+    },
+    "CountVMsResponse": {
       "type": "object",
       "required": [
         "count"
@@ -2101,6 +2243,9 @@
     "CreateNetworkResponse": {
       "type": "object"
     },
+    "CreatePrivateVMImageResponse": {
+      "type": "object"
+    },
     "CreateSecurityGroupResponse": {
       "type": "object",
       "required": [
@@ -2109,6 +2254,23 @@
       "properties": {
         "securityGroup": {
           "$ref": "#/definitions/SecurityGroup"
+        }
+      }
+    },
+    "CreateVMRequest.NIC": {
+      "type": "object",
+      "properties": {
+        "assignPublicIp": {
+          "type": "boolean"
+        },
+        "networkId": {
+          "type": "string"
+        },
+        "securityGroupIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -2183,6 +2345,9 @@
     "DeleteNetworkResponse": {
       "type": "object"
     },
+    "DeletePrivateVMImageResponse": {
+      "type": "object"
+    },
     "DeleteSecurityGroupResponse": {
       "type": "object"
     },
@@ -2210,17 +2375,6 @@
         "apikeyId": {
           "description": "The identifier to use for the api key, which will become the final component of\nthe api key's resource name.\nThis value should be 4-63 characters, and valid characters\nare /[a-z][0-9]-/.",
           "type": "string"
-        }
-      }
-    },
-    "GetInstanceResponse": {
-      "type": "object",
-      "required": [
-        "instance"
-      ],
-      "properties": {
-        "instance": {
-          "$ref": "#/definitions/Instance"
         }
       }
     },
@@ -2280,18 +2434,14 @@
         }
       }
     },
-    "GetVncConnectUrlResponse": {
+    "GetVMResponse": {
       "type": "object",
       "required": [
-        "connectUrl",
-        "token"
+        "VM"
       ],
       "properties": {
-        "connectUrl": {
-          "type": "string"
-        },
-        "token": {
-          "type": "string"
+        "VM": {
+          "$ref": "#/definitions/VM"
         }
       }
     },
@@ -2405,6 +2555,7 @@
         "name",
         "description",
         "displayName",
+        "platform",
         "sizeGib"
       ],
       "properties": {
@@ -2420,140 +2571,12 @@
         "name": {
           "type": "string"
         },
+        "platform": {
+          "type": "string"
+        },
         "sizeGib": {
           "type": "integer",
           "format": "int32"
-        }
-      }
-    },
-    "Instance": {
-      "type": "object",
-      "properties": {
-        "bootDiskSizeGib": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "cpuModel": {
-          "type": "string"
-        },
-        "createBy": {
-          "type": "string",
-          "readOnly": true
-        },
-        "datacenterId": {
-          "type": "string",
-          "readOnly": true
-        },
-        "externalIpAddress": {
-          "type": "string"
-        },
-        "gpuModel": {
-          "type": "string"
-        },
-        "gpuQuantity": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "id": {
-          "type": "string"
-        },
-        "imageDesc": {
-          "type": "string"
-        },
-        "imageId": {
-          "type": "string"
-        },
-        "imageName": {
-          "type": "string"
-        },
-        "internalIpAddress": {
-          "type": "string"
-        },
-        "lcmState": {
-          "type": "string"
-        },
-        "memory": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "nics": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/NIC"
-          }
-        },
-        "oneState": {
-          "type": "string"
-        },
-        "priceHr": {
-          "type": "number",
-          "format": "float"
-        },
-        "publicIpAddress": {
-          "type": "string"
-        },
-        "regionId": {
-          "type": "string",
-          "readOnly": true
-        },
-        "regionName": {
-          "type": "string",
-          "readOnly": true
-        },
-        "renewableEnergy": {
-          "type": "boolean"
-        },
-        "rules": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/SecurityGroupRule"
-          }
-        },
-        "vcpus": {
-          "type": "integer",
-          "format": "int64"
-        }
-      }
-    },
-    "InstanceMonitoringItem": {
-      "type": "object",
-      "properties": {
-        "cpu": {
-          "type": "number",
-          "format": "float"
-        },
-        "diskRdBytes": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "diskRdIops": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "diskWrBytes": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "diskWrIops": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "memory": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "netRx": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "netTx": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "timestamp": {
-          "type": "string"
         }
       }
     },
@@ -2587,18 +2610,6 @@
         }
       }
     },
-    "ListInstancesResponse": {
-      "type": "object",
-      "properties": {
-        "instances": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/Instance"
-          }
-        }
-      }
-    },
     "ListNetworksResponse": {
       "type": "object",
       "required": [
@@ -2613,6 +2624,35 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/Network"
+          }
+        },
+        "pageNumber": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ListPrivateVMImagesResponse": {
+      "type": "object",
+      "required": [
+        "totalCount",
+        "pageNumber",
+        "pageSize"
+      ],
+      "properties": {
+        "images": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/PrivateImage"
           }
         },
         "pageNumber": {
@@ -2668,7 +2708,7 @@
         }
       }
     },
-    "ListPublicImagesResponse": {
+    "ListPublicVMImagesResponse": {
       "type": "object",
       "required": [
         "images"
@@ -2789,7 +2829,145 @@
         }
       }
     },
-    "MonitorInstanceResponse": {
+    "ListVMDataCentersResponse": {
+      "type": "object",
+      "required": [
+        "dataCenters"
+      ],
+      "properties": {
+        "dataCenters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/DataCenter"
+          }
+        }
+      }
+    },
+    "ListVMMachineTypesRequest": {
+      "type": "object",
+      "required": [
+        "memoryGib",
+        "vcpu"
+      ],
+      "properties": {
+        "cpuModel": {
+          "type": "string"
+        },
+        "dataCenterId": {
+          "type": "string"
+        },
+        "gpu": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "gpuModel": {
+          "type": "string"
+        },
+        "memoryGib": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "orderBy": {
+          "type": "string"
+        },
+        "pageNumber": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "regionId": {
+          "type": "string"
+        },
+        "storageGib": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "vcpu": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ListVMMachineTypesResponse": {
+      "type": "object",
+      "required": [
+        "request",
+        "maxVcpu",
+        "maxMemoryGib",
+        "maxGpu",
+        "countVmAvailable",
+        "cpuModels",
+        "gpuModels",
+        "dataCenters",
+        "hostConfigs"
+      ],
+      "properties": {
+        "countVmAvailable": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "cpuModels": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/CpuModelCategory"
+          }
+        },
+        "dataCenters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/DataCenterCategory"
+          }
+        },
+        "gpuModels": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/GpuModelCategory"
+          }
+        },
+        "hostConfigs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/HostConfigCategory"
+          }
+        },
+        "maxGpu": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxMemoryGib": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxVcpu": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "request": {
+          "$ref": "#/definitions/ListVMMachineTypesRequest"
+        }
+      }
+    },
+    "ListVMsResponse": {
+      "type": "object",
+      "properties": {
+        "VMs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/VM"
+          }
+        }
+      }
+    },
+    "MonitorVMResponse": {
       "type": "object",
       "required": [
         "items"
@@ -2799,24 +2977,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/InstanceMonitoringItem"
-          }
-        }
-      }
-    },
-    "NIC": {
-      "type": "object",
-      "properties": {
-        "assignPublicIp": {
-          "type": "boolean"
-        },
-        "networkId": {
-          "type": "string"
-        },
-        "securityGroupIds": {
-          "type": "array",
-          "items": {
-            "type": "string"
+            "$ref": "#/definitions/VMMonitoringItem"
           }
         }
       }
@@ -2824,10 +2985,10 @@
     "Network": {
       "type": "object",
       "properties": {
-        "cidrPrefix": {
+        "dataCenterId": {
           "type": "string"
         },
-        "dataCenter": {
+        "externalIpAddress": {
           "type": "string"
         },
         "gateway": {
@@ -2836,9 +2997,23 @@
         "id": {
           "type": "string"
         },
+        "internalIpAddress": {
+          "type": "string"
+        },
+        "ipRange": {
+          "type": "string"
+        },
+        "oneLcmState": {
+          "type": "string"
+        },
+        "oneState": {
+          "type": "string"
+        },
+        "priceHr": {
+          "$ref": "#/definitions/Decimal"
+        },
         "size": {
-          "type": "integer",
-          "format": "int32"
+          "$ref": "#/definitions/VRouterSize"
         }
       }
     },
@@ -2882,6 +3057,27 @@
         },
         "uid": {
           "type": "string"
+        }
+      }
+    },
+    "PrivateImage": {
+      "type": "object",
+      "properties": {
+        "dataCenterId": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "projectId": {
+          "type": "string"
+        },
+        "sizeGib": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -2961,16 +3157,8 @@
         "PROTOCOL_IPSEC"
       ]
     },
-    "RebootInstanceResponse": {
-      "type": "object",
-      "required": [
-        "instance"
-      ],
-      "properties": {
-        "instance": {
-          "$ref": "#/definitions/Instance"
-        }
-      }
+    "RebootVMResponse": {
+      "type": "object"
     },
     "Region": {
       "type": "object",
@@ -3025,143 +3213,6 @@
         "RULE_TYPE_INBOUND",
         "RULE_TYPE_OUTBOUND"
       ]
-    },
-    "SearchComputeRequest": {
-      "type": "object",
-      "properties": {
-        "cpuModel": {
-          "type": "string"
-        },
-        "dataCenterId": {
-          "type": "string"
-        },
-        "gpu": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "gpuModel": {
-          "type": "string"
-        },
-        "memoryGib": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "orderBy": {
-          "type": "string"
-        },
-        "pageNumber": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "pageSize": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "regionId": {
-          "type": "string"
-        },
-        "storageGib": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "vcpu": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "SearchComputeResponse": {
-      "type": "object",
-      "required": [
-        "request",
-        "maxVcpu",
-        "maxMemoryGib",
-        "maxGpu",
-        "countVmAvailable",
-        "cpuModels",
-        "gpuModels",
-        "dataCenters",
-        "hostConfigs"
-      ],
-      "properties": {
-        "countVmAvailable": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "cpuModels": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/CpuModelCategory"
-          }
-        },
-        "dataCenters": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/DataCenterCategory"
-          }
-        },
-        "gpuModels": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/GpuModelCategory"
-          }
-        },
-        "hostConfigs": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/HostConfigCategory"
-          }
-        },
-        "maxGpu": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "maxMemoryGib": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "maxVcpu": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "request": {
-          "$ref": "#/definitions/SearchComputeRequest"
-        }
-      }
-    },
-    "SearchDataCentersResponse": {
-      "type": "object",
-      "required": [
-        "dataCenters"
-      ],
-      "properties": {
-        "dataCenters": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/DataCenter"
-          }
-        }
-      }
-    },
-    "SearchNetworksResponse": {
-      "type": "object",
-      "required": [
-        "networks"
-      ],
-      "properties": {
-        "networks": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/Network"
-          }
-        }
-      }
     },
     "SecurityGroup": {
       "type": "object",
@@ -3257,7 +3308,7 @@
         "SSH_KEY_SOURCE_NONE"
       ]
     },
-    "StartInstanceResponse": {
+    "StartVMResponse": {
       "type": "object"
     },
     "Status": {
@@ -3279,7 +3330,7 @@
         }
       }
     },
-    "StopInstanceResponse": {
+    "StopVMResponse": {
       "type": "object"
     },
     "StorageClass": {
@@ -3291,7 +3342,10 @@
         "STORAGE_CLASS_NETWORK"
       ]
     },
-    "TerminateInstanceResponse": {
+    "TerminateVMResponse": {
+      "type": "object"
+    },
+    "UpdatePrivateVMImageResponse": {
       "type": "object"
     },
     "UpdateSecurityGroupResponse": {
@@ -3332,10 +3386,177 @@
         }
       }
     },
-    "VrouterSize": {
+    "VM": {
+      "type": "object",
+      "properties": {
+        "bootDiskSizeGib": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "cpuModel": {
+          "type": "string"
+        },
+        "createBy": {
+          "type": "string",
+          "readOnly": true
+        },
+        "datacenterId": {
+          "type": "string",
+          "readOnly": true
+        },
+        "externalIpAddress": {
+          "type": "string"
+        },
+        "gpuModel": {
+          "type": "string"
+        },
+        "gpuQuantity": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "id": {
+          "type": "string"
+        },
+        "imageId": {
+          "type": "string"
+        },
+        "imageName": {
+          "type": "string"
+        },
+        "internalIpAddress": {
+          "type": "string"
+        },
+        "lcmState": {
+          "type": "string"
+        },
+        "memory": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "nics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/VM.NIC"
+          }
+        },
+        "oneState": {
+          "type": "string"
+        },
+        "priceHr": {
+          "type": "number",
+          "format": "float"
+        },
+        "privateImageId": {
+          "type": "string"
+        },
+        "publicImageId": {
+          "type": "string"
+        },
+        "publicImageName": {
+          "type": "string"
+        },
+        "publicIpAddress": {
+          "type": "string"
+        },
+        "regionId": {
+          "type": "string",
+          "readOnly": true
+        },
+        "regionName": {
+          "type": "string",
+          "readOnly": true
+        },
+        "renewableEnergy": {
+          "type": "boolean"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/SecurityGroupRule"
+          }
+        },
+        "securityGroupIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "vcpus": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "VM.NIC": {
+      "type": "object",
+      "properties": {
+        "externalIpAddress": {
+          "type": "string"
+        },
+        "internalIpAddress": {
+          "type": "string"
+        },
+        "networkAddress": {
+          "type": "string"
+        },
+        "networkId": {
+          "type": "string"
+        },
+        "securityGroupIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "VMMonitoringItem": {
+      "type": "object",
+      "properties": {
+        "cpu": {
+          "type": "number",
+          "format": "float"
+        },
+        "diskRdBytes": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "diskRdIops": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "diskWrBytes": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "diskWrIops": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "memory": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "netRx": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "netTx": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "timestamp": {
+          "type": "string"
+        }
+      }
+    },
+    "VRouterSize": {
       "type": "string",
-      "default": "VROUTER_INSTANCE_SMALL",
+      "default": "VROUTER_INSTANCE_UNKNOWN",
       "enum": [
+        "VROUTER_INSTANCE_UNKNOWN",
         "VROUTER_INSTANCE_SMALL",
         "VROUTER_INSTANCE_MEDIUM",
         "VROUTER_INSTANCE_LARGE"

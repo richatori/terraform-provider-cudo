@@ -3,7 +3,8 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/CudoVentures/terraform-provider-cudo/internal/client/search"
+
+	"github.com/CudoVentures/terraform-provider-cudo/internal/client/virtual_machines"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -24,7 +25,7 @@ type MachineTypeDataSource struct {
 type MachineTypeModel struct {
 	Id           types.String `tfsdk:"id"`
 	CpuModel     types.String `tfsdk:"cpu_model"`
-	DataCenterId types.String `tfsdk:"data_center_id"`
+	DataCenterID types.String `tfsdk:"data_center_id"`
 	//GpuMemoryGib        types.Int64  `tfsdk:"gpu_memory_gib"`
 	GpuModel            types.String `tfsdk:"gpu_model"`
 	GpuPriceHr          types.String `tfsdk:"gpu_price_hr"`
@@ -234,7 +235,7 @@ func (d *MachineTypeDataSource) Read(ctx context.Context, req datasource.ReadReq
 
 	resp.Diagnostics.Append(req.Config.Get(ctx, &state)...)
 
-	params := search.NewSearchComputeParams()
+	params := virtual_machines.NewListVMMachineTypesParams()
 
 	if state.SearchParams == nil {
 		state.SearchParams = &SearchParamsModel{}
@@ -261,7 +262,7 @@ func (d *MachineTypeDataSource) Read(ctx context.Context, req datasource.ReadReq
 	if memoryGiB < 2 {
 		memoryGiB = 2
 	}
-	params.MemoryGib = &memoryGiB
+	params.MemoryGib = memoryGiB
 
 	regionID := state.SearchParams.RegionID.ValueString()
 	params.RegionID = &regionID
@@ -278,9 +279,9 @@ func (d *MachineTypeDataSource) Read(ctx context.Context, req datasource.ReadReq
 	if vcpus < 1 {
 		vcpus = 1
 	}
-	params.Vcpu = &vcpus
+	params.Vcpu = vcpus
 
-	res, err := d.client.Client.Search.SearchCompute(params)
+	res, err := d.client.Client.VirtualMachines.ListVMMachineTypes(params)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to read machine_types",
@@ -302,7 +303,7 @@ func (d *MachineTypeDataSource) Read(ctx context.Context, req datasource.ReadReq
 		machineTypeState := MachineTypeModel{
 			Id:                  types.StringValue(*cfg.MachineType),
 			CpuModel:            types.StringValue(*cfg.CPUModel),
-			DataCenterId:        types.StringValue(*cfg.DataCenterID),
+			DataCenterID:        types.StringValue(*cfg.DataCenterID),
 			GpuModel:            types.StringValue(*cfg.GpuModel),
 			GpuPriceHr:          types.StringValue(gpuPriceHr),
 			MachineType:         types.StringValue(*cfg.MachineType),
@@ -320,18 +321,26 @@ func (d *MachineTypeDataSource) Read(ctx context.Context, req datasource.ReadReq
 		state.MachineType = append(state.MachineType, machineTypeState)
 	}
 
+	if res.Payload.Request.MemoryGib == nil {
+		var defaultMemoryGib int32 = 2
+		res.Payload.Request.MemoryGib = &defaultMemoryGib
+	}
+	if res.Payload.Request.Vcpu == nil {
+		var defaultVcpu int32 = 1
+		res.Payload.Request.Vcpu = &defaultVcpu
+	}
 	state.SearchParams = &SearchParamsModel{
 		CpuModel:     types.StringValue(res.Payload.Request.CPUModel),
 		DataCenterID: types.StringValue(res.Payload.Request.DataCenterID),
 		GpuCount:     types.Int64Value(int64(res.Payload.Request.Gpu)),
 		GpuModel:     types.StringValue(res.Payload.Request.GpuModel),
-		MemoryGiB:    types.Int64Value(int64(res.Payload.Request.MemoryGib)),
+		MemoryGiB:    types.Int64Value(int64(*res.Payload.Request.MemoryGib)),
 		OrderBy:      types.StringValue(res.Payload.Request.OrderBy),
 		PageNumber:   types.Int64Value(int64(res.Payload.Request.PageNumber)),
 		PageSize:     types.Int64Value(int64(res.Payload.Request.PageSize)),
 		RegionID:     types.StringValue(res.Payload.Request.RegionID),
 		StorageGiB:   types.Int64Value(int64(res.Payload.Request.StorageGib)),
-		VCPU:         types.Int64Value(int64(res.Payload.Request.Vcpu)),
+		VCPU:         types.Int64Value(int64(*res.Payload.Request.Vcpu)),
 	}
 
 	state.ID = types.StringValue("placeholder")

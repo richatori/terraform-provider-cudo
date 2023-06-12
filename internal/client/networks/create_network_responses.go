@@ -51,7 +51,7 @@ func NewCreateNetworkOK() *CreateNetworkOK {
 }
 
 /*
-	CreateNetworkOK describes a response with status code 200, with default header values.
+CreateNetworkOK describes a response with status code 200, with default header values.
 
 A successful response.
 */
@@ -84,6 +84,11 @@ func (o *CreateNetworkOK) IsCode(code int) bool {
 	return code == 200
 }
 
+// Code gets the status code for the create network o k response
+func (o *CreateNetworkOK) Code() int {
+	return 200
+}
+
 func (o *CreateNetworkOK) Error() string {
 	return fmt.Sprintf("[POST /v1/projects/{projectId}/networks][%d] createNetworkOK  %+v", 200, o.Payload)
 }
@@ -114,7 +119,7 @@ func NewCreateNetworkDefault(code int) *CreateNetworkDefault {
 }
 
 /*
-	CreateNetworkDefault describes a response with status code -1, with default header values.
+CreateNetworkDefault describes a response with status code -1, with default header values.
 
 An unexpected error response.
 */
@@ -122,11 +127,6 @@ type CreateNetworkDefault struct {
 	_statusCode int
 
 	Payload *models.Status
-}
-
-// Code gets the status code for the create network default response
-func (o *CreateNetworkDefault) Code() int {
-	return o._statusCode
 }
 
 // IsSuccess returns true when this create network default response has a 2xx status code
@@ -152,6 +152,11 @@ func (o *CreateNetworkDefault) IsServerError() bool {
 // IsCode returns true when this create network default response a status code equal to that given
 func (o *CreateNetworkDefault) IsCode(code int) bool {
 	return o._statusCode == code
+}
+
+// Code gets the status code for the create network default response
+func (o *CreateNetworkDefault) Code() int {
+	return o._statusCode
 }
 
 func (o *CreateNetworkDefault) Error() string {
@@ -197,7 +202,7 @@ type CreateNetworkBody struct {
 	NetworkID *string `json:"networkId"`
 
 	// vrouter size
-	VrouterSize *models.VrouterSize `json:"vrouterSize,omitempty"`
+	VrouterSize *models.VRouterSize `json:"vrouterSize,omitempty"`
 }
 
 // Validate validates this create network body
@@ -289,6 +294,11 @@ func (o *CreateNetworkBody) ContextValidate(ctx context.Context, formats strfmt.
 func (o *CreateNetworkBody) contextValidateVrouterSize(ctx context.Context, formats strfmt.Registry) error {
 
 	if o.VrouterSize != nil {
+
+		if swag.IsZero(o.VrouterSize) { // not required
+			return nil
+		}
+
 		if err := o.VrouterSize.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("body" + "." + "vrouterSize")

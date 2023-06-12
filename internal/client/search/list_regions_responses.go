@@ -47,7 +47,7 @@ func NewListRegionsOK() *ListRegionsOK {
 }
 
 /*
-	ListRegionsOK describes a response with status code 200, with default header values.
+ListRegionsOK describes a response with status code 200, with default header values.
 
 A successful response.
 */
@@ -78,6 +78,11 @@ func (o *ListRegionsOK) IsServerError() bool {
 // IsCode returns true when this list regions o k response a status code equal to that given
 func (o *ListRegionsOK) IsCode(code int) bool {
 	return code == 200
+}
+
+// Code gets the status code for the list regions o k response
+func (o *ListRegionsOK) Code() int {
+	return 200
 }
 
 func (o *ListRegionsOK) Error() string {
@@ -112,7 +117,7 @@ func NewListRegionsDefault(code int) *ListRegionsDefault {
 }
 
 /*
-	ListRegionsDefault describes a response with status code -1, with default header values.
+ListRegionsDefault describes a response with status code -1, with default header values.
 
 An unexpected error response.
 */
@@ -120,11 +125,6 @@ type ListRegionsDefault struct {
 	_statusCode int
 
 	Payload *models.Status
-}
-
-// Code gets the status code for the list regions default response
-func (o *ListRegionsDefault) Code() int {
-	return o._statusCode
 }
 
 // IsSuccess returns true when this list regions default response has a 2xx status code
@@ -150,6 +150,11 @@ func (o *ListRegionsDefault) IsServerError() bool {
 // IsCode returns true when this list regions default response a status code equal to that given
 func (o *ListRegionsDefault) IsCode(code int) bool {
 	return o._statusCode == code
+}
+
+// Code gets the status code for the list regions default response
+func (o *ListRegionsDefault) Code() int {
+	return o._statusCode
 }
 
 func (o *ListRegionsDefault) Error() string {

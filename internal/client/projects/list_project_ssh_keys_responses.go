@@ -47,7 +47,7 @@ func NewListProjectSSHKeysOK() *ListProjectSSHKeysOK {
 }
 
 /*
-	ListProjectSSHKeysOK describes a response with status code 200, with default header values.
+ListProjectSSHKeysOK describes a response with status code 200, with default header values.
 
 A successful response.
 */
@@ -78,6 +78,11 @@ func (o *ListProjectSSHKeysOK) IsServerError() bool {
 // IsCode returns true when this list project Ssh keys o k response a status code equal to that given
 func (o *ListProjectSSHKeysOK) IsCode(code int) bool {
 	return code == 200
+}
+
+// Code gets the status code for the list project Ssh keys o k response
+func (o *ListProjectSSHKeysOK) Code() int {
+	return 200
 }
 
 func (o *ListProjectSSHKeysOK) Error() string {
@@ -112,7 +117,7 @@ func NewListProjectSSHKeysDefault(code int) *ListProjectSSHKeysDefault {
 }
 
 /*
-	ListProjectSSHKeysDefault describes a response with status code -1, with default header values.
+ListProjectSSHKeysDefault describes a response with status code -1, with default header values.
 
 An unexpected error response.
 */
@@ -120,11 +125,6 @@ type ListProjectSSHKeysDefault struct {
 	_statusCode int
 
 	Payload *models.Status
-}
-
-// Code gets the status code for the list project Ssh keys default response
-func (o *ListProjectSSHKeysDefault) Code() int {
-	return o._statusCode
 }
 
 // IsSuccess returns true when this list project Ssh keys default response has a 2xx status code
@@ -150,6 +150,11 @@ func (o *ListProjectSSHKeysDefault) IsServerError() bool {
 // IsCode returns true when this list project Ssh keys default response a status code equal to that given
 func (o *ListProjectSSHKeysDefault) IsCode(code int) bool {
 	return o._statusCode == code
+}
+
+// Code gets the status code for the list project Ssh keys default response
+func (o *ListProjectSSHKeysDefault) Code() int {
+	return o._statusCode
 }
 
 func (o *ListProjectSSHKeysDefault) Error() string {

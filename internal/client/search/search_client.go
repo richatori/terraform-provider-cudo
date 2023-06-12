@@ -28,52 +28,9 @@ type ClientOption func(*runtime.ClientOperation)
 
 // ClientService is the interface for Client methods
 type ClientService interface {
-	ListPublicImages(params *ListPublicImagesParams, opts ...ClientOption) (*ListPublicImagesOK, error)
-
 	ListRegions(params *ListRegionsParams, opts ...ClientOption) (*ListRegionsOK, error)
 
-	SearchCompute(params *SearchComputeParams, opts ...ClientOption) (*SearchComputeOK, error)
-
-	SearchDataCenters(params *SearchDataCentersParams, opts ...ClientOption) (*SearchDataCentersOK, error)
-
 	SetTransport(transport runtime.ClientTransport)
-}
-
-/*
-ListPublicImages lists public images
-*/
-func (a *Client) ListPublicImages(params *ListPublicImagesParams, opts ...ClientOption) (*ListPublicImagesOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewListPublicImagesParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "ListPublicImages",
-		Method:             "GET",
-		PathPattern:        "/v1/compute/images",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &ListPublicImagesReader{formats: a.formats},
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*ListPublicImagesOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	unexpectedSuccess := result.(*ListPublicImagesDefault)
-	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
 /*
@@ -110,80 +67,6 @@ func (a *Client) ListRegions(params *ListRegionsParams, opts ...ClientOption) (*
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*ListRegionsDefault)
-	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
-}
-
-/*
-SearchCompute searches machines
-*/
-func (a *Client) SearchCompute(params *SearchComputeParams, opts ...ClientOption) (*SearchComputeOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewSearchComputeParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "SearchCompute",
-		Method:             "GET",
-		PathPattern:        "/v1/compute/search",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &SearchComputeReader{formats: a.formats},
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*SearchComputeOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	unexpectedSuccess := result.(*SearchComputeDefault)
-	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
-}
-
-/*
-SearchDataCenters lists available data centers
-*/
-func (a *Client) SearchDataCenters(params *SearchDataCentersParams, opts ...ClientOption) (*SearchDataCentersOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewSearchDataCentersParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "SearchDataCenters",
-		Method:             "GET",
-		PathPattern:        "/v1/compute/data-centers",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &SearchDataCentersReader{formats: a.formats},
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*SearchDataCentersOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	unexpectedSuccess := result.(*SearchDataCentersDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

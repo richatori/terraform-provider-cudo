@@ -47,7 +47,7 @@ func NewDeleteSecurityGroupOK() *DeleteSecurityGroupOK {
 }
 
 /*
-	DeleteSecurityGroupOK describes a response with status code 200, with default header values.
+DeleteSecurityGroupOK describes a response with status code 200, with default header values.
 
 A successful response.
 */
@@ -80,6 +80,11 @@ func (o *DeleteSecurityGroupOK) IsCode(code int) bool {
 	return code == 200
 }
 
+// Code gets the status code for the delete security group o k response
+func (o *DeleteSecurityGroupOK) Code() int {
+	return 200
+}
+
 func (o *DeleteSecurityGroupOK) Error() string {
 	return fmt.Sprintf("[DELETE /v1/projects/{projectId}/networks/security-groups/{id}][%d] deleteSecurityGroupOK  %+v", 200, o.Payload)
 }
@@ -110,7 +115,7 @@ func NewDeleteSecurityGroupDefault(code int) *DeleteSecurityGroupDefault {
 }
 
 /*
-	DeleteSecurityGroupDefault describes a response with status code -1, with default header values.
+DeleteSecurityGroupDefault describes a response with status code -1, with default header values.
 
 An unexpected error response.
 */
@@ -118,11 +123,6 @@ type DeleteSecurityGroupDefault struct {
 	_statusCode int
 
 	Payload *models.Status
-}
-
-// Code gets the status code for the delete security group default response
-func (o *DeleteSecurityGroupDefault) Code() int {
-	return o._statusCode
 }
 
 // IsSuccess returns true when this delete security group default response has a 2xx status code
@@ -148,6 +148,11 @@ func (o *DeleteSecurityGroupDefault) IsServerError() bool {
 // IsCode returns true when this delete security group default response a status code equal to that given
 func (o *DeleteSecurityGroupDefault) IsCode(code int) bool {
 	return o._statusCode == code
+}
+
+// Code gets the status code for the delete security group default response
+func (o *DeleteSecurityGroupDefault) Code() int {
+	return o._statusCode
 }
 
 func (o *DeleteSecurityGroupDefault) Error() string {

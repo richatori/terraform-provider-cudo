@@ -51,7 +51,7 @@ func NewRemoveProjectUserPermissionOK() *RemoveProjectUserPermissionOK {
 }
 
 /*
-	RemoveProjectUserPermissionOK describes a response with status code 200, with default header values.
+RemoveProjectUserPermissionOK describes a response with status code 200, with default header values.
 
 A successful response.
 */
@@ -84,6 +84,11 @@ func (o *RemoveProjectUserPermissionOK) IsCode(code int) bool {
 	return code == 200
 }
 
+// Code gets the status code for the remove project user permission o k response
+func (o *RemoveProjectUserPermissionOK) Code() int {
+	return 200
+}
+
 func (o *RemoveProjectUserPermissionOK) Error() string {
 	return fmt.Sprintf("[POST /v1/projects/{projectId}/remove-user-permission][%d] removeProjectUserPermissionOK  %+v", 200, o.Payload)
 }
@@ -114,7 +119,7 @@ func NewRemoveProjectUserPermissionDefault(code int) *RemoveProjectUserPermissio
 }
 
 /*
-	RemoveProjectUserPermissionDefault describes a response with status code -1, with default header values.
+RemoveProjectUserPermissionDefault describes a response with status code -1, with default header values.
 
 An unexpected error response.
 */
@@ -122,11 +127,6 @@ type RemoveProjectUserPermissionDefault struct {
 	_statusCode int
 
 	Payload *models.Status
-}
-
-// Code gets the status code for the remove project user permission default response
-func (o *RemoveProjectUserPermissionDefault) Code() int {
-	return o._statusCode
 }
 
 // IsSuccess returns true when this remove project user permission default response has a 2xx status code
@@ -152,6 +152,11 @@ func (o *RemoveProjectUserPermissionDefault) IsServerError() bool {
 // IsCode returns true when this remove project user permission default response a status code equal to that given
 func (o *RemoveProjectUserPermissionDefault) IsCode(code int) bool {
 	return o._statusCode == code
+}
+
+// Code gets the status code for the remove project user permission default response
+func (o *RemoveProjectUserPermissionDefault) Code() int {
+	return o._statusCode
 }
 
 func (o *RemoveProjectUserPermissionDefault) Error() string {
@@ -267,6 +272,7 @@ func (o *RemoveProjectUserPermissionBody) ContextValidate(ctx context.Context, f
 func (o *RemoveProjectUserPermissionBody) contextValidateRole(ctx context.Context, formats strfmt.Registry) error {
 
 	if o.Role != nil {
+
 		if err := o.Role.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("body" + "." + "role")

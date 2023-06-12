@@ -47,7 +47,7 @@ func NewGetNetworkOK() *GetNetworkOK {
 }
 
 /*
-	GetNetworkOK describes a response with status code 200, with default header values.
+GetNetworkOK describes a response with status code 200, with default header values.
 
 A successful response.
 */
@@ -78,6 +78,11 @@ func (o *GetNetworkOK) IsServerError() bool {
 // IsCode returns true when this get network o k response a status code equal to that given
 func (o *GetNetworkOK) IsCode(code int) bool {
 	return code == 200
+}
+
+// Code gets the status code for the get network o k response
+func (o *GetNetworkOK) Code() int {
+	return 200
 }
 
 func (o *GetNetworkOK) Error() string {
@@ -112,7 +117,7 @@ func NewGetNetworkDefault(code int) *GetNetworkDefault {
 }
 
 /*
-	GetNetworkDefault describes a response with status code -1, with default header values.
+GetNetworkDefault describes a response with status code -1, with default header values.
 
 An unexpected error response.
 */
@@ -120,11 +125,6 @@ type GetNetworkDefault struct {
 	_statusCode int
 
 	Payload *models.Status
-}
-
-// Code gets the status code for the get network default response
-func (o *GetNetworkDefault) Code() int {
-	return o._statusCode
 }
 
 // IsSuccess returns true when this get network default response has a 2xx status code
@@ -150,6 +150,11 @@ func (o *GetNetworkDefault) IsServerError() bool {
 // IsCode returns true when this get network default response a status code equal to that given
 func (o *GetNetworkDefault) IsCode(code int) bool {
 	return o._statusCode == code
+}
+
+// Code gets the status code for the get network default response
+func (o *GetNetworkDefault) Code() int {
+	return o._statusCode
 }
 
 func (o *GetNetworkDefault) Error() string {

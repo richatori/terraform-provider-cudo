@@ -51,7 +51,7 @@ func NewAddBillingAccountUserPermissionOK() *AddBillingAccountUserPermissionOK {
 }
 
 /*
-	AddBillingAccountUserPermissionOK describes a response with status code 200, with default header values.
+AddBillingAccountUserPermissionOK describes a response with status code 200, with default header values.
 
 A successful response.
 */
@@ -84,6 +84,11 @@ func (o *AddBillingAccountUserPermissionOK) IsCode(code int) bool {
 	return code == 200
 }
 
+// Code gets the status code for the add billing account user permission o k response
+func (o *AddBillingAccountUserPermissionOK) Code() int {
+	return 200
+}
+
 func (o *AddBillingAccountUserPermissionOK) Error() string {
 	return fmt.Sprintf("[POST /v1/billing-accounts/{billingAccountId}/add-user-permission][%d] addBillingAccountUserPermissionOK  %+v", 200, o.Payload)
 }
@@ -114,7 +119,7 @@ func NewAddBillingAccountUserPermissionDefault(code int) *AddBillingAccountUserP
 }
 
 /*
-	AddBillingAccountUserPermissionDefault describes a response with status code -1, with default header values.
+AddBillingAccountUserPermissionDefault describes a response with status code -1, with default header values.
 
 An unexpected error response.
 */
@@ -122,11 +127,6 @@ type AddBillingAccountUserPermissionDefault struct {
 	_statusCode int
 
 	Payload *models.Status
-}
-
-// Code gets the status code for the add billing account user permission default response
-func (o *AddBillingAccountUserPermissionDefault) Code() int {
-	return o._statusCode
 }
 
 // IsSuccess returns true when this add billing account user permission default response has a 2xx status code
@@ -152,6 +152,11 @@ func (o *AddBillingAccountUserPermissionDefault) IsServerError() bool {
 // IsCode returns true when this add billing account user permission default response a status code equal to that given
 func (o *AddBillingAccountUserPermissionDefault) IsCode(code int) bool {
 	return o._statusCode == code
+}
+
+// Code gets the status code for the add billing account user permission default response
+func (o *AddBillingAccountUserPermissionDefault) Code() int {
+	return o._statusCode
 }
 
 func (o *AddBillingAccountUserPermissionDefault) Error() string {
@@ -267,6 +272,7 @@ func (o *AddBillingAccountUserPermissionBody) ContextValidate(ctx context.Contex
 func (o *AddBillingAccountUserPermissionBody) contextValidateRole(ctx context.Context, formats strfmt.Registry) error {
 
 	if o.Role != nil {
+
 		if err := o.Role.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("body" + "." + "role")

@@ -3,6 +3,10 @@ package provider
 import (
 	"context"
 	"fmt"
+	"regexp"
+	"strconv"
+	"strings"
+
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/networks"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -13,9 +17,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"regexp"
-	"strconv"
-	"strings"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -370,11 +371,11 @@ type portListValidator struct {
 }
 
 func (p portListValidator) Description(ctx context.Context) string {
-	return fmt.Sprintf("must be a comma separated list of ports 80,443,8080 or a single port range 1024:2048")
+	return "must be a comma separated list of ports 80,443,8080 or a single port range 1024:2048"
 }
 
 func (p portListValidator) MarkdownDescription(ctx context.Context) string {
-	return fmt.Sprintf("must be a comma separated list of ports 80,443,8080 or a single port range 1024:2048")
+	return "must be a comma separated list of ports 80,443,8080 or a single port range 1024:2048"
 }
 
 func (p portListValidator) ValidateString(ctx context.Context, req validator.StringRequest, resp *validator.StringResponse) {
@@ -390,7 +391,7 @@ func (p portListValidator) ValidateString(ctx context.Context, req validator.Str
 		resp.Diagnostics.AddAttributeError(
 			req.Path,
 			"Invalid port range",
-			fmt.Sprintf("String length must be a single range i.e. 1024:2048 or a comma separated list i.e. 80,443,8080"),
+			"String length must be a single range i.e. 1024:2048 or a comma separated list i.e. 80,443,8080",
 		)
 	}
 

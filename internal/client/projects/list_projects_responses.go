@@ -47,7 +47,7 @@ func NewListProjectsOK() *ListProjectsOK {
 }
 
 /*
-	ListProjectsOK describes a response with status code 200, with default header values.
+ListProjectsOK describes a response with status code 200, with default header values.
 
 A successful response.
 */
@@ -78,6 +78,11 @@ func (o *ListProjectsOK) IsServerError() bool {
 // IsCode returns true when this list projects o k response a status code equal to that given
 func (o *ListProjectsOK) IsCode(code int) bool {
 	return code == 200
+}
+
+// Code gets the status code for the list projects o k response
+func (o *ListProjectsOK) Code() int {
+	return 200
 }
 
 func (o *ListProjectsOK) Error() string {
@@ -112,7 +117,7 @@ func NewListProjectsDefault(code int) *ListProjectsDefault {
 }
 
 /*
-	ListProjectsDefault describes a response with status code -1, with default header values.
+ListProjectsDefault describes a response with status code -1, with default header values.
 
 An unexpected error response.
 */
@@ -120,11 +125,6 @@ type ListProjectsDefault struct {
 	_statusCode int
 
 	Payload *models.Status
-}
-
-// Code gets the status code for the list projects default response
-func (o *ListProjectsDefault) Code() int {
-	return o._statusCode
 }
 
 // IsSuccess returns true when this list projects default response has a 2xx status code
@@ -150,6 +150,11 @@ func (o *ListProjectsDefault) IsServerError() bool {
 // IsCode returns true when this list projects default response a status code equal to that given
 func (o *ListProjectsDefault) IsCode(code int) bool {
 	return o._statusCode == code
+}
+
+// Code gets the status code for the list projects default response
+func (o *ListProjectsDefault) Code() int {
+	return o._statusCode
 }
 
 func (o *ListProjectsDefault) Error() string {

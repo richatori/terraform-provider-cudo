@@ -47,7 +47,7 @@ func NewListAPIKeysOK() *ListAPIKeysOK {
 }
 
 /*
-	ListAPIKeysOK describes a response with status code 200, with default header values.
+ListAPIKeysOK describes a response with status code 200, with default header values.
 
 A successful response.
 */
@@ -78,6 +78,11 @@ func (o *ListAPIKeysOK) IsServerError() bool {
 // IsCode returns true when this list Api keys o k response a status code equal to that given
 func (o *ListAPIKeysOK) IsCode(code int) bool {
 	return code == 200
+}
+
+// Code gets the status code for the list Api keys o k response
+func (o *ListAPIKeysOK) Code() int {
+	return 200
 }
 
 func (o *ListAPIKeysOK) Error() string {
@@ -112,7 +117,7 @@ func NewListAPIKeysDefault(code int) *ListAPIKeysDefault {
 }
 
 /*
-	ListAPIKeysDefault describes a response with status code -1, with default header values.
+ListAPIKeysDefault describes a response with status code -1, with default header values.
 
 An unexpected error response.
 */
@@ -120,11 +125,6 @@ type ListAPIKeysDefault struct {
 	_statusCode int
 
 	Payload *models.Status
-}
-
-// Code gets the status code for the list Api keys default response
-func (o *ListAPIKeysDefault) Code() int {
-	return o._statusCode
 }
 
 // IsSuccess returns true when this list Api keys default response has a 2xx status code
@@ -150,6 +150,11 @@ func (o *ListAPIKeysDefault) IsServerError() bool {
 // IsCode returns true when this list Api keys default response a status code equal to that given
 func (o *ListAPIKeysDefault) IsCode(code int) bool {
 	return o._statusCode == code
+}
+
+// Code gets the status code for the list Api keys default response
+func (o *ListAPIKeysDefault) Code() int {
+	return o._statusCode
 }
 
 func (o *ListAPIKeysDefault) Error() string {

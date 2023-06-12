@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/networks"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
@@ -109,8 +110,8 @@ func (d *NetworksDataSource) Read(ctx context.Context, req datasource.ReadReques
 	for _, net := range res.Payload.Networks {
 		networkModel := NetworkResourceModel{
 			Id:           types.StringValue(net.ID),
-			DataCenterId: types.StringValue(net.DataCenter),
-			CIDRPrefix:   types.StringValue(net.CidrPrefix),
+			DataCenterId: types.StringValue(net.DataCenterID),
+			IPRange:      types.StringValue(net.IPRange),
 			Gateway:      types.StringValue(net.Gateway),
 		}
 

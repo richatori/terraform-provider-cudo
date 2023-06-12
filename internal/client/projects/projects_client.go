@@ -30,8 +30,6 @@ type ClientOption func(*runtime.ClientOperation)
 type ClientService interface {
 	CreateProject(params *CreateProjectParams, opts ...ClientOption) (*CreateProjectOK, error)
 
-	CreateVM(params *CreateVMParams, opts ...ClientOption) (*CreateVMOK, error)
-
 	DeleteProject(params *DeleteProjectParams, opts ...ClientOption) (*DeleteProjectOK, error)
 
 	GetProject(params *GetProjectParams, opts ...ClientOption) (*GetProjectOK, error)
@@ -85,43 +83,6 @@ func (a *Client) CreateProject(params *CreateProjectParams, opts ...ClientOption
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*CreateProjectDefault)
-	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
-}
-
-/*
-CreateVM creates virtual machine
-*/
-func (a *Client) CreateVM(params *CreateVMParams, opts ...ClientOption) (*CreateVMOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewCreateVMParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "CreateVM",
-		Method:             "POST",
-		PathPattern:        "/v1/projects/{projectId}/vm",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &CreateVMReader{formats: a.formats},
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*CreateVMOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	unexpectedSuccess := result.(*CreateVMDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

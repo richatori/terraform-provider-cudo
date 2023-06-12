@@ -3,7 +3,8 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/CudoVentures/terraform-provider-cudo/internal/client/search"
+
+	"github.com/CudoVentures/terraform-provider-cudo/internal/client/virtual_machines"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -99,7 +100,7 @@ func (d *ImagesDataSource) Configure(ctx context.Context, req datasource.Configu
 func (d *ImagesDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var state ImagesDataSourceModel
 
-	res, err := d.client.Client.Search.ListPublicImages(search.NewListPublicImagesParams())
+	res, err := d.client.Client.VirtualMachines.ListPublicVMImages(virtual_machines.NewListPublicVMImagesParams())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to read images",

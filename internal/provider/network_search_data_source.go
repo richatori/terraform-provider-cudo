@@ -3,13 +3,14 @@ package provider
 import (
 	"context"
 	"fmt"
+	"regexp"
+
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/networks"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"regexp"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -117,12 +118,10 @@ func (d *NetworkSearchDataSource) Read(ctx context.Context, req datasource.ReadR
 		return
 	}
 
-	params := networks.NewSearchNetworksParams()
+	params := networks.NewListNetworksParams()
 	params.ProjectID = d.client.DefaultProjectID
-	params.MachineType = state.MachineType.ValueStringPointer()
-	params.DataCenterID = state.DataCenterId.ValueStringPointer()
 
-	res, err := d.client.Client.Networks.SearchNetworks(params)
+	res, err := d.client.Client.Networks.ListNetworks(params)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to read network_search",
@@ -133,9 +132,9 @@ func (d *NetworkSearchDataSource) Read(ctx context.Context, req datasource.ReadR
 
 	for _, net := range res.Payload.Networks {
 		networkModel := NetworkResourceModel{
+			DataCenterId: types.StringValue(net.DataCenterID),
 			Id:           types.StringValue(net.ID),
-			DataCenterId: types.StringValue(net.DataCenter),
-			CIDRPrefix:   types.StringValue(net.CidrPrefix),
+			IPRange:      types.StringValue(net.IPRange),
 			Gateway:      types.StringValue(net.Gateway),
 		}
 

@@ -47,7 +47,7 @@ func NewCreateSSHKeyOK() *CreateSSHKeyOK {
 }
 
 /*
-	CreateSSHKeyOK describes a response with status code 200, with default header values.
+CreateSSHKeyOK describes a response with status code 200, with default header values.
 
 A successful response.
 */
@@ -78,6 +78,11 @@ func (o *CreateSSHKeyOK) IsServerError() bool {
 // IsCode returns true when this create Ssh key o k response a status code equal to that given
 func (o *CreateSSHKeyOK) IsCode(code int) bool {
 	return code == 200
+}
+
+// Code gets the status code for the create Ssh key o k response
+func (o *CreateSSHKeyOK) Code() int {
+	return 200
 }
 
 func (o *CreateSSHKeyOK) Error() string {
@@ -112,7 +117,7 @@ func NewCreateSSHKeyDefault(code int) *CreateSSHKeyDefault {
 }
 
 /*
-	CreateSSHKeyDefault describes a response with status code -1, with default header values.
+CreateSSHKeyDefault describes a response with status code -1, with default header values.
 
 An unexpected error response.
 */
@@ -120,11 +125,6 @@ type CreateSSHKeyDefault struct {
 	_statusCode int
 
 	Payload *models.Status
-}
-
-// Code gets the status code for the create Ssh key default response
-func (o *CreateSSHKeyDefault) Code() int {
-	return o._statusCode
 }
 
 // IsSuccess returns true when this create Ssh key default response has a 2xx status code
@@ -150,6 +150,11 @@ func (o *CreateSSHKeyDefault) IsServerError() bool {
 // IsCode returns true when this create Ssh key default response a status code equal to that given
 func (o *CreateSSHKeyDefault) IsCode(code int) bool {
 	return o._statusCode == code
+}
+
+// Code gets the status code for the create Ssh key default response
+func (o *CreateSSHKeyDefault) Code() int {
+	return o._statusCode
 }
 
 func (o *CreateSSHKeyDefault) Error() string {

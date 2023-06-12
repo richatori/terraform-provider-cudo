@@ -47,7 +47,7 @@ func NewGenerateAPIKeyOK() *GenerateAPIKeyOK {
 }
 
 /*
-	GenerateAPIKeyOK describes a response with status code 200, with default header values.
+GenerateAPIKeyOK describes a response with status code 200, with default header values.
 
 A successful response.
 */
@@ -78,6 +78,11 @@ func (o *GenerateAPIKeyOK) IsServerError() bool {
 // IsCode returns true when this generate Api key o k response a status code equal to that given
 func (o *GenerateAPIKeyOK) IsCode(code int) bool {
 	return code == 200
+}
+
+// Code gets the status code for the generate Api key o k response
+func (o *GenerateAPIKeyOK) Code() int {
+	return 200
 }
 
 func (o *GenerateAPIKeyOK) Error() string {
@@ -112,7 +117,7 @@ func NewGenerateAPIKeyDefault(code int) *GenerateAPIKeyDefault {
 }
 
 /*
-	GenerateAPIKeyDefault describes a response with status code -1, with default header values.
+GenerateAPIKeyDefault describes a response with status code -1, with default header values.
 
 An unexpected error response.
 */
@@ -120,11 +125,6 @@ type GenerateAPIKeyDefault struct {
 	_statusCode int
 
 	Payload *models.Status
-}
-
-// Code gets the status code for the generate Api key default response
-func (o *GenerateAPIKeyDefault) Code() int {
-	return o._statusCode
 }
 
 // IsSuccess returns true when this generate Api key default response has a 2xx status code
@@ -150,6 +150,11 @@ func (o *GenerateAPIKeyDefault) IsServerError() bool {
 // IsCode returns true when this generate Api key default response a status code equal to that given
 func (o *GenerateAPIKeyDefault) IsCode(code int) bool {
 	return o._statusCode == code
+}
+
+// Code gets the status code for the generate Api key default response
+func (o *GenerateAPIKeyDefault) Code() int {
+	return o._statusCode
 }
 
 func (o *GenerateAPIKeyDefault) Error() string {

@@ -47,7 +47,7 @@ func NewListNetworksOK() *ListNetworksOK {
 }
 
 /*
-	ListNetworksOK describes a response with status code 200, with default header values.
+ListNetworksOK describes a response with status code 200, with default header values.
 
 A successful response.
 */
@@ -78,6 +78,11 @@ func (o *ListNetworksOK) IsServerError() bool {
 // IsCode returns true when this list networks o k response a status code equal to that given
 func (o *ListNetworksOK) IsCode(code int) bool {
 	return code == 200
+}
+
+// Code gets the status code for the list networks o k response
+func (o *ListNetworksOK) Code() int {
+	return 200
 }
 
 func (o *ListNetworksOK) Error() string {
@@ -112,7 +117,7 @@ func NewListNetworksDefault(code int) *ListNetworksDefault {
 }
 
 /*
-	ListNetworksDefault describes a response with status code -1, with default header values.
+ListNetworksDefault describes a response with status code -1, with default header values.
 
 An unexpected error response.
 */
@@ -120,11 +125,6 @@ type ListNetworksDefault struct {
 	_statusCode int
 
 	Payload *models.Status
-}
-
-// Code gets the status code for the list networks default response
-func (o *ListNetworksDefault) Code() int {
-	return o._statusCode
 }
 
 // IsSuccess returns true when this list networks default response has a 2xx status code
@@ -150,6 +150,11 @@ func (o *ListNetworksDefault) IsServerError() bool {
 // IsCode returns true when this list networks default response a status code equal to that given
 func (o *ListNetworksDefault) IsCode(code int) bool {
 	return o._statusCode == code
+}
+
+// Code gets the status code for the list networks default response
+func (o *ListNetworksDefault) Code() int {
+	return o._statusCode
 }
 
 func (o *ListNetworksDefault) Error() string {

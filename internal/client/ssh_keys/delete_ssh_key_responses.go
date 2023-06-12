@@ -47,7 +47,7 @@ func NewDeleteSSHKeyOK() *DeleteSSHKeyOK {
 }
 
 /*
-	DeleteSSHKeyOK describes a response with status code 200, with default header values.
+DeleteSSHKeyOK describes a response with status code 200, with default header values.
 
 A successful response.
 */
@@ -80,6 +80,11 @@ func (o *DeleteSSHKeyOK) IsCode(code int) bool {
 	return code == 200
 }
 
+// Code gets the status code for the delete Ssh key o k response
+func (o *DeleteSSHKeyOK) Code() int {
+	return 200
+}
+
 func (o *DeleteSSHKeyOK) Error() string {
 	return fmt.Sprintf("[DELETE /v1/ssh-keys/{id}][%d] deleteSshKeyOK  %+v", 200, o.Payload)
 }
@@ -110,7 +115,7 @@ func NewDeleteSSHKeyDefault(code int) *DeleteSSHKeyDefault {
 }
 
 /*
-	DeleteSSHKeyDefault describes a response with status code -1, with default header values.
+DeleteSSHKeyDefault describes a response with status code -1, with default header values.
 
 An unexpected error response.
 */
@@ -118,11 +123,6 @@ type DeleteSSHKeyDefault struct {
 	_statusCode int
 
 	Payload *models.Status
-}
-
-// Code gets the status code for the delete Ssh key default response
-func (o *DeleteSSHKeyDefault) Code() int {
-	return o._statusCode
 }
 
 // IsSuccess returns true when this delete Ssh key default response has a 2xx status code
@@ -148,6 +148,11 @@ func (o *DeleteSSHKeyDefault) IsServerError() bool {
 // IsCode returns true when this delete Ssh key default response a status code equal to that given
 func (o *DeleteSSHKeyDefault) IsCode(code int) bool {
 	return o._statusCode == code
+}
+
+// Code gets the status code for the delete Ssh key default response
+func (o *DeleteSSHKeyDefault) Code() int {
+	return o._statusCode
 }
 
 func (o *DeleteSSHKeyDefault) Error() string {

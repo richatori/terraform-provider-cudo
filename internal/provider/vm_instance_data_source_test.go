@@ -2,12 +2,13 @@ package provider
 
 import (
 	"fmt"
+	"testing"
+	"time"
+
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/virtual_machines"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/helper"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
-	"testing"
-	"time"
 )
 
 func TestAccVMInstanceDataSource(t *testing.T) {
@@ -37,14 +38,14 @@ resource "cudo_vm" "my-vm" {
 
 			cl := getClient()
 
-			getParams := virtual_machines.NewGetInstanceParams()
-			getParams.InstanceID = name
+			getParams := virtual_machines.NewGetVMParams()
+			getParams.ID = name
 			getParams.ProjectID = project_id
 
-			ins, err := cl.VirtualMachines.GetInstance(getParams)
+			ins, err := cl.VirtualMachines.GetVM(getParams)
 
 			if err == nil {
-				return fmt.Errorf("vm resource not destroyed %s , %s,  %s", ins.Payload.Instance.ID, ins.Payload.Instance.LcmState, ins.Payload.Instance.OneState)
+				return fmt.Errorf("vm resource not destroyed %s , %s,  %s", ins.Payload.VM.ID, ins.Payload.VM.LcmState, ins.Payload.VM.OneState)
 			}
 			return nil
 		},

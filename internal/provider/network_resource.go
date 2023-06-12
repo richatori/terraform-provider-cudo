@@ -3,6 +3,8 @@ package provider
 import (
 	"context"
 	"fmt"
+	"regexp"
+
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/networks"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -12,7 +14,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"regexp"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -30,10 +31,12 @@ type NetworkResource struct {
 
 // NetworkResourceModel describes the resource data model.
 type NetworkResourceModel struct {
-	Id           types.String `tfsdk:"id"`
-	DataCenterId types.String `tfsdk:"datacenter_id"`
-	CIDRPrefix   types.String `tfsdk:"cidr_prefix"`
-	Gateway      types.String `tfsdk:"gateway"`
+	Id                types.String `tfsdk:"id"`
+	DataCenterId      types.String `tfsdk:"datacenter_id"`
+	IPRange           types.String `tfsdk:"ip_range"`
+	Gateway           types.String `tfsdk:"gateway"`
+	ExternalIPAddress types.String `tfsdk:"external_ip_address"`
+	InternalIPAddress types.String `tfsdk:"internal_ip_address"`
 }
 
 func (r *NetworkResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -107,10 +110,10 @@ func (r *NetworkResource) Create(ctx context.Context, req resource.CreateRequest
 	params := networks.NewCreateNetworkParams()
 	params.ProjectID = r.client.DefaultProjectID
 	params.Body = networks.CreateNetworkBody{
-		CidrPrefix:   state.CIDRPrefix.ValueStringPointer(),
+		CidrPrefix:   state.IPRange.ValueStringPointer(),
 		DataCenterID: state.DataCenterId.ValueStringPointer(),
 		NetworkID:    state.Id.ValueStringPointer(),
-		VrouterSize:  models.VrouterSizeVROUTERINSTANCESMALL.Pointer(),
+		VrouterSize:  models.VRouterSizeVROUTERINSTANCESMALL.Pointer(),
 	}
 	_, err := r.client.Client.Networks.CreateNetwork(params)
 
@@ -137,8 +140,8 @@ func (r *NetworkResource) Create(ctx context.Context, req resource.CreateRequest
 	}
 
 	state.Id = types.StringValue(res.Payload.Network.ID)
-	state.DataCenterId = types.StringValue(res.Payload.Network.DataCenter)
-	state.CIDRPrefix = types.StringValue(res.Payload.Network.CidrPrefix)
+	state.DataCenterId = types.StringValue(res.Payload.Network.DataCenterID)
+	state.IPRange = types.StringValue(res.Payload.Network.IPRange)
 	state.Gateway = types.StringValue(res.Payload.Network.Gateway)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
@@ -169,8 +172,10 @@ func (r *NetworkResource) Read(ctx context.Context, req resource.ReadRequest, re
 	}
 
 	state.Id = types.StringValue(resget.Payload.Network.ID)
-	state.DataCenterId = types.StringValue(resget.Payload.Network.DataCenter)
-	state.CIDRPrefix = types.StringValue(resget.Payload.Network.CidrPrefix)
+	state.DataCenterId = types.StringValue(resget.Payload.Network.DataCenterID)
+	state.ExternalIPAddress = types.StringValue(resget.Payload.Network.ExternalIPAddress)
+	state.InternalIPAddress = types.StringValue(resget.Payload.Network.InternalIPAddress)
+	state.IPRange = types.StringValue(resget.Payload.Network.IPRange)
 	state.Gateway = types.StringValue(resget.Payload.Network.Gateway)
 
 	// Save updated data into Terraform state
@@ -202,8 +207,8 @@ func (r *NetworkResource) Update(ctx context.Context, req resource.UpdateRequest
 	}
 
 	state.Id = types.StringValue(resget.Payload.Network.ID)
-	state.DataCenterId = types.StringValue(resget.Payload.Network.DataCenter)
-	state.CIDRPrefix = types.StringValue(resget.Payload.Network.CidrPrefix)
+	state.DataCenterId = types.StringValue(resget.Payload.Network.DataCenterID)
+	state.IPRange = types.StringValue(resget.Payload.Network.IPRange)
 	state.Gateway = types.StringValue(resget.Payload.Network.Gateway)
 
 	// Save updated data into Terraform state

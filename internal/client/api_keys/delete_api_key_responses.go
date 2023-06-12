@@ -47,7 +47,7 @@ func NewDeleteAPIKeyOK() *DeleteAPIKeyOK {
 }
 
 /*
-	DeleteAPIKeyOK describes a response with status code 200, with default header values.
+DeleteAPIKeyOK describes a response with status code 200, with default header values.
 
 A successful response.
 */
@@ -80,6 +80,11 @@ func (o *DeleteAPIKeyOK) IsCode(code int) bool {
 	return code == 200
 }
 
+// Code gets the status code for the delete Api key o k response
+func (o *DeleteAPIKeyOK) Code() int {
+	return 200
+}
+
 func (o *DeleteAPIKeyOK) Error() string {
 	return fmt.Sprintf("[DELETE /v1/api-keys/{name}][%d] deleteApiKeyOK  %+v", 200, o.Payload)
 }
@@ -110,7 +115,7 @@ func NewDeleteAPIKeyDefault(code int) *DeleteAPIKeyDefault {
 }
 
 /*
-	DeleteAPIKeyDefault describes a response with status code -1, with default header values.
+DeleteAPIKeyDefault describes a response with status code -1, with default header values.
 
 An unexpected error response.
 */
@@ -118,11 +123,6 @@ type DeleteAPIKeyDefault struct {
 	_statusCode int
 
 	Payload *models.Status
-}
-
-// Code gets the status code for the delete Api key default response
-func (o *DeleteAPIKeyDefault) Code() int {
-	return o._statusCode
 }
 
 // IsSuccess returns true when this delete Api key default response has a 2xx status code
@@ -148,6 +148,11 @@ func (o *DeleteAPIKeyDefault) IsServerError() bool {
 // IsCode returns true when this delete Api key default response a status code equal to that given
 func (o *DeleteAPIKeyDefault) IsCode(code int) bool {
 	return o._statusCode == code
+}
+
+// Code gets the status code for the delete Api key default response
+func (o *DeleteAPIKeyDefault) Code() int {
+	return o._statusCode
 }
 
 func (o *DeleteAPIKeyDefault) Error() string {

@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/virtual_machines"
 	"github.com/go-openapi/strfmt"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -31,9 +32,8 @@ type VMModel struct {
 	DatacenterID      types.String  `tfsdk:"datacenter_id"`
 	GpuModel          types.String  `tfsdk:"gpu_model"`
 	GpuQuantity       types.Int64   `tfsdk:"gpu_quantity"`
-	ImageDesc         types.String  `tfsdk:"image_desc"`
-	ImageID           types.String  `tfsdk:"image_id"`
-	ImageName         types.String  `tfsdk:"image_name"`
+	PrivateImageID    types.String  `tfsdk:"private_image_id"`
+	PublicImageID     types.String  `tfsdk:"public_image_id"`
 	LcmState          types.String  `tfsdk:"lcm_state"`
 	InternalIPAddress types.String  `tfsdk:"internal_ip_address"`
 	ExternalIPAddress types.String  `tfsdk:"external_ip_address"`
@@ -202,10 +202,10 @@ func (d *VMInstanceDataSource) Read(ctx context.Context, req datasource.ReadRequ
 
 	resp.Diagnostics.Append(req.Config.Get(ctx, &state)...)
 
-	params := virtual_machines.NewListInstancesParams()
+	params := virtual_machines.NewListVMsParams()
 	params.ProjectID = d.client.DefaultProjectID
 
-	res, err := d.client.Client.VirtualMachines.ListInstances(params)
+	res, err := d.client.Client.VirtualMachines.ListVMs(params)
 
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -215,7 +215,7 @@ func (d *VMInstanceDataSource) Read(ctx context.Context, req datasource.ReadRequ
 		return
 	}
 
-	for _, i := range res.Payload.Instances {
+	for _, i := range res.Payload.VMs {
 		vmState := VMModel{
 			Id:                types.StringValue(i.ID),
 			BootDiskSizeGib:   types.Int64Value(i.BootDiskSizeGib),
@@ -224,9 +224,8 @@ func (d *VMInstanceDataSource) Read(ctx context.Context, req datasource.ReadRequ
 			DatacenterID:      types.StringValue(i.DatacenterID),
 			GpuModel:          types.StringValue(i.GpuModel),
 			GpuQuantity:       types.Int64Value(i.GpuQuantity),
-			ImageDesc:         types.StringValue(i.ImageDesc),
-			ImageID:           types.StringValue(i.ImageID),
-			ImageName:         types.StringValue(i.ImageName),
+			PrivateImageID:    types.StringValue(i.PrivateImageID),
+			PublicImageID:     types.StringValue(i.PublicImageID),
 			LcmState:          types.StringValue(i.LcmState),
 			InternalIPAddress: types.StringValue(i.InternalIPAddress),
 			ExternalIPAddress: types.StringValue(i.ExternalIPAddress),
