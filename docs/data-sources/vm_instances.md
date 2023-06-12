@@ -29,12 +29,13 @@ Read-Only:
 - `cpu_model` (String) The model of the CPU.
 - `create_by` (String) The name of the user who created the VM instance.
 - `datacenter_id` (String) The unique identifier of the datacenter where the VM instance is located.
+- `external_ip_address` (String) The external IP address of the VM instance.
 - `gpu_model` (String) The model of the GPU.
 - `gpu_quantity` (Number) The number of GPUs attached to the VM instance.
 - `id` (String) The unique identifier of the VM instance.
 - `image_id` (String) The unique identifier of the image used to create the VM instance.
+- `internal_ip_address` (String) The internal IP address of the VM instance.
 - `lcm_state` (String) The state of the VM instance in the LCM.
-- `local_ip_address` (String) The local IP address of the VM instance.
 - `memory_gib` (Number) The amount of memory allocated to the VM instance.
 - `one_state` (String) The state of the VM instance in OpenNebula.
 - `price_hr` (Number) The price per hour for the VM instance.

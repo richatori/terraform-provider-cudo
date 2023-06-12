@@ -34,6 +34,6 @@ Read-Only:
 - `description` (String) Image description
 - `id` (String) Image identifier
 - `name` (String) Image name
-- `size` (String) Image size
+- `size_gib` (String) Image size in GiB
 
 

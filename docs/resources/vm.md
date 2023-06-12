@@ -23,8 +23,8 @@ resource "cudo_vm" "my-vm" {
   vm_id              = "terra-vm-1"
   boot_disk_class    = "network"
   ssh_key_source     = "custom"
-  ssh_keys_custom    = ["custom-sshkey-1","custom-sshkey-2"]
-  start_script = <<EOF
+  ssh_keys_custom    = ["custom-sshkey-1", "custom-sshkey-2"]
+  start_script       = <<EOF
                      touch /multiline-script.txt
                      echo  $PWD > /current-dir.txt
                      EOF
@@ -57,10 +57,11 @@ resource "cudo_vm" "my-vm" {
 
 - `cpu_model` (String) The model of the CPU.
 - `create_by` (String) The name of the user who created the VM instance.
+- `external_ip_address` (String) The external IP address of the VM instance.
 - `gpu_model` (String) The model of the GPU.
 - `id` (String) placeholder
+- `internal_ip_address` (String) The internal IP address of the VM instance.
 - `lcm_state` (String) The state of the VM instance in the LCM.
-- `local_ip_address` (String) The local IP address of the VM instance.
 - `one_state` (String) The state of the VM instance in OpenNebula.
 - `price_hr` (Number) The price per hour for the VM instance.
 - `public_ip_address` (String) The public IP address of the VM instance.
