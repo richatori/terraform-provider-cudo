@@ -114,16 +114,8 @@ func (d *VMInstanceDataSource) Schema(ctx context.Context, req datasource.Schema
 							MarkdownDescription: "The number of GPUs attached to the VM instance.",
 							Computed:            true,
 						},
-						"image_desc": schema.StringAttribute{
-							MarkdownDescription: "The description of the image used to create the VM instance.",
-							Computed:            true,
-						},
 						"image_id": schema.StringAttribute{
 							MarkdownDescription: "The unique identifier of the image used to create the VM instance.",
-							Computed:            true,
-						},
-						"image_name": schema.StringAttribute{
-							MarkdownDescription: "The name of the image used to create the VM instance.",
 							Computed:            true,
 						},
 						"lcm_state": schema.StringAttribute{

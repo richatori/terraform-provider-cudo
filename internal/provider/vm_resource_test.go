@@ -2,8 +2,9 @@ package provider
 
 import (
 	"fmt"
-	"github.com/CudoVentures/terraform-provider-cudo/internal/helper"
 	"testing"
+
+	"github.com/CudoVentures/terraform-provider-cudo/internal/helper"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
@@ -42,9 +43,7 @@ resource "cudo_vm" "test-vm" {
 					resource.TestCheckResourceAttr("cudo_vm.test-vm", "cpu_model", "Haswell-noTSX-IBRS"),
 					resource.TestCheckResourceAttr("cudo_vm.test-vm", "datacenter_id", "black-mesa"),
 					resource.TestCheckResourceAttr("cudo_vm.test-vm", "gpu_model", ""),
-					resource.TestCheckResourceAttr("cudo_vm.test-vm", "image_desc", "Ubuntu 20.04 LTS (focal) Minimal"),
 					resource.TestCheckResourceAttr("cudo_vm.test-vm", "image_id", "ubuntu-minimal-2004"),
-					resource.TestCheckResourceAttr("cudo_vm.test-vm", "image_name", "Ubuntu Minimal 20.04"),
 					resource.TestCheckResourceAttr("cudo_vm.test-vm", "memory_gib", "4"),
 					resource.TestCheckResourceAttr("cudo_vm.test-vm", "one_state", "INIT"),
 					resource.TestCheckResourceAttrSet("cudo_vm.test-vm", "price_hr"),

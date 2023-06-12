@@ -32,9 +32,7 @@ Read-Only:
 - `gpu_model` (String) The model of the GPU.
 - `gpu_quantity` (Number) The number of GPUs attached to the VM instance.
 - `id` (String) The unique identifier of the VM instance.
-- `image_desc` (String) The description of the image used to create the VM instance.
 - `image_id` (String) The unique identifier of the image used to create the VM instance.
-- `image_name` (String) The name of the image used to create the VM instance.
 - `lcm_state` (String) The state of the VM instance in the LCM.
 - `local_ip_address` (String) The local IP address of the VM instance.
 - `memory_gib` (Number) The amount of memory allocated to the VM instance.

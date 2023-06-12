@@ -136,14 +136,6 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				MarkdownDescription: "The model of the GPU.",
 				Computed:            true,
 			},
-			"image_desc": schema.StringAttribute{
-				MarkdownDescription: "The description of the image used to create the VM instance.",
-				Computed:            true,
-			},
-			"image_name": schema.StringAttribute{
-				MarkdownDescription: "The name of the image used to create the VM instance.",
-				Computed:            true,
-			},
 			"lcm_state": schema.StringAttribute{
 				MarkdownDescription: "The state of the VM instance in the LCM.",
 				Computed:            true,

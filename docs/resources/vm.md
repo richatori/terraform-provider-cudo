@@ -59,8 +59,6 @@ resource "cudo_vm" "my-vm" {
 - `create_by` (String) The name of the user who created the VM instance.
 - `gpu_model` (String) The model of the GPU.
 - `id` (String) placeholder
-- `image_desc` (String) The description of the image used to create the VM instance.
-- `image_name` (String) The name of the image used to create the VM instance.
 - `lcm_state` (String) The state of the VM instance in the LCM.
 - `local_ip_address` (String) The local IP address of the VM instance.
 - `one_state` (String) The state of the VM instance in OpenNebula.
