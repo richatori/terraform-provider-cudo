@@ -733,7 +733,7 @@
     "/v1/projects/{projectId}/count-vms": {
       "get": {
         "tags": [
-          "Virtual machines"
+          "Virtual Machines"
         ],
         "summary": "Count",
         "operationId": "CountVMs",
@@ -764,7 +764,7 @@
     "/v1/projects/{projectId}/images": {
       "get": {
         "tags": [
-          "Virtual machines"
+          "Virtual Machines"
         ],
         "summary": "List private images",
         "operationId": "ListPrivateVMImages",
@@ -805,7 +805,7 @@
       },
       "post": {
         "tags": [
-          "Virtual machines"
+          "Virtual Machines"
         ],
         "summary": "Create private image",
         "operationId": "CreatePrivateVMImage",
@@ -853,7 +853,7 @@
     "/v1/projects/{projectId}/images/{id}": {
       "post": {
         "tags": [
-          "Virtual machines"
+          "Virtual Machines"
         ],
         "summary": "Update private image",
         "operationId": "UpdatePrivateVMImage",
@@ -893,7 +893,7 @@
       },
       "delete": {
         "tags": [
-          "Virtual machines"
+          "Virtual Machines"
         ],
         "summary": "Delete private image",
         "operationId": "DeletePrivateVMImage",
@@ -1427,7 +1427,7 @@
     "/v1/projects/{projectId}/vms": {
       "get": {
         "tags": [
-          "Virtual machines"
+          "Virtual Machines"
         ],
         "summary": "List",
         "operationId": "ListVMs",
@@ -1468,7 +1468,7 @@
     "/v1/projects/{projectId}/vms/{id}": {
       "get": {
         "tags": [
-          "Virtual machines"
+          "Virtual Machines"
         ],
         "summary": "Get",
         "operationId": "GetVM",
@@ -1505,7 +1505,7 @@
     "/v1/projects/{projectId}/vms/{id}/connect": {
       "get": {
         "tags": [
-          "Virtual machines"
+          "Virtual Machines"
         ],
         "summary": "Connect via VNC",
         "operationId": "ConnectVM",
@@ -1547,7 +1547,7 @@
     "/v1/projects/{projectId}/vms/{id}/monitor": {
       "get": {
         "tags": [
-          "Virtual machines"
+          "Virtual Machines"
         ],
         "summary": "Monitor",
         "operationId": "MonitorVM",
@@ -1584,7 +1584,7 @@
     "/v1/projects/{projectId}/vms/{id}/reboot": {
       "post": {
         "tags": [
-          "Virtual machines"
+          "Virtual Machines"
         ],
         "summary": "Reboot",
         "operationId": "RebootVM",
@@ -1621,7 +1621,7 @@
     "/v1/projects/{projectId}/vms/{id}/start": {
       "post": {
         "tags": [
-          "Virtual machines"
+          "Virtual Machines"
         ],
         "summary": "Start",
         "operationId": "StartVM",
@@ -1658,7 +1658,7 @@
     "/v1/projects/{projectId}/vms/{id}/stop": {
       "post": {
         "tags": [
-          "Virtual machines"
+          "Virtual Machines"
         ],
         "summary": "Stop",
         "operationId": "StopVM",
@@ -1695,7 +1695,7 @@
     "/v1/projects/{projectId}/vms/{id}/terminate": {
       "post": {
         "tags": [
-          "Virtual machines"
+          "Virtual Machines"
         ],
         "summary": "Terminate",
         "operationId": "TerminateVM",
@@ -2017,7 +2017,7 @@
     "/v1/vms/data-centers": {
       "get": {
         "tags": [
-          "Virtual machines"
+          "Virtual Machines"
         ],
         "summary": "List available data centers",
         "operationId": "ListVMDataCenters",
@@ -2056,7 +2056,7 @@
     "/v1/vms/machine-types": {
       "get": {
         "tags": [
-          "Virtual machines"
+          "Virtual Machines"
         ],
         "summary": "List suitable virtual machine types",
         "operationId": "ListVMMachineTypes",
@@ -2144,7 +2144,7 @@
     "/v1/vms/public-images": {
       "get": {
         "tags": [
-          "Virtual machines"
+          "Virtual Machines"
         ],
         "summary": "List Public images",
         "operationId": "ListPublicVMImages",
