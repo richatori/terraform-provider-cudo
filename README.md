@@ -25,6 +25,8 @@ See docs directory
 
 If you wish to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine (see [Requirements](#requirements) above).
 
+The Cudo API client and provider docs are generated from swagger/public.swagger.json by running `make codegen`.
+
 To compile the provider, run `go install`. This will build the provider and put the provider binary in the `$GOPATH/bin` directory.
 
 To run locally add the code below to ~/.terraformrc
@@ -45,14 +47,11 @@ provider_installation {
 ```
 
 ## Documentation
-To generate or update documentation, run `go generate`.
+To generate or update documentation, run `make docs`.
 
-or to change name:
+or to change the name:
 
 go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs generate --rendered-provider-name Cudo
-
-
-
 
 ## Testing
 In order to run the full suite of Acceptance tests, run `make testacc`.
