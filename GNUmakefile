@@ -17,7 +17,7 @@ $(GOPATH)/bin/swagger:
 swagger/public.swagger.json: $(GOPATH)/bin/swagger
 
 internal/client internal/models: swagger/public.swagger.json
-	@$(swagger) generate client -f swagger/public.swagger.json -t internal
+	@swagger generate client -f swagger/public.swagger.json -t internal
 
 docs: $(wildcard examples/*)
 	@go generate ./...
