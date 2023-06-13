@@ -1,14 +1,28 @@
-default: testacc
+default: codegen
 
 # Run acceptance tests
 .PHONY: testacc
 testacc:
 	TF_ACC=1 go test ./... -v $(TESTARGS) -timeout 120m
 
-.PHONY: swagger
-swagger:
-	@swagger generate client -f swagger/public.swagger.json -t internal
+.PHONY: test
+test:
+	go test ./...
 
-.PHONY: tools
-tools:
-	@go install github.com/go-swagger/go-swagger/cmd/swagger@latest
+GOPATH := $(shell go env GOPATH)
+
+$(GOPATH)/bin/swagger: 
+	go install github.com/go-swagger/go-swagger/cmd/swagger@v0.30.5
+
+swagger/public.swagger.json: $(GOPATH)/bin/swagger
+
+internal/client internal/models: swagger/public.swagger.json
+	@$(swagger) generate client -f swagger/public.swagger.json -t internal
+
+docs: $(wildcard examples/*)
+	@go generate ./...
+
+codegen: internal/client internal/models docs
+
+clean:
+	@rm -rf docs internal/client internal/models
