@@ -766,7 +766,7 @@
         "tags": [
           "Virtual Machines"
         ],
-        "summary": "List private images",
+        "summary": "List private VM images",
         "operationId": "ListPrivateVMImages",
         "parameters": [
           {
@@ -807,7 +807,7 @@
         "tags": [
           "Virtual Machines"
         ],
-        "summary": "Create private image",
+        "summary": "Create private VM image",
         "operationId": "CreatePrivateVMImage",
         "parameters": [
           {
@@ -855,7 +855,7 @@
         "tags": [
           "Virtual Machines"
         ],
-        "summary": "Update private image",
+        "summary": "Update private VM image",
         "operationId": "UpdatePrivateVMImage",
         "parameters": [
           {
@@ -895,7 +895,7 @@
         "tags": [
           "Virtual Machines"
         ],
-        "summary": "Delete private image",
+        "summary": "Delete private VM image",
         "operationId": "DeletePrivateVMImage",
         "parameters": [
           {
@@ -2019,7 +2019,7 @@
         "tags": [
           "Virtual Machines"
         ],
-        "summary": "List available data centers",
+        "summary": "List data centers",
         "operationId": "ListVMDataCenters",
         "parameters": [
           {
@@ -2058,7 +2058,7 @@
         "tags": [
           "Virtual Machines"
         ],
-        "summary": "List suitable virtual machine types",
+        "summary": "List machine types",
         "operationId": "ListVMMachineTypes",
         "parameters": [
           {
@@ -2146,7 +2146,7 @@
         "tags": [
           "Virtual Machines"
         ],
-        "summary": "List Public images",
+        "summary": "List public VM images",
         "operationId": "ListPublicVMImages",
         "responses": {
           "200": {
@@ -2282,6 +2282,9 @@
       "properties": {
         "id": {
           "type": "string"
+        },
+        "vm": {
+          "$ref": "#/definitions/VM"
         }
       }
     },
@@ -2985,6 +2988,9 @@
     "Network": {
       "type": "object",
       "properties": {
+        "activeState": {
+          "type": "string"
+        },
         "dataCenterId": {
           "type": "string"
         },
@@ -2995,6 +3001,9 @@
           "type": "string"
         },
         "id": {
+          "type": "string"
+        },
+        "initState": {
           "type": "string"
         },
         "internalIpAddress": {
@@ -3389,6 +3398,9 @@
     "VM": {
       "type": "object",
       "properties": {
+        "activeState": {
+          "type": "string"
+        },
         "bootDiskSizeGib": {
           "type": "integer",
           "format": "int64"
@@ -3423,10 +3435,16 @@
         "imageName": {
           "type": "string"
         },
+        "initState": {
+          "type": "string"
+        },
         "internalIpAddress": {
           "type": "string"
         },
         "lcmState": {
+          "type": "string"
+        },
+        "machineType": {
           "type": "string"
         },
         "memory": {

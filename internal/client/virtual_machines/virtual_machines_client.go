@@ -140,7 +140,7 @@ func (a *Client) CountVMs(params *CountVMsParams, opts ...ClientOption) (*CountV
 }
 
 /*
-CreatePrivateVMImage creates private image
+CreatePrivateVMImage creates private VM image
 */
 func (a *Client) CreatePrivateVMImage(params *CreatePrivateVMImageParams, opts ...ClientOption) (*CreatePrivateVMImageOK, error) {
 	// TODO: Validate the params before sending
@@ -214,7 +214,7 @@ func (a *Client) CreateVM(params *CreateVMParams, opts ...ClientOption) (*Create
 }
 
 /*
-DeletePrivateVMImage deletes private image
+DeletePrivateVMImage deletes private VM image
 */
 func (a *Client) DeletePrivateVMImage(params *DeletePrivateVMImageParams, opts ...ClientOption) (*DeletePrivateVMImageOK, error) {
 	// TODO: Validate the params before sending
@@ -288,7 +288,7 @@ func (a *Client) GetVM(params *GetVMParams, opts ...ClientOption) (*GetVMOK, err
 }
 
 /*
-ListPrivateVMImages lists private images
+ListPrivateVMImages lists private VM images
 */
 func (a *Client) ListPrivateVMImages(params *ListPrivateVMImagesParams, opts ...ClientOption) (*ListPrivateVMImagesOK, error) {
 	// TODO: Validate the params before sending
@@ -325,7 +325,7 @@ func (a *Client) ListPrivateVMImages(params *ListPrivateVMImagesParams, opts ...
 }
 
 /*
-ListPublicVMImages lists public images
+ListPublicVMImages lists public VM images
 */
 func (a *Client) ListPublicVMImages(params *ListPublicVMImagesParams, opts ...ClientOption) (*ListPublicVMImagesOK, error) {
 	// TODO: Validate the params before sending
@@ -362,7 +362,7 @@ func (a *Client) ListPublicVMImages(params *ListPublicVMImagesParams, opts ...Cl
 }
 
 /*
-ListVMDataCenters lists available data centers
+ListVMDataCenters lists data centers
 */
 func (a *Client) ListVMDataCenters(params *ListVMDataCentersParams, opts ...ClientOption) (*ListVMDataCentersOK, error) {
 	// TODO: Validate the params before sending
@@ -399,7 +399,7 @@ func (a *Client) ListVMDataCenters(params *ListVMDataCentersParams, opts ...Clie
 }
 
 /*
-ListVMMachineTypes lists suitable virtual machine types
+ListVMMachineTypes lists machine types
 */
 func (a *Client) ListVMMachineTypes(params *ListVMMachineTypesParams, opts ...ClientOption) (*ListVMMachineTypesOK, error) {
 	// TODO: Validate the params before sending
@@ -658,7 +658,7 @@ func (a *Client) TerminateVM(params *TerminateVMParams, opts ...ClientOption) (*
 }
 
 /*
-UpdatePrivateVMImage updates private image
+UpdatePrivateVMImage updates private VM image
 */
 func (a *Client) UpdatePrivateVMImage(params *UpdatePrivateVMImageParams, opts ...ClientOption) (*UpdatePrivateVMImageOK, error) {
 	// TODO: Validate the params before sending
