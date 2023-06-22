@@ -131,7 +131,7 @@ func (d *SecurityGroupsDataSource) Read(ctx context.Context, req datasource.Read
 		return
 	}
 
-	params := networks.NewListSecurityGroupsParams()
+	params := networks.NewListSecurityGroupsParamsWithContext(ctx)
 	params.ProjectID = d.client.DefaultProjectID
 	params.DataCenterID = state.DataCenterId.ValueStringPointer()
 	res, err := d.client.Client.Networks.ListSecurityGroups(params)

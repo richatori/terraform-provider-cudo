@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/search"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
@@ -90,7 +91,7 @@ func (d *RegionsDataSource) Configure(ctx context.Context, req datasource.Config
 func (d *RegionsDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var state RegionsDataSourceModel
 
-	res, err := d.client.Client.Search.ListRegions(search.NewListRegionsParams())
+	res, err := d.client.Client.Search.ListRegions(search.NewListRegionsParamsWithContext(ctx))
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to read regions",

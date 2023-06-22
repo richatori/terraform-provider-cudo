@@ -235,7 +235,7 @@ func (d *MachineTypeDataSource) Read(ctx context.Context, req datasource.ReadReq
 
 	resp.Diagnostics.Append(req.Config.Get(ctx, &state)...)
 
-	params := virtual_machines.NewListVMMachineTypesParams()
+	params := virtual_machines.NewListVMMachineTypesParamsWithContext(ctx)
 
 	if state.SearchParams == nil {
 		state.SearchParams = &SearchParamsModel{}

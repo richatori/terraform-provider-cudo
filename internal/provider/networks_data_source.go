@@ -95,7 +95,7 @@ func (d *NetworksDataSource) Configure(ctx context.Context, req datasource.Confi
 func (d *NetworksDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var state NetworksDataSourceModel
 
-	params := networks.NewListNetworksParams()
+	params := networks.NewListNetworksParamsWithContext(ctx)
 	params.ProjectID = d.client.DefaultProjectID
 
 	res, err := d.client.Client.Networks.ListNetworks(params)

@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/ssh_keys"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
@@ -106,7 +107,7 @@ func (d *SshKeysDataSource) Read(ctx context.Context, req datasource.ReadRequest
 
 	resp.Diagnostics.Append(req.Config.Get(ctx, &state)...)
 
-	res, err := d.client.Client.SSHKeys.ListSSHKeys(ssh_keys.NewListSSHKeysParams())
+	res, err := d.client.Client.SSHKeys.ListSSHKeys(ssh_keys.NewListSSHKeysParamsWithContext(ctx))
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to read ssh keys",

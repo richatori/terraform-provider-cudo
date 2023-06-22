@@ -118,7 +118,7 @@ func (d *NetworkSearchDataSource) Read(ctx context.Context, req datasource.ReadR
 		return
 	}
 
-	params := networks.NewListNetworksParams()
+	params := networks.NewListNetworksParamsWithContext(ctx)
 	params.ProjectID = d.client.DefaultProjectID
 
 	res, err := d.client.Client.Networks.ListNetworks(params)

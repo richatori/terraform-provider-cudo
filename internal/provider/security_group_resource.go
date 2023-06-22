@@ -244,7 +244,7 @@ func (r *SecurityGroupResource) Create(ctx context.Context, req resource.CreateR
 		return
 	}
 
-	params := networks.NewCreateSecurityGroupParams()
+	params := networks.NewCreateSecurityGroupParamsWithContext(ctx)
 	params.Body = networks.CreateSecurityGroupBody{
 		SecurityGroup: &networks.CreateSecurityGroupParamsBodySecurityGroup{
 			DataCenterID: state.DataCenterId.ValueString(),
@@ -279,7 +279,7 @@ func (r *SecurityGroupResource) Read(ctx context.Context, req resource.ReadReque
 		return
 	}
 
-	params := networks.NewGetSecurityGroupParams()
+	params := networks.NewGetSecurityGroupParamsWithContext(ctx)
 	params.ID = state.Id.ValueString()
 	params.ProjectID = r.client.DefaultProjectID
 
@@ -313,7 +313,7 @@ func (r *SecurityGroupResource) Update(ctx context.Context, req resource.UpdateR
 		return
 	}
 
-	params := networks.NewUpdateSecurityGroupParams()
+	params := networks.NewUpdateSecurityGroupParamsWithContext(ctx)
 	params.Body = networks.UpdateSecurityGroupBody{
 		SecurityGroup: &networks.UpdateSecurityGroupParamsBodySecurityGroup{
 			DataCenterID: state.DataCenterId.ValueString(),
@@ -343,7 +343,7 @@ func (r *SecurityGroupResource) Delete(ctx context.Context, req resource.DeleteR
 	var state *SecurityGroupResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 
-	params := networks.NewDeleteSecurityGroupParams()
+	params := networks.NewDeleteSecurityGroupParamsWithContext(ctx)
 	params.ProjectID = r.client.DefaultProjectID
 	params.ID = state.Id.ValueString()
 

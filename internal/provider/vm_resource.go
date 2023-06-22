@@ -234,7 +234,7 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		customKeys = append(customKeys, key.ValueString())
 	}
 
-	params := virtual_machines.NewCreateVMParams()
+	params := virtual_machines.NewCreateVMParamsWithContext(ctx)
 	params.ProjectID = r.client.DefaultProjectID
 	params.Body = virtual_machines.CreateVMBody{
 		BootDisk: &models.Disk{
@@ -307,7 +307,7 @@ func (r *VMResource) Read(ctx context.Context, req resource.ReadRequest, resp *r
 		return
 	}
 
-	params := virtual_machines.NewGetVMParams()
+	params := virtual_machines.NewGetVMParamsWithContext(ctx)
 	params.ProjectID = r.client.DefaultProjectID
 	params.ID = state.ID.ValueString()
 
@@ -349,7 +349,7 @@ func (r *VMResource) Update(ctx context.Context, req resource.UpdateRequest, res
 		return
 	}
 
-	params := virtual_machines.NewGetVMParams()
+	params := virtual_machines.NewGetVMParamsWithContext(ctx)
 
 	params.ProjectID = r.client.DefaultProjectID
 	params.ID = state.ID.ValueString()
@@ -386,7 +386,7 @@ func (r *VMResource) Delete(ctx context.Context, req resource.DeleteRequest, res
 	var state *VMResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 
-	params := virtual_machines.NewTerminateVMParams()
+	params := virtual_machines.NewTerminateVMParamsWithContext(ctx)
 	params.ProjectID = r.client.DefaultProjectID
 	params.ID = state.ID.ValueString()
 

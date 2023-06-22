@@ -107,7 +107,7 @@ func (r *NetworkResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	params := networks.NewCreateNetworkParams()
+	params := networks.NewCreateNetworkParamsWithContext(ctx)
 	params.ProjectID = r.client.DefaultProjectID
 	params.Body = networks.CreateNetworkBody{
 		CidrPrefix:   state.IPRange.ValueStringPointer(),
@@ -125,7 +125,7 @@ func (r *NetworkResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	getParams := networks.NewGetNetworkParams()
+	getParams := networks.NewGetNetworkParamsWithContext(ctx)
 	getParams.ID = state.Id.ValueString()
 	getParams.ProjectID = r.client.DefaultProjectID
 
@@ -157,7 +157,7 @@ func (r *NetworkResource) Read(ctx context.Context, req resource.ReadRequest, re
 		return
 	}
 
-	getParams := networks.NewGetNetworkParams()
+	getParams := networks.NewGetNetworkParamsWithContext(ctx)
 	getParams.ID = state.Id.ValueString()
 	getParams.ProjectID = r.client.DefaultProjectID
 
@@ -192,7 +192,7 @@ func (r *NetworkResource) Update(ctx context.Context, req resource.UpdateRequest
 		return
 	}
 
-	getParams := networks.NewGetNetworkParams()
+	getParams := networks.NewGetNetworkParamsWithContext(ctx)
 	getParams.ID = state.Id.ValueString()
 	getParams.ProjectID = r.client.DefaultProjectID
 
@@ -219,7 +219,7 @@ func (r *NetworkResource) Delete(ctx context.Context, req resource.DeleteRequest
 	var state *NetworkResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 
-	params := networks.NewDeleteNetworkParams()
+	params := networks.NewDeleteNetworkParamsWithContext(ctx)
 	params.ProjectID = r.client.DefaultProjectID
 	params.NetworkID = state.Id.ValueString()
 
