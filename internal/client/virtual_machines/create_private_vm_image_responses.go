@@ -52,7 +52,7 @@ CreatePrivateVMImageOK describes a response with status code 200, with default h
 A successful response.
 */
 type CreatePrivateVMImageOK struct {
-	Payload models.CreatePrivateVMImageResponse
+	Payload *models.CreatePrivateVMImageResponse
 }
 
 // IsSuccess returns true when this create private Vm image o k response has a 2xx status code
@@ -93,14 +93,16 @@ func (o *CreatePrivateVMImageOK) String() string {
 	return fmt.Sprintf("[POST /v1/projects/{projectId}/images][%d] createPrivateVmImageOK  %+v", 200, o.Payload)
 }
 
-func (o *CreatePrivateVMImageOK) GetPayload() models.CreatePrivateVMImageResponse {
+func (o *CreatePrivateVMImageOK) GetPayload() *models.CreatePrivateVMImageResponse {
 	return o.Payload
 }
 
 func (o *CreatePrivateVMImageOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
+	o.Payload = new(models.CreatePrivateVMImageResponse)
+
 	// response payload
-	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
 		return err
 	}
 

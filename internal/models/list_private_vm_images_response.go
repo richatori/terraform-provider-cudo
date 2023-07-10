@@ -21,7 +21,7 @@ import (
 type ListPrivateVMImagesResponse struct {
 
 	// images
-	Images []*PrivateImage `json:"images"`
+	Images []*ListPrivateVMImagesResponsePrivateImage `json:"images"`
 
 	// page number
 	// Required: true

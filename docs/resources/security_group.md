@@ -16,7 +16,7 @@ Security group resource
 resource "cudo_security_group" "my-sg" {
   id             = "my-sg"
   data_center_id = "gb-london-1"
-  description    = "security group for a purpose"
+  description    = "security group for a web server"
   rules = [
     {
       ports     = "22,80,443"
@@ -50,14 +50,14 @@ resource "cudo_security_group" "my-sg" {
 
 Required:
 
-- `protocol` (String) Protocol for rule, use one of: tcp or udp
 - `rule_type` (String) Type for rule either 'inbound' or 'outbound'
 
 Optional:
 
 - `icmp_type` (String) Specific ICMP type of the rule. If a type has multiple codes, it includes all the codes within. This can only be used with ICMP
-- `ip_range_cidr` (String) A single IP address or CIDR format range to apply rule to
+- `ip_range` (String) A single IP address or CIDR format range to apply rule to
 - `ports` (String) A comma separated list of ports (80,443,8080) or a single port range (1024:2048)
+- `protocol` (String) Protocol for rule, use one of: all, tcp, udp, icmp, icmpv6, ipsec
 
 Read-Only:
 

@@ -1,0 +1,1 @@
+data "cudo_vm_data_centers" "data_centers" {}

@@ -1,0 +1,1 @@
+data "cudo_public_images" "public_images" {}

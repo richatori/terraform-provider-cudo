@@ -22,6 +22,9 @@ type CreateVMResponse struct {
 	// id
 	// Required: true
 	ID *string `json:"id"`
+
+	// vm
+	VM *VM `json:"vm,omitempty"`
 }
 
 // Validate validates this create VM response
@@ -29,6 +32,10 @@ func (m *CreateVMResponse) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateVM(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -47,8 +54,57 @@ func (m *CreateVMResponse) validateID(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validates this create VM response based on context it is used
+func (m *CreateVMResponse) validateVM(formats strfmt.Registry) error {
+	if swag.IsZero(m.VM) { // not required
+		return nil
+	}
+
+	if m.VM != nil {
+		if err := m.VM.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("vm")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("vm")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+// ContextValidate validate this create VM response based on the context it is used
 func (m *CreateVMResponse) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.contextValidateVM(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *CreateVMResponse) contextValidateVM(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.VM != nil {
+
+		if swag.IsZero(m.VM) { // not required
+			return nil
+		}
+
+		if err := m.VM.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("vm")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("vm")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 

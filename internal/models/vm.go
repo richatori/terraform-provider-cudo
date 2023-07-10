@@ -20,6 +20,9 @@ import (
 // swagger:model VM
 type VM struct {
 
+	// active state
+	ActiveState string `json:"activeState,omitempty"`
+
 	// boot disk size gib
 	BootDiskSizeGib int64 `json:"bootDiskSizeGib,omitempty"`
 
@@ -52,11 +55,17 @@ type VM struct {
 	// image name
 	ImageName string `json:"imageName,omitempty"`
 
+	// init state
+	InitState string `json:"initState,omitempty"`
+
 	// internal Ip address
 	InternalIPAddress string `json:"internalIpAddress,omitempty"`
 
 	// lcm state
 	LcmState string `json:"lcmState,omitempty"`
+
+	// machine type
+	MachineType string `json:"machineType,omitempty"`
 
 	// memory
 	Memory int64 `json:"memory,omitempty"`
@@ -98,6 +107,9 @@ type VM struct {
 
 	// security group ids
 	SecurityGroupIds []string `json:"securityGroupIds"`
+
+	// short state
+	ShortState string `json:"shortState,omitempty"`
 
 	// vcpus
 	Vcpus int64 `json:"vcpus,omitempty"`

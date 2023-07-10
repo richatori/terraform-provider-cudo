@@ -1,4 +1,4 @@
-data "cudo_machine_types" "types" {
+data "cudo_machine_types" "machine_types" {
   search_params = {
     memory_gib = 4
   }

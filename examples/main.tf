@@ -7,50 +7,42 @@ terraform {
 }
 
 provider "cudo" {
-  api_key        = "api-key"
-  project_id     = "my-project"
-  data_center_id = "gb-london-1"
+  api_key    = "api-key"
+  project_id = "my-project"
 }
 
-data "cudo_regions" "reg1" {
+data "cudo_data_centers" "data_centers" {
 }
 
-output "regions" {
-  value = data.cudo_regions.reg1
+output "data_centers" {
+  value = data.data_centers
 }
 
-data "cudo_images" "img1" {
+data "cudo_images" "images" {
 }
 
 output "images" {
-  value = data.cudo_images.img1.images
+  value = data.cudo_images.images
 }
 
-data "cudo_vm_configs" "cfgs" {
-  search_params = {
-    memory_gib = 4
-  }
+data "cudo_vm" "vm" {
+  id = "test-vm"
 }
 
-output "configs" {
-  value = data.cudo_vm_configs.cfgs
-}
-
-data "cudo_vm_instances" "ins" {
-}
-
-output "instances" {
-  value = data.cudo_vm_instances.ins
+output "vm_external_ip_address" {
+  value = data.cudo_vm.ins.external_ip_address
 }
 
 resource "cudo_vm" "my-vm" {
-  config_id          = data.cudo_vm_configs.cfgs.vm_configs[0].id
-  vcpus              = 1
-  boot_disk_size_gib = 50
-  image_id           = "ubuntu-minimal-2004"
-  memory_gib         = 2
-  vm_id              = "terra-vm-1"
-  boot_disk_class    = "network"
+  id             = "terra-vm-1"
+  data_center_id = "cudo-ca-montreal-2"
+  machine_type   = ""
+  vcpus          = 1
+  memory_gib     = 2
+  boot_disk = {
+    image_id = "debian-11"
+    size_gib = 25
+  }
 }
 
 output "new-instance" {

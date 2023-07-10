@@ -13,18 +13,30 @@ VM resource
 ## Example Usage
 
 ```terraform
+# start a vm in any data center by specifying a maximum price
+resource "cudo_vm" "my-vm-max-price" {
+  id         = "terra-vm-1"
+  memory_gib = 2
+  vcpus      = 1
+  boot_disk = {
+    image_id = "debian-11"
+  }
+  max_price_hr = 0.003
+}
+
+# pick a specific data center and machine type
 resource "cudo_vm" "my-vm" {
-  machine_type       = "standard"
-  datacenter         = "gb-bournemouth-1"
-  vcpus              = 1
-  boot_disk_size_gib = 50
-  image_id           = "ubuntu-minimal-2004"
-  memory_gib         = 2
-  vm_id              = "terra-vm-1"
-  boot_disk_class    = "network"
-  ssh_key_source     = "custom"
-  ssh_keys_custom    = ["custom-sshkey-1", "custom-sshkey-2"]
-  start_script       = <<EOF
+  id             = "terra-vm-1"
+  machine_type   = "standard"
+  data_center_id = "gb-bournemouth-1"
+  memory_gib     = 2
+  vcpus          = 1
+  boot_disk = {
+    image_id = "debian-11"
+    size_gib = 50
+  }
+  ssh_key_source = "project"
+  start_script   = <<EOF
                      touch /multiline-script.txt
                      echo  $PWD > /current-dir.txt
                      EOF
@@ -36,35 +48,61 @@ resource "cudo_vm" "my-vm" {
 
 ### Required
 
-- `boot_disk_class` (String) Storage class for boot disk, either 'local' or 'network'
-- `boot_disk_size_gib` (Number) Size of the boot disk in GiB
-- `data_center_id` (String) The unique identifier of the datacenter where the VM instance is located.
-- `image_id` (String) OS image ID on boot disk
-- `machine_type` (String) VM machine type, from machine type data source
-- `memory_gib` (Number) Amount of VM memory in GiB
-- `vcpus` (Number) Number of VCPUs
-- `vm_id` (String) Your chosen VM identifier
+- `boot_disk` (Attributes) Specification for boot disk (see [below for nested schema](#nestedatt--boot_disk))
+- `id` (String) ID for VM within project
 
 ### Optional
 
+- `cpu_model` (String) The model of the CPU.
+- `data_center_id` (String) The id of the datacenter where the VM instance is located.
+- `gpu_model` (String) The model of the GPU.
 - `gpus` (Number) Number of GPUs
-- `password` (String) VM password
+- `machine_type` (String) VM machine type, from machine type data source
+- `max_price_hr` (String) The maximum price per hour for the VM instance.
+- `memory_gib` (Number) Amount of VM memory in GiB
+- `networks` (Attributes List) Network adapters for private networks (see [below for nested schema](#nestedatt--networks))
+- `password` (String, Sensitive) Root password for linux, or Admin password for windows
+- `project_id` (String) The project the VM instance is in.
+- `security_group_ids` (Set of String) Security groups to assign to the VM when using public networking
 - `ssh_key_source` (String) Which SSH keys to add to the VM: project (default), user or custom
-- `ssh_keys_custom` (List of String) List of custom SSH keys to add to the VM, ssh_key_source must be set to custom
+- `ssh_keys` (List of String) List of SSH keys to add to the VM, ssh_key_source must be set to custom
 - `start_script` (String) A script to run when VM boots
+- `vcpus` (Number) Number of VCPUs
 
 ### Read-Only
 
-- `cpu_model` (String) The model of the CPU.
-- `create_by` (String) The name of the user who created the VM instance.
 - `external_ip_address` (String) The external IP address of the VM instance.
-- `gpu_model` (String) The model of the GPU.
-- `id` (String) placeholder
 - `internal_ip_address` (String) The internal IP address of the VM instance.
-- `lcm_state` (String) The state of the VM instance in the LCM.
-- `price_hr` (Number) The price per hour for the VM instance.
-- `region_id` (String) The unique identifier of the region where the VM instance is located.
-- `region_name` (String) The name of the region where the VM instance is located.
+- `price_hr` (String) The current price per hour for the VM instance.
 - `renewable_energy` (Boolean) Whether the VM instance is powered by renewable energy
+
+<a id="nestedatt--boot_disk"></a>
+### Nested Schema for `boot_disk`
+
+Required:
+
+- `image_id` (String) ID of OS image on boot disk
+
+Optional:
+
+- `size_gib` (Number) Size of boot disk in Gib
+
+
+<a id="nestedatt--networks"></a>
+### Nested Schema for `networks`
+
+Required:
+
+- `network_id` (String) ID of private network to attach the NIC to
+
+Optional:
+
+- `assign_public_ip` (Boolean) Assign a public IP to the NIC
+- `security_group_ids` (Set of String) Security groups to assign to the NIC
+
+Read-Only:
+
+- `external_ip_address` (String) The external IP address of the NIC.
+- `internal_ip_address` (String) The internal IP address of the NIC.
 
 

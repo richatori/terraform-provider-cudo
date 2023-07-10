@@ -18,6 +18,9 @@ import (
 // swagger:model Network
 type Network struct {
 
+	// active state
+	ActiveState string `json:"activeState,omitempty"`
+
 	// data center Id
 	DataCenterID string `json:"dataCenterId,omitempty"`
 
@@ -29,6 +32,9 @@ type Network struct {
 
 	// id
 	ID string `json:"id,omitempty"`
+
+	// init state
+	InitState string `json:"initState,omitempty"`
 
 	// internal Ip address
 	InternalIPAddress string `json:"internalIpAddress,omitempty"`
@@ -44,6 +50,9 @@ type Network struct {
 
 	// price hr
 	PriceHr *Decimal `json:"priceHr,omitempty"`
+
+	// short state
+	ShortState string `json:"shortState,omitempty"`
 
 	// size
 	Size *VRouterSize `json:"size,omitempty"`

@@ -13,17 +13,17 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// CreatePrivateVMImageResponse create private VM image response
+// GetPrivateVMImageResponse get private VM image response
 //
-// swagger:model CreatePrivateVMImageResponse
-type CreatePrivateVMImageResponse struct {
+// swagger:model GetPrivateVMImageResponse
+type GetPrivateVMImageResponse struct {
 
 	// image
 	Image *V1PrivateImage `json:"image,omitempty"`
 }
 
-// Validate validates this create private VM image response
-func (m *CreatePrivateVMImageResponse) Validate(formats strfmt.Registry) error {
+// Validate validates this get private VM image response
+func (m *GetPrivateVMImageResponse) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateImage(formats); err != nil {
@@ -36,7 +36,7 @@ func (m *CreatePrivateVMImageResponse) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *CreatePrivateVMImageResponse) validateImage(formats strfmt.Registry) error {
+func (m *GetPrivateVMImageResponse) validateImage(formats strfmt.Registry) error {
 	if swag.IsZero(m.Image) { // not required
 		return nil
 	}
@@ -55,8 +55,8 @@ func (m *CreatePrivateVMImageResponse) validateImage(formats strfmt.Registry) er
 	return nil
 }
 
-// ContextValidate validate this create private VM image response based on the context it is used
-func (m *CreatePrivateVMImageResponse) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this get private VM image response based on the context it is used
+func (m *GetPrivateVMImageResponse) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateImage(ctx, formats); err != nil {
@@ -69,7 +69,7 @@ func (m *CreatePrivateVMImageResponse) ContextValidate(ctx context.Context, form
 	return nil
 }
 
-func (m *CreatePrivateVMImageResponse) contextValidateImage(ctx context.Context, formats strfmt.Registry) error {
+func (m *GetPrivateVMImageResponse) contextValidateImage(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Image != nil {
 
@@ -91,7 +91,7 @@ func (m *CreatePrivateVMImageResponse) contextValidateImage(ctx context.Context,
 }
 
 // MarshalBinary interface implementation
-func (m *CreatePrivateVMImageResponse) MarshalBinary() ([]byte, error) {
+func (m *GetPrivateVMImageResponse) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -99,8 +99,8 @@ func (m *CreatePrivateVMImageResponse) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *CreatePrivateVMImageResponse) UnmarshalBinary(b []byte) error {
-	var res CreatePrivateVMImageResponse
+func (m *GetPrivateVMImageResponse) UnmarshalBinary(b []byte) error {
+	var res GetPrivateVMImageResponse
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

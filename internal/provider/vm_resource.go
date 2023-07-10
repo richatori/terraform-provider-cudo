@@ -4,14 +4,17 @@ import (
 	"context"
 	"fmt"
 	"regexp"
+	"time"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/virtual_machines"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/helper"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -32,31 +35,40 @@ type VMResource struct {
 
 // VMResourceModel describes the resource data model.
 type VMResourceModel struct {
-	Id            types.String   `tfsdk:"id"`
-	BootDiskClass types.String   `tfsdk:"boot_disk_class"`
-	BootDiskSize  types.Int64    `tfsdk:"boot_disk_size_gib"`
-	MachineType   types.String   `tfsdk:"machine_type"`
-	GPUs          types.Int64    `tfsdk:"gpus"`
-	ImageID       types.String   `tfsdk:"image_id"`
-	Memory        types.Int64    `tfsdk:"memory_gib"`
-	Password      types.String   `tfsdk:"password"`
-	VCPUs         types.Int64    `tfsdk:"vcpus"`
-	ID            types.String   `tfsdk:"vm_id"`
-	SSHKeySource  types.String   `tfsdk:"ssh_key_source"`
-	SSHKeysCustom []types.String `tfsdk:"ssh_keys_custom"`
-	StartScript   types.String   `tfsdk:"start_script"`
-	// Response
-	CPUModel          types.String  `tfsdk:"cpu_model"`
-	CreateBy          types.String  `tfsdk:"create_by"`
-	DatacenterID      types.String  `tfsdk:"data_center_id"`
-	GpuModel          types.String  `tfsdk:"gpu_model"`
-	LcmState          types.String  `tfsdk:"lcm_state"`
-	InternalIPAddress types.String  `tfsdk:"internal_ip_address"`
-	ExternalIPAddress types.String  `tfsdk:"external_ip_address"`
-	PriceHr           types.Float64 `tfsdk:"price_hr"`
-	RegionID          types.String  `tfsdk:"region_id"`
-	RegionName        types.String  `tfsdk:"region_name"`
-	RenewableEnergy   types.Bool    `tfsdk:"renewable_energy"`
+	BootDisk          *VMBootDiskResourceModel `tfsdk:"boot_disk"`
+	DataCenterID      types.String             `tfsdk:"data_center_id"`
+	CPUModel          types.String             `tfsdk:"cpu_model"`
+	GPUs              types.Int64              `tfsdk:"gpus"`
+	GPUModel          types.String             `tfsdk:"gpu_model"`
+	ID                types.String             `tfsdk:"id"`
+	MachineType       types.String             `tfsdk:"machine_type"`
+	MaxPriceHr        types.String             `tfsdk:"max_price_hr"`
+	MemoryGib         types.Int64              `tfsdk:"memory_gib"`
+	Password          types.String             `tfsdk:"password"`
+	PriceHr           types.String             `tfsdk:"price_hr"`
+	ProjectID         types.String             `tfsdk:"project_id"`
+	SSHKeys           []types.String           `tfsdk:"ssh_keys"`
+	SSHKeySource      types.String             `tfsdk:"ssh_key_source"`
+	StartScript       types.String             `tfsdk:"start_script"`
+	VCPUs             types.Int64              `tfsdk:"vcpus"`
+	Networks          []*VMNICResourceModel    `tfsdk:"networks"`
+	InternalIPAddress types.String             `tfsdk:"internal_ip_address"`
+	ExternalIPAddress types.String             `tfsdk:"external_ip_address"`
+	RenewableEnergy   types.Bool               `tfsdk:"renewable_energy"`
+	SecurityGroupIDs  types.Set                `tfsdk:"security_group_ids"`
+}
+
+type VMBootDiskResourceModel struct {
+	ImageID types.String `tfsdk:"image_id"`
+	SizeGib types.Int64  `tfsdk:"size_gib"`
+}
+
+type VMNICResourceModel struct {
+	NetworkID         types.String `tfsdk:"network_id"`
+	AssignPublicIP    types.Bool   `tfsdk:"assign_public_ip"`
+	InternalIPAddress types.String `tfsdk:"internal_ip_address"`
+	ExternalIPAddress types.String `tfsdk:"external_ip_address"`
+	SecurityGroupIDs  types.Set    `tfsdk:"security_group_ids"`
 }
 
 func (r *VMResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -68,113 +80,141 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 		// This description is used by the documentation generator and the language server.
 		MarkdownDescription: "VM resource",
 		Attributes: map[string]schema.Attribute{
-			"id": schema.StringAttribute{
-				MarkdownDescription: "placeholder",
-				Computed:            true,
-			},
-			"boot_disk_class": schema.StringAttribute{
-				MarkdownDescription: "Storage class for boot disk, either 'local' or 'network'",
-				Required:            true,
-				Validators:          []validator.String{stringvalidator.OneOf("local", "network")},
-			},
-			"boot_disk_size_gib": schema.Int64Attribute{
-				MarkdownDescription: "Size of the boot disk in GiB",
-				Required:            true,
-				Validators:          []validator.Int64{int64validator.AtLeast(10)},
-			},
-			"machine_type": schema.StringAttribute{
-				MarkdownDescription: "VM machine type, from machine type data source",
-				Required:            true,
-				Validators:          []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
-			},
-			"gpus": schema.Int64Attribute{
-				MarkdownDescription: "Number of GPUs",
-				Optional:            true,
-				Validators:          []validator.Int64{int64validator.AtLeast(0), int64validator.AtMost(10)},
-			},
-			"image_id": schema.StringAttribute{
-				MarkdownDescription: "OS image ID on boot disk",
-				Required:            true,
-				Validators:          []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
-			},
-			"memory_gib": schema.Int64Attribute{
-				MarkdownDescription: "Amount of VM memory in GiB",
-				Required:            true,
-				Validators:          []validator.Int64{int64validator.AtLeast(1), int64validator.AtMost(1000)},
-			},
-			"password": schema.StringAttribute{
-				MarkdownDescription: "VM password",
-				Optional:            true,
-				Validators:          []validator.String{stringvalidator.LengthBetween(6, 64)},
-			},
-			"vcpus": schema.Int64Attribute{
-				MarkdownDescription: "Number of VCPUs",
-				Required:            true,
-				Validators:          []validator.Int64{int64validator.AtLeast(1), int64validator.AtMost(100)},
-			},
-			"vm_id": schema.StringAttribute{
-				MarkdownDescription: "Your chosen VM identifier",
-				Required:            true,
-				Validators:          []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id e.g. my-vm")},
+			"boot_disk": schema.SingleNestedAttribute{
+				MarkdownDescription: "Specification for boot disk",
+				Attributes: map[string]schema.Attribute{
+					"size_gib": schema.Int64Attribute{
+						Computed:            true,
+						Optional:            true,
+						MarkdownDescription: "Size of boot disk in Gib",
+					},
+					"image_id": schema.StringAttribute{
+						MarkdownDescription: "ID of OS image on boot disk",
+						Required:            true,
+						Validators:          []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
+					},
+				},
+				Required: true,
 			},
 			"cpu_model": schema.StringAttribute{
 				MarkdownDescription: "The model of the CPU.",
-				Computed:            true,
-			},
-			"create_by": schema.StringAttribute{
-				MarkdownDescription: "The name of the user who created the VM instance.",
+				Optional:            true,
 				Computed:            true,
 			},
 			"data_center_id": schema.StringAttribute{
-				MarkdownDescription: "The unique identifier of the datacenter where the VM instance is located.",
-				Required:            true,
+				MarkdownDescription: "The id of the datacenter where the VM instance is located.",
+				Optional:            true,
+				Computed:            true,
 				Validators:          []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
-			},
-			"gpu_model": schema.StringAttribute{
-				MarkdownDescription: "The model of the GPU.",
-				Computed:            true,
-			},
-			"lcm_state": schema.StringAttribute{
-				MarkdownDescription: "The state of the VM instance in the LCM.",
-				Computed:            true,
-			},
-			"internal_ip_address": schema.StringAttribute{
-				MarkdownDescription: "The internal IP address of the VM instance.",
-				Computed:            true,
 			},
 			"external_ip_address": schema.StringAttribute{
 				MarkdownDescription: "The external IP address of the VM instance.",
 				Computed:            true,
 			},
-			"price_hr": schema.Float64Attribute{
-				MarkdownDescription: "The price per hour for the VM instance.",
+			"gpu_model": schema.StringAttribute{
+				MarkdownDescription: "The model of the GPU.",
+				Optional:            true,
 				Computed:            true,
 			},
-			"region_id": schema.StringAttribute{
-				MarkdownDescription: "The unique identifier of the region where the VM instance is located.",
+			"gpus": schema.Int64Attribute{
+				MarkdownDescription: "Number of GPUs",
+				Optional:            true,
+				Computed:            true,
+				Default:             int64default.StaticInt64(0),
+			},
+			"id": schema.StringAttribute{
+				MarkdownDescription: "ID for VM within project",
+				Required:            true,
+				Validators:          []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id e.g. my-vm")},
+			},
+			"internal_ip_address": schema.StringAttribute{
+				MarkdownDescription: "The internal IP address of the VM instance.",
 				Computed:            true,
 			},
-			"region_name": schema.StringAttribute{
-				MarkdownDescription: "The name of the region where the VM instance is located.",
+			"machine_type": schema.StringAttribute{
+				MarkdownDescription: "VM machine type, from machine type data source",
+				Optional:            true,
 				Computed:            true,
+				Validators:          []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
+			},
+			"max_price_hr": schema.StringAttribute{
+				MarkdownDescription: "The maximum price per hour for the VM instance.",
+				Optional:            true,
+			},
+			"memory_gib": schema.Int64Attribute{
+				MarkdownDescription: "Amount of VM memory in GiB",
+				Optional:            true,
+			},
+			"networks": schema.ListNestedAttribute{
+				Optional:            true,
+				MarkdownDescription: "Network adapters for private networks",
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"network_id": schema.StringAttribute{
+							MarkdownDescription: "ID of private network to attach the NIC to",
+							Required:            true,
+						},
+						"assign_public_ip": schema.BoolAttribute{
+							MarkdownDescription: "Assign a public IP to the NIC",
+							Optional:            true,
+						},
+						"external_ip_address": schema.StringAttribute{
+							MarkdownDescription: "The external IP address of the NIC.",
+							Computed:            true,
+						},
+						"internal_ip_address": schema.StringAttribute{
+							MarkdownDescription: "The internal IP address of the NIC.",
+							Computed:            true,
+						},
+						"security_group_ids": schema.SetAttribute{
+							ElementType:         types.StringType,
+							Optional:            true,
+							MarkdownDescription: "Security groups to assign to the NIC",
+						},
+					},
+				},
+			},
+			"password": schema.StringAttribute{
+				MarkdownDescription: "Root password for linux, or Admin password for windows",
+				Optional:            true,
+				Sensitive:           true,
+				Validators:          []validator.String{stringvalidator.LengthBetween(6, 64)},
+			},
+			"price_hr": schema.StringAttribute{
+				MarkdownDescription: "The current price per hour for the VM instance.",
+				Computed:            true,
+			},
+			"project_id": schema.StringAttribute{
+				MarkdownDescription: "The project the VM instance is in.",
+				Optional:            true,
 			},
 			"renewable_energy": schema.BoolAttribute{
 				MarkdownDescription: "Whether the VM instance is powered by renewable energy",
 				Computed:            true,
+			},
+			"security_group_ids": schema.SetAttribute{
+				ElementType:         types.StringType,
+				Optional:            true,
+				MarkdownDescription: "Security groups to assign to the VM when using public networking",
 			},
 			"ssh_key_source": schema.StringAttribute{
 				MarkdownDescription: "Which SSH keys to add to the VM: project (default), user or custom",
 				Optional:            true,
 				Validators:          []validator.String{stringvalidator.OneOf("project", "user", "custom")},
 			},
-			"ssh_keys_custom": schema.ListAttribute{
+			"ssh_keys": schema.ListAttribute{
 				ElementType:         types.StringType,
-				MarkdownDescription: "List of custom SSH keys to add to the VM, ssh_key_source must be set to custom",
+				MarkdownDescription: "List of SSH keys to add to the VM, ssh_key_source must be set to custom",
 				Optional:            true,
 			},
 			"start_script": schema.StringAttribute{
 				MarkdownDescription: "A script to run when VM boots",
 				Optional:            true,
+			},
+			"vcpus": schema.Int64Attribute{
+				MarkdownDescription: "Number of VCPUs",
+				Optional:            true,
+				Validators:          []validator.Int64{int64validator.AtMost(100)},
 			},
 		},
 	}
@@ -200,6 +240,81 @@ func (r *VMResource) Configure(ctx context.Context, req resource.ConfigureReques
 	r.client = client
 }
 
+func waitForVmAvailable(ctx context.Context, projectID string, vmID string, c virtual_machines.ClientService) (*virtual_machines.GetVMOK, error) {
+	refreshFunc := func() (interface{}, string, error) {
+		params := virtual_machines.NewGetVMParamsWithContext(ctx)
+		params.ID = vmID
+		params.ProjectID = projectID
+		res, err := c.GetVM(params)
+		if err != nil {
+			if apiErr, ok := err.(*virtual_machines.GetVMDefault); ok && apiErr.IsCode(404) {
+				tflog.Debug(ctx, fmt.Sprintf("VM %s in project %s not found: ", vmID, projectID))
+				return res, "done", nil
+			}
+			return nil, "", err
+		}
+
+		tflog.Trace(ctx, fmt.Sprintf("pending VM %s in project %s state: %s", vmID, projectID, res.Payload.VM.ShortState))
+		return res, res.Payload.VM.ShortState, nil
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("waiting for VM %s in project %s ", vmID, projectID))
+
+	stateConf := &helper.StateChangeConf{
+		Pending:    []string{"clea", "clon", "dsrz", "epil", "hold", "hotp", "init", "migr", "pend", "prol", "save", "shut", "snap", "unkn"},
+		Target:     []string{"boot", "done", "fail", "poff", "runn", "stop", "susp", "unde"},
+		Refresh:    refreshFunc,
+		Timeout:    10 * time.Minute,
+		Delay:      1 * time.Second,
+		MinTimeout: 3 * time.Second,
+	}
+
+	if res, err := stateConf.WaitForState(ctx); err != nil {
+		return nil, fmt.Errorf("error waiting for VM %s in project %s to become available: %w", vmID, projectID, err)
+	} else if vm, ok := res.(*virtual_machines.GetVMOK); ok {
+		tflog.Trace(ctx, fmt.Sprintf("completed waiting for VM %s in project %s (%s)", vmID, projectID, vm.Payload.VM.ShortState))
+		return vm, nil
+	}
+
+	return nil, nil
+}
+
+func waitForVmDelete(ctx context.Context, projectID string, vmID string, c virtual_machines.ClientService) (*virtual_machines.GetVMOK, error) {
+	refreshFunc := func() (interface{}, string, error) {
+		params := virtual_machines.NewGetVMParamsWithContext(ctx)
+		params.ID = vmID
+		params.ProjectID = projectID
+		res, err := c.GetVM(params)
+		if err != nil {
+			if apiErr, ok := err.(*virtual_machines.GetVMDefault); ok && apiErr.IsCode(404) {
+				tflog.Debug(ctx, fmt.Sprintf("VM %s in project %s is done: ", vmID, projectID))
+				return res, "done", nil
+			}
+			tflog.Error(ctx, fmt.Sprintf("error getting VM %s in project %s: %v", vmID, projectID, err))
+			return nil, "", err
+		}
+
+		tflog.Trace(ctx, fmt.Sprintf("pending VM %s in project %s state: %s", vmID, projectID, res.Payload.VM.ShortState))
+		return res, res.Payload.VM.ShortState, nil
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("waiting for VM %s in project %s ", vmID, projectID))
+
+	stateConf := &helper.StateChangeConf{
+		Pending:    []string{"fail", "poff", "runn", "stop", "susp", "unde", "boot", "clea", "clon", "dsrz", "epil", "hold", "hotp", "init", "migr", "pend", "prol", "save", "shut", "snap", "unkn"},
+		Target:     []string{"done"},
+		Refresh:    refreshFunc,
+		Timeout:    10 * time.Minute,
+		MinTimeout: 3 * time.Second,
+	}
+
+	if _, err := stateConf.WaitForState(ctx); err != nil {
+		return nil, fmt.Errorf("error waiting for VM %s in project %s to become done: %w", vmID, projectID, err)
+	}
+
+	return nil, nil
+}
+
 func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	var state *VMResourceModel
 
@@ -210,52 +325,77 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		return
 	}
 
-	bootDiskClass := models.NewStorageClass(models.StorageClassSTORAGECLASSUNKNOWN)
-
-	switch state.BootDiskClass.ValueString() {
-	case "local":
-		bootDiskClass = models.NewStorageClass(models.StorageClassSTORAGECLASSLOCAL)
-	case "network":
-		bootDiskClass = models.NewStorageClass(models.StorageClassSTORAGECLASSNETWORK)
-	}
-
-	sshKeySource := "SSH_KEY_SOURCE_USER"
+	sshKeySource := models.SSHKeySourceSSHKEYSOURCEPROJECT
 	switch state.SSHKeySource.ValueString() {
-	case "project":
-		sshKeySource = "SSH_KEY_SOURCE_PROJECT"
+	case "user":
+		sshKeySource = models.SSHKeySourceSSHKEYSOURCEUSER
 	case "custom":
-		sshKeySource = "SSH_KEY_SOURCE_NONE"
+		sshKeySource = models.SSHKeySourceSSHKEYSOURCENONE
 	}
-
-	ks := models.SSHKeySource(sshKeySource)
 
 	var customKeys []string
-	for _, key := range state.SSHKeysCustom {
-		customKeys = append(customKeys, key.ValueString())
+	if sshKeySource == models.SSHKeySourceSSHKEYSOURCENONE {
+		for _, key := range state.SSHKeys {
+			customKeys = append(customKeys, key.ValueString())
+		}
 	}
 
 	params := virtual_machines.NewCreateVMParamsWithContext(ctx)
 	params.ProjectID = r.client.DefaultProjectID
+	if !state.ProjectID.IsNull() {
+		params.ProjectID = state.ProjectID.ValueString()
+	}
+
+	var bootDisk models.Disk
+	if !state.BootDisk.SizeGib.IsNull() {
+		bootDisk.SizeGib = int32(state.BootDisk.SizeGib.ValueInt64())
+	}
+	nics := make([]*models.CreateVMRequestNIC, len(state.Networks))
+
+	for i, nic := range state.Networks {
+		var securityGroupIDS []string
+		if !nic.SecurityGroupIDs.IsNull() {
+			resp.Diagnostics.Append(nic.SecurityGroupIDs.ElementsAs(ctx, &securityGroupIDS, false)...)
+			if resp.Diagnostics.HasError() {
+				return
+			}
+		}
+		nics[i] = &models.CreateVMRequestNIC{
+			AssignPublicIP:   nic.AssignPublicIP.ValueBool(),
+			NetworkID:        nic.NetworkID.ValueString(),
+			SecurityGroupIds: securityGroupIDS,
+		}
+	}
+
+	var securityGroupIDs []string
+	resp.Diagnostics.Append(state.SecurityGroupIDs.ElementsAs(ctx, &securityGroupIDs, false)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	var maxPriceHr *models.Decimal
+	if !state.MaxPriceHr.IsNull() {
+		maxPriceHr = &models.Decimal{Value: state.MaxPriceHr.ValueString()}
+	}
 	params.Body = virtual_machines.CreateVMBody{
-		BootDisk: &models.Disk{
-			SizeGib:      int32(state.BootDiskSize.ValueInt64()),
-			StorageClass: bootDiskClass,
-		},
-		DataCenterID:    state.DatacenterID.ValueString(),
-		Gpus:            int32(state.GPUs.ValueInt64()),
-		MachineType:     state.MachineType.ValueString(),
-		MemoryGib:       int32(state.Memory.ValueInt64()),
-		BootDiskImageID: state.ImageID.ValueStringPointer(),
-		Password:        state.Password.ValueString(),
-		Vcpus:           int32(state.VCPUs.ValueInt64()),
-		VMID:            state.ID.ValueStringPointer(),
-		SSHKeySource:    &ks,
-		CustomSSHKeys:   customKeys,
-		StartScript:     state.StartScript.ValueString(),
+		BootDisk:         &bootDisk,
+		DataCenterID:     state.DataCenterID.ValueString(),
+		Gpus:             int32(state.GPUs.ValueInt64()),
+		MachineType:      state.MachineType.ValueString(),
+		MaxPriceHr:       maxPriceHr,
+		MemoryGib:        int32(state.MemoryGib.ValueInt64()),
+		Nics:             nics,
+		BootDiskImageID:  state.BootDisk.ImageID.ValueStringPointer(),
+		Password:         state.Password.ValueString(),
+		Vcpus:            int32(state.VCPUs.ValueInt64()),
+		VMID:             state.ID.ValueStringPointer(),
+		SecurityGroupIds: securityGroupIDs,
+		SSHKeySource:     models.SSHKeySource(sshKeySource).Pointer(),
+		CustomSSHKeys:    customKeys,
+		StartScript:      state.StartScript.ValueString(),
 	}
 
 	_, err := r.client.Client.VirtualMachines.CreateVM(params)
-
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to create VM resource",
@@ -264,12 +404,7 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		return
 	}
 
-	paramsGet := virtual_machines.NewGetVMParams()
-	paramsGet.ProjectID = r.client.DefaultProjectID
-	paramsGet.ID = state.ID.ValueString()
-
-	res, err := r.client.Client.VirtualMachines.GetVM(paramsGet)
-
+	vm, err := waitForVmAvailable(ctx, params.ProjectID, state.ID.ValueString(), r.client.Client.VirtualMachines)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to create VM resource",
@@ -278,21 +413,27 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		return
 	}
 
-	state.Id = types.StringValue("placeholder")
-	state.CPUModel = types.StringValue(res.Payload.VM.CPUModel)
-	state.CreateBy = types.StringValue(res.Payload.VM.CreateBy)
-	state.DatacenterID = types.StringValue(res.Payload.VM.DatacenterID)
-	state.GpuModel = types.StringValue(res.Payload.VM.GpuModel)
-	state.ImageID = types.StringValue(res.Payload.VM.ImageID)
-	state.LcmState = types.StringValue(res.Payload.VM.LcmState)
-	state.InternalIPAddress = types.StringValue(res.Payload.VM.InternalIPAddress)
-	state.ExternalIPAddress = types.StringValue(res.Payload.VM.ExternalIPAddress)
-	state.PriceHr = types.Float64Value(float64(res.Payload.VM.PriceHr))
-	state.RegionID = types.StringValue(res.Payload.VM.RegionID)
-	state.RegionName = types.StringValue(res.Payload.VM.RegionName)
-	state.RenewableEnergy = types.BoolValue(res.Payload.VM.RenewableEnergy)
-
-	tflog.Trace(ctx, "created a vm")
+	state.DataCenterID = types.StringValue(vm.Payload.VM.DatacenterID)
+	state.CPUModel = types.StringValue(vm.Payload.VM.CPUModel)
+	state.GPUs = types.Int64Value(vm.Payload.VM.GpuQuantity)
+	state.BootDisk.SizeGib = types.Int64Value(vm.Payload.VM.BootDiskSizeGib)
+	if vm.Payload.VM.PublicImageID != "" {
+		state.BootDisk.ImageID = types.StringValue(vm.Payload.VM.PublicImageID)
+	}
+	if vm.Payload.VM.PrivateImageID != "" {
+		state.BootDisk.ImageID = types.StringValue(vm.Payload.VM.PrivateImageID)
+	}
+	state.MachineType = types.StringValue(vm.Payload.VM.MachineType)
+	for i, nic := range state.Networks {
+		nic.ExternalIPAddress = types.StringValue(vm.Payload.VM.Nics[i].ExternalIPAddress)
+		nic.InternalIPAddress = types.StringValue(vm.Payload.VM.Nics[i].InternalIPAddress)
+	}
+	state.GPUModel = types.StringValue(vm.Payload.VM.GpuModel)
+	state.ID = types.StringValue(vm.Payload.VM.ID)
+	state.InternalIPAddress = types.StringValue(vm.Payload.VM.InternalIPAddress)
+	state.ExternalIPAddress = types.StringValue(vm.Payload.VM.ExternalIPAddress)
+	state.PriceHr = types.StringValue(fmt.Sprintf("%0.2f", vm.Payload.VM.PriceHr))
+	state.RenewableEnergy = types.BoolValue(vm.Payload.VM.RenewableEnergy)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
@@ -312,8 +453,11 @@ func (r *VMResource) Read(ctx context.Context, req resource.ReadRequest, resp *r
 	params.ID = state.ID.ValueString()
 
 	res, err := r.client.Client.VirtualMachines.GetVM(params)
-
 	if err != nil {
+		if apiErr, ok := err.(*virtual_machines.GetVMDefault); ok && apiErr.IsCode(404) {
+			resp.State.RemoveResource(ctx)
+			return
+		}
 		resp.Diagnostics.AddError(
 			"Unable to read VM resource",
 			err.Error(),
@@ -321,18 +465,48 @@ func (r *VMResource) Read(ctx context.Context, req resource.ReadRequest, resp *r
 		return
 	}
 
-	state.Id = types.StringValue("placeholder")
+	// state.DataCenterID =
+	// state.CPUModel =
+	// state.GPUs =
+	// state.GPUModel =
+	// state.ID =
+	// state.BootDisk =
+	// state.BootDiskImageID =
+	// state.MachineType =
+	// state.MaxPriceHr =
+	// state.MemoryGib =
+	// state.Password =
+	// state.PriceHr =
+	// state.SSHKeys =
+	// state.SSHKeySource =
+	// state.StartScript =
+	// state.VCPUs =
+	// state.NICs =
+	// state.InternalIPAddress =
+	// state.ExternalIPAddress =
+	// state.RenewableEnergy =
+	// state.SecurityGroupIDs =
+
+	state.DataCenterID = types.StringValue(res.Payload.VM.DatacenterID)
 	state.CPUModel = types.StringValue(res.Payload.VM.CPUModel)
-	state.CreateBy = types.StringValue(res.Payload.VM.CreateBy)
-	state.DatacenterID = types.StringValue(res.Payload.VM.DatacenterID)
-	state.GpuModel = types.StringValue(res.Payload.VM.GpuModel)
-	state.ImageID = types.StringValue(res.Payload.VM.ImageID)
-	state.LcmState = types.StringValue(res.Payload.VM.LcmState)
+	state.GPUs = types.Int64Value(res.Payload.VM.GpuQuantity)
+	state.BootDisk.SizeGib = types.Int64Value(res.Payload.VM.BootDiskSizeGib)
+	if res.Payload.VM.PublicImageID != "" {
+		state.BootDisk.ImageID = types.StringValue(res.Payload.VM.PublicImageID)
+	}
+	if res.Payload.VM.PrivateImageID != "" {
+		state.BootDisk.ImageID = types.StringValue(res.Payload.VM.PrivateImageID)
+	}
+	state.MachineType = types.StringValue(res.Payload.VM.MachineType)
+	for i, nic := range state.Networks {
+		nic.ExternalIPAddress = types.StringValue(res.Payload.VM.Nics[i].ExternalIPAddress)
+		nic.InternalIPAddress = types.StringValue(res.Payload.VM.Nics[i].InternalIPAddress)
+	}
+	state.GPUModel = types.StringValue(res.Payload.VM.GpuModel)
+	state.ID = types.StringValue(res.Payload.VM.ID)
 	state.InternalIPAddress = types.StringValue(res.Payload.VM.InternalIPAddress)
 	state.ExternalIPAddress = types.StringValue(res.Payload.VM.ExternalIPAddress)
-	state.PriceHr = types.Float64Value(float64(res.Payload.VM.PriceHr))
-	state.RegionID = types.StringValue(res.Payload.VM.RegionID)
-	state.RegionName = types.StringValue(res.Payload.VM.RegionName)
+	state.PriceHr = types.StringValue(fmt.Sprintf("%0.2f", res.Payload.VM.PriceHr))
 	state.RenewableEnergy = types.BoolValue(res.Payload.VM.RenewableEnergy)
 
 	// Save updated data into Terraform state
@@ -357,6 +531,10 @@ func (r *VMResource) Update(ctx context.Context, req resource.UpdateRequest, res
 	res, err := r.client.Client.VirtualMachines.GetVM(params)
 
 	if err != nil {
+		if apiErr, ok := err.(*virtual_machines.GetVMDefault); ok && apiErr.IsCode(404) {
+			resp.State.RemoveResource(ctx)
+			return
+		}
 		resp.Diagnostics.AddError(
 			"Unable to update VM resource",
 			err.Error(),
@@ -364,18 +542,49 @@ func (r *VMResource) Update(ctx context.Context, req resource.UpdateRequest, res
 		return
 	}
 
-	state.Id = types.StringValue("placeholder")
+	// state.DataCenterID =
+	// state.CPUModel =
+	// state.GPUs =
+	// state.GPUModel =
+	// state.ID =
+	// state.BootDisk =
+	// state.BootDiskImageID =
+	// state.MachineType =
+	// state.MaxPriceHr =
+	// state.MemoryGib =
+	// state.Password =
+	// state.PriceHr =
+	// state.ProjectID =
+	// state.SSHKeys =
+	// state.SSHKeySource =
+	// state.StartScript =
+	// state.VCPUs =
+	// state.NICs =
+	// state.InternalIPAddress =
+	// state.ExternalIPAddress =
+	// state.RenewableEnergy =
+	// state.SecurityGroupIDs =
+
+	state.DataCenterID = types.StringValue(res.Payload.VM.DatacenterID)
 	state.CPUModel = types.StringValue(res.Payload.VM.CPUModel)
-	state.CreateBy = types.StringValue(res.Payload.VM.CreateBy)
-	state.DatacenterID = types.StringValue(res.Payload.VM.DatacenterID)
-	state.GpuModel = types.StringValue(res.Payload.VM.GpuModel)
-	state.ImageID = types.StringValue(res.Payload.VM.ImageID)
-	state.LcmState = types.StringValue(res.Payload.VM.LcmState)
+	state.GPUs = types.Int64Value(res.Payload.VM.GpuQuantity)
+	state.BootDisk.SizeGib = types.Int64Value(res.Payload.VM.BootDiskSizeGib)
+	if res.Payload.VM.PublicImageID != "" {
+		state.BootDisk.ImageID = types.StringValue(res.Payload.VM.PublicImageID)
+	}
+	if res.Payload.VM.PrivateImageID != "" {
+		state.BootDisk.ImageID = types.StringValue(res.Payload.VM.PrivateImageID)
+	}
+	state.MachineType = types.StringValue(res.Payload.VM.MachineType)
+	for i, nic := range state.Networks {
+		nic.ExternalIPAddress = types.StringValue(res.Payload.VM.Nics[i].ExternalIPAddress)
+		nic.InternalIPAddress = types.StringValue(res.Payload.VM.Nics[i].InternalIPAddress)
+	}
+	state.GPUModel = types.StringValue(res.Payload.VM.GpuModel)
+	state.ID = types.StringValue(res.Payload.VM.ID)
 	state.InternalIPAddress = types.StringValue(res.Payload.VM.InternalIPAddress)
 	state.ExternalIPAddress = types.StringValue(res.Payload.VM.ExternalIPAddress)
-	state.PriceHr = types.Float64Value(float64(res.Payload.VM.PriceHr))
-	state.RegionID = types.StringValue(res.Payload.VM.RegionID)
-	state.RegionName = types.StringValue(res.Payload.VM.RegionName)
+	state.PriceHr = types.StringValue(fmt.Sprintf("%0.2f", res.Payload.VM.PriceHr))
 	state.RenewableEnergy = types.BoolValue(res.Payload.VM.RenewableEnergy)
 
 	// Save updated data into Terraform state
@@ -390,8 +599,15 @@ func (r *VMResource) Delete(ctx context.Context, req resource.DeleteRequest, res
 	params.ProjectID = r.client.DefaultProjectID
 	params.ID = state.ID.ValueString()
 
-	_, err := r.client.Client.VirtualMachines.TerminateVM(params)
+	if _, err := waitForVmAvailable(ctx, params.ProjectID, params.ID, r.client.Client.VirtualMachines); err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to wait for VM resource to be available",
+			err.Error(),
+		)
+		return
+	}
 
+	_, err := r.client.Client.VirtualMachines.TerminateVM(params)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to delete VM resource",
@@ -400,7 +616,14 @@ func (r *VMResource) Delete(ctx context.Context, req resource.DeleteRequest, res
 		return
 	}
 
-	tflog.Trace(ctx, "deleted a vm")
+	_, err = waitForVmDelete(ctx, params.ProjectID, params.ID, r.client.Client.VirtualMachines)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to wait for VM resource to be deleted",
+			err.Error(),
+		)
+		return
+	}
 }
 
 func (r *VMResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {

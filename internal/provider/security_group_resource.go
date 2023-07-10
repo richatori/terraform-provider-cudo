@@ -13,6 +13,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
@@ -35,7 +36,7 @@ type SecurityGroupResource struct {
 type RuleModel struct {
 	Id          types.String `tfsdk:"id"`
 	IcmpType    types.String `tfsdk:"icmp_type"`
-	IpRangeCidr types.String `tfsdk:"ip_range_cidr"`
+	IpRangeCidr types.String `tfsdk:"ip_range"`
 	Ports       types.String `tfsdk:"ports"`
 	Protocol    types.String `tfsdk:"protocol"`
 	RuleType    types.String `tfsdk:"rule_type"`
@@ -44,7 +45,7 @@ type RuleModel struct {
 // SecurityGroupResourceModel describes the resource data model.
 type SecurityGroupResourceModel struct {
 	Id           types.String `tfsdk:"id"`
-	DataCenterId types.String `tfsdk:"data_center_id"`
+	DataCenterID types.String `tfsdk:"data_center_id"`
 	Description  types.String `tfsdk:"description"`
 	Rules        []RuleModel  `tfsdk:"rules"`
 }
@@ -72,7 +73,9 @@ func (r *SecurityGroupResource) Schema(ctx context.Context, req resource.SchemaR
 			},
 			"description": schema.StringAttribute{
 				MarkdownDescription: "Description of the security group",
+				Computed:            true,
 				Optional:            true,
+				Default:             stringdefault.StaticString(""),
 				Validators: []validator.String{stringvalidator.RegexMatches(securityGroupDescriptionRegex,
 					"must be a valid security group description up to 255 characters, commas, periods, & spaces")},
 			},
@@ -91,7 +94,7 @@ func (r *SecurityGroupResource) Schema(ctx context.Context, req resource.SchemaR
 							Validators: []validator.String{stringvalidator.RegexMatches(
 								icmpTypesRegex, "must be a valid icmp type i.e. 0,3,4,5,8,9,10,11,12,13,14,17,18")},
 						},
-						"ip_range_cidr": schema.StringAttribute{
+						"ip_range": schema.StringAttribute{
 							Description: "A single IP address or CIDR format range to apply rule to",
 							Optional:    true,
 						},
@@ -101,9 +104,10 @@ func (r *SecurityGroupResource) Schema(ctx context.Context, req resource.SchemaR
 							Validators:  []validator.String{portListValidator{}},
 						},
 						"protocol": schema.StringAttribute{
-							Description: "Protocol for rule, use one of: tcp or udp", //all, tcp, udp, icmp, icmpv6 or ipsec", // these supported later ??
-							Required:    true,
-							Validators:  []validator.String{stringvalidator.OneOf("tcp", "udp")}, //"all", "tcp", "udp", "icmp", "icmpv6", "ipsec")},
+							Description: "Protocol for rule, use one of: all, tcp, udp, icmp, icmpv6, ipsec",
+							Computed:    true,
+							Optional:    true,
+							Validators:  []validator.String{stringvalidator.OneOf("all", "tcp", "udp", "icmp", "icmpv6", "ipsec")},
 						},
 						"rule_type": schema.StringAttribute{
 							Description: "Type for rule either 'inbound' or 'outbound'",
@@ -247,7 +251,7 @@ func (r *SecurityGroupResource) Create(ctx context.Context, req resource.CreateR
 	params := networks.NewCreateSecurityGroupParamsWithContext(ctx)
 	params.Body = networks.CreateSecurityGroupBody{
 		SecurityGroup: &networks.CreateSecurityGroupParamsBodySecurityGroup{
-			DataCenterID: state.DataCenterId.ValueString(),
+			DataCenterID: state.DataCenterID.ValueString(),
 			Description:  state.Description.ValueString(), //allows up to 255 characters, commas, periods, & spaces has regex
 			ID:           state.Id.ValueString(),          // security group id
 			Rules:        getRuleParams(state.Rules),
@@ -295,7 +299,7 @@ func (r *SecurityGroupResource) Read(ctx context.Context, req resource.ReadReque
 
 	state.Id = types.StringValue(*res.Payload.SecurityGroup.ID)
 	state.Description = types.StringValue(res.Payload.SecurityGroup.Description)
-	state.DataCenterId = types.StringValue(*res.Payload.SecurityGroup.DataCenterID)
+	state.DataCenterID = types.StringValue(*res.Payload.SecurityGroup.DataCenterID)
 	state.Id = types.StringValue(*res.Payload.SecurityGroup.ID)
 	state.Rules = getRuleModels(res.Payload.SecurityGroup.Rules)
 
@@ -316,7 +320,7 @@ func (r *SecurityGroupResource) Update(ctx context.Context, req resource.UpdateR
 	params := networks.NewUpdateSecurityGroupParamsWithContext(ctx)
 	params.Body = networks.UpdateSecurityGroupBody{
 		SecurityGroup: &networks.UpdateSecurityGroupParamsBodySecurityGroup{
-			DataCenterID: state.DataCenterId.ValueString(),
+			DataCenterID: state.DataCenterID.ValueString(),
 			Description:  state.Description.ValueString(), //allows up to 255 characters, commas, periods, & spaces has regex
 			Rules:        getRuleParams(state.Rules),
 		}}

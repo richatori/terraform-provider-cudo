@@ -13,28 +13,25 @@ import (
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 )
 
+var apiKey = os.Getenv("TF_TEST_CUDO_API_KEY")
+var projectID = os.Getenv("TF_TEST_CUDO_PROJECT_ID")
+var remoteAddr = "rest.staging.compute.cudo.org"
+var billingAccountID = os.Getenv("TF_TEST_CUDO_BILLING_ACCOUNT_ID")
+
 var testAccProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServer, error){
-	"cudo": providerserver.NewProtocol6WithError(New("test", endpoint)()),
+	"cudo": providerserver.NewProtocol6WithError(New("test", remoteAddr)()),
 }
 
-var billing_account_id = "billing-account"
-var data_center_id = "black-mesa"
-var project_id = "terraform-testing"
-var endpoint = "rest.staging.compute.cudo.org"
-var apiKey string
-
 func getProviderConfig() string {
-	apiKey = os.Getenv("TF_TEST_CUDO_API_KEY")
 
 	return fmt.Sprintf(`
 provider "cudo" {
   api_key            = "%s"
   remote_addr        = "%s"
   project_id         = "%s"
-  data_center_id     = "%s"
   billing_account_id = "%s"
 }
-`, apiKey, endpoint, project_id, data_center_id, billing_account_id)
+`, apiKey, remoteAddr, projectID, billingAccountID)
 }
 
 func testAccPreCheck(t *testing.T) {
@@ -45,8 +42,10 @@ func testAccPreCheck(t *testing.T) {
 }
 
 func getClient() *client.CudoComputeService {
-	tx := httptransport.New(endpoint, client.DefaultBasePath, client.DefaultSchemes)
+	tx := httptransport.New(remoteAddr, client.DefaultBasePath, client.DefaultSchemes)
 	tx.DefaultAuthentication = httptransport.BearerToken(apiKey)
+	// TODO: it would be nice to plug the debug logging into t.Log
+	// tx.Debug = true
 	clientx := client.New(tx, strfmt.Default)
 	return clientx
 }

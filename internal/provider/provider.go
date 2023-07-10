@@ -36,14 +36,12 @@ type CudoProviderModel struct {
 	DisableTLS       types.Bool   `tfsdk:"disable_tls"`
 	RemoteAddr       types.String `tfsdk:"remote_addr"`
 	ProjectID        types.String `tfsdk:"project_id"`
-	DataCenterID     types.String `tfsdk:"data_center_id"`
 	BillingAccountID types.String `tfsdk:"billing_account_id"`
 }
 
 type CudoClientData struct {
 	Client                  *client.CudoComputeService
 	DefaultBillingAccountID string
-	DefaultDataCenterID     string
 	DefaultProjectID        string
 }
 
@@ -59,10 +57,6 @@ func (p *CudoProvider) Schema(ctx context.Context, req provider.SchemaRequest, r
 				MarkdownDescription: "Your API key",
 				Optional:            true,
 			},
-			"data_center_id": schema.StringAttribute{
-				MarkdownDescription: "Which data center id to use for resources",
-				Optional:            true,
-			},
 			"billing_account_id": schema.StringAttribute{
 				MarkdownDescription: "Which billinag account id to create resources in",
 				Optional:            true,
@@ -76,7 +70,7 @@ func (p *CudoProvider) Schema(ctx context.Context, req provider.SchemaRequest, r
 				Optional:            true,
 			},
 			"disable_tls": schema.BoolAttribute{
-				MarkdownDescription: "Whether to connect using TLS",
+				MarkdownDescription: "Whether to connect the API endpoint using TLS",
 				Optional:            true,
 			},
 		},
@@ -126,12 +120,7 @@ func (p *CudoProvider) Configure(ctx context.Context, req provider.ConfigureRequ
 		)
 	}
 
-	dataCenterID := config.DataCenterID.ValueString()
-	if dataCenterID == "" {
-		dataCenterID = os.Getenv("CUDO_DATA_CENTER_ID")
-	}
-
-	billingAccountID := config.DataCenterID.ValueString()
+	billingAccountID := config.BillingAccountID.ValueString()
 	if billingAccountID == "" {
 		billingAccountID = os.Getenv("CUDO_BILLING_ACCOUNT_ID")
 	}
@@ -150,7 +139,6 @@ func (p *CudoProvider) Configure(ctx context.Context, req provider.ConfigureRequ
 	ccd := &CudoClientData{
 		Client:                  clientx,
 		DefaultProjectID:        projectID,
-		DefaultDataCenterID:     dataCenterID,
 		DefaultBillingAccountID: billingAccountID,
 	}
 	resp.DataSourceData = ccd
@@ -159,22 +147,20 @@ func (p *CudoProvider) Configure(ctx context.Context, req provider.ConfigureRequ
 
 func (p *CudoProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
-		NewVMResource,
 		NewSecurityGroupResource,
 		NewNetworkResource,
+		NewVMImageResource,
+		NewVMResource,
 	}
 }
 
 func (p *CudoProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
-		NewImagesDataSource,
-		NewRegionsDataSource,
-		NewMachineTypeDataSource,
-		NewSshKeysDataSource,
-		NewVMInstanceDataSource,
-		NewSecurityGroupsDataSource,
-		NewNetworksDataSource,
-		NewNetworkSearchDataSource,
+		NewVMImagesDataSource,
+		NewVMDataCentersDataSource,
+		NewVMDataSource,
+		NewSecurityGroupDataSource,
+		NewNetworkDataSource,
 	}
 }
 
