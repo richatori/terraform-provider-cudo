@@ -44,6 +44,10 @@ type ClientService interface {
 
 	ListSecurityGroups(params *ListSecurityGroupsParams, opts ...ClientOption) (*ListSecurityGroupsOK, error)
 
+	StartNetwork(params *StartNetworkParams, opts ...ClientOption) (*StartNetworkOK, error)
+
+	StopNetwork(params *StopNetworkParams, opts ...ClientOption) (*StopNetworkOK, error)
+
 	UpdateSecurityGroup(params *UpdateSecurityGroupParams, opts ...ClientOption) (*UpdateSecurityGroupOK, error)
 
 	SetTransport(transport runtime.ClientTransport)
@@ -342,6 +346,80 @@ func (a *Client) ListSecurityGroups(params *ListSecurityGroupsParams, opts ...Cl
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*ListSecurityGroupsDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+StartNetwork starts network
+*/
+func (a *Client) StartNetwork(params *StartNetworkParams, opts ...ClientOption) (*StartNetworkOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewStartNetworkParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "StartNetwork",
+		Method:             "POST",
+		PathPattern:        "/v1/projects/{projectId}/networks/{networkId}/start",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &StartNetworkReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*StartNetworkOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*StartNetworkDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+StopNetwork stops network
+*/
+func (a *Client) StopNetwork(params *StopNetworkParams, opts ...ClientOption) (*StopNetworkOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewStopNetworkParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "StopNetwork",
+		Method:             "POST",
+		PathPattern:        "/v1/projects/{projectId}/networks/{networkId}/stop",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &StopNetworkReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*StopNetworkOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*StopNetworkDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

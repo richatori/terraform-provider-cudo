@@ -70,9 +70,6 @@ type CreatePrivateVMImageParams struct {
 	// ProjectID.
 	ProjectID string
 
-	// SnapshotID.
-	SnapshotID *string
-
 	// VMID.
 	VMID string
 
@@ -162,17 +159,6 @@ func (o *CreatePrivateVMImageParams) SetProjectID(projectID string) {
 	o.ProjectID = projectID
 }
 
-// WithSnapshotID adds the snapshotID to the create private VM image params
-func (o *CreatePrivateVMImageParams) WithSnapshotID(snapshotID *string) *CreatePrivateVMImageParams {
-	o.SetSnapshotID(snapshotID)
-	return o
-}
-
-// SetSnapshotID adds the snapshotId to the create private VM image params
-func (o *CreatePrivateVMImageParams) SetSnapshotID(snapshotID *string) {
-	o.SnapshotID = snapshotID
-}
-
 // WithVMID adds the vMID to the create private VM image params
 func (o *CreatePrivateVMImageParams) WithVMID(vMID string) *CreatePrivateVMImageParams {
 	o.SetVMID(vMID)
@@ -222,23 +208,6 @@ func (o *CreatePrivateVMImageParams) WriteToRequest(r runtime.ClientRequest, reg
 	// path param projectId
 	if err := r.SetPathParam("projectId", o.ProjectID); err != nil {
 		return err
-	}
-
-	if o.SnapshotID != nil {
-
-		// query param snapshotId
-		var qrSnapshotID string
-
-		if o.SnapshotID != nil {
-			qrSnapshotID = *o.SnapshotID
-		}
-		qSnapshotID := qrSnapshotID
-		if qSnapshotID != "" {
-
-			if err := r.SetQueryParam("snapshotId", qSnapshotID); err != nil {
-				return err
-			}
-		}
 	}
 
 	// query param vmId
