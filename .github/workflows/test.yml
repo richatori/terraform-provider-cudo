@@ -73,6 +73,7 @@ jobs:
       - run: go mod download
       - env:
           TF_ACC: "1"
-          CUDO_API_KEY: ${{ vars.CUDO_API_KEY }}
+          TF_TEST_CUDO_API_KEY: ${{ vars.CUDO_API_KEY }}
+          TF_TEST_CUDO_PROJECT_ID: ${{ vars.CUDO_PROJECT_ID }}
         run: go test -v -cover ./internal/provider/
         timeout-minutes: 10

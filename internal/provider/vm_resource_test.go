@@ -19,7 +19,7 @@ func TestAcc_VMResource(t *testing.T) {
 		ctx, cancel = context.WithDeadline(ctx, deadline)
 		defer cancel()
 	}
-	name := "vm-resource"
+	name := "vm-resource-" + testRunID
 
 	vmConfig := fmt.Sprintf(`
 resource "cudo_vm" "vm" {
@@ -87,7 +87,7 @@ func TestAcc_VMResourceMinimal(t *testing.T) {
 		ctx, cancel = context.WithDeadline(ctx, deadline)
 		defer cancel()
 	}
-	name := "vm-resource-minimal"
+	name := "vm-resource-minimal-" + testRunID
 
 	vmConfig := fmt.Sprintf(`
 resource "cudo_vm" "vm-minimal" {
@@ -155,7 +155,7 @@ func TestAcc_VMResourceOOBDelete(t *testing.T) {
 		ctx, cancel = context.WithDeadline(ctx, deadline)
 		defer cancel()
 	}
-	name := "vm-resource-oob-delete"
+	name := "vm-resource-oob-delete-" + testRunID
 
 	vmConfig := fmt.Sprintf(`
 resource "cudo_vm" "vm-oob-delete" {

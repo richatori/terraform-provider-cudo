@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/helper"
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 
@@ -40,6 +41,8 @@ func testAccPreCheck(t *testing.T) {
 	// function.
 
 }
+
+var testRunID, _ = helper.NewNanoID(6)
 
 func getClient() *client.CudoComputeService {
 	tx := httptransport.New(remoteAddr, client.DefaultBasePath, client.DefaultSchemes)

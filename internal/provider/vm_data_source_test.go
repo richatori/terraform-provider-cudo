@@ -18,7 +18,7 @@ func TestAcc_VMInstanceDataSource(t *testing.T) {
 		ctx, cancel = context.WithDeadline(ctx, deadline)
 		defer cancel()
 	}
-	name := "tf-ds-test"
+	name := "tf-ds-test-" + testRunID
 
 	resourcesConfig := fmt.Sprintf(`
 resource "cudo_vm" "my-vm" {
