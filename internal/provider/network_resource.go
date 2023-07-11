@@ -141,6 +141,46 @@ func waitForNetworkAvailable(ctx context.Context, projectID string, networkID st
 	return nil, nil
 }
 
+func waitForNetworkStop(ctx context.Context, projectID string, networkID string, c networks.ClientService) (*networks.GetNetworkOK, error) {
+	refreshFunc := func() (interface{}, string, error) {
+		params := networks.NewGetNetworkParamsWithContext(ctx)
+		params.ID = networkID
+		params.ProjectID = projectID
+		res, err := c.GetNetwork(params)
+		if err != nil {
+			if apiErr, ok := err.(*networks.GetNetworkDefault); ok && apiErr.IsCode(404) {
+				tflog.Debug(ctx, fmt.Sprintf("Network %s in project %s is done: ", networkID, projectID))
+				return res, "done", nil
+			}
+			tflog.Error(ctx, fmt.Sprintf("error getting network %s in project %s: %v", networkID, projectID, err))
+			return nil, "", err
+		}
+		if res.Payload.Network.ShortState == "" {
+			tflog.Debug(ctx, fmt.Sprintf("Network %s in project %s is stopped: ", networkID, projectID))
+			return res, "done", nil
+		}
+
+		tflog.Trace(ctx, fmt.Sprintf("pending network %s in project %s state: %s", networkID, projectID, res.Payload.Network.ShortState))
+		return res, res.Payload.Network.ShortState, nil
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("waiting for network %s in project %s ", networkID, projectID))
+
+	stateConf := &helper.StateChangeConf{
+		Pending:    []string{"fail", "poff", "runn", "stop", "susp", "unde", "boot", "clea", "clon", "dsrz", "epil", "hold", "hotp", "init", "migr", "pend", "prol", "save", "shut", "snap", "unkn"},
+		Target:     []string{"done", "epil"},
+		Refresh:    refreshFunc,
+		Timeout:    10 * time.Minute,
+		MinTimeout: 3 * time.Second,
+	}
+
+	if _, err := stateConf.WaitForState(ctx); err != nil {
+		return nil, fmt.Errorf("error waiting for network %s in project %s to be deleted: %w", networkID, projectID, err)
+	}
+
+	return nil, nil
+}
+
 func waitForNetworkDelete(ctx context.Context, projectID string, networkID string, c networks.ClientService) (*networks.GetNetworkOK, error) {
 	refreshFunc := func() (interface{}, string, error) {
 		params := networks.NewGetNetworkParamsWithContext(ctx)
@@ -297,19 +337,33 @@ func (r *NetworkResource) Delete(ctx context.Context, req resource.DeleteRequest
 	var state *NetworkResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 
-	params := networks.NewDeleteNetworkParamsWithContext(ctx)
-	params.ProjectID = r.client.DefaultProjectID
-	params.NetworkID = state.ID.ValueString()
+	stopParams := networks.NewStopNetworkParamsWithContext(ctx)
+	stopParams.ProjectID = r.client.DefaultProjectID
+	stopParams.NetworkID = state.ID.ValueString()
 
-	// if _, err := waitForNetworkAvailable(ctx, params.ProjectID, params.NetworkID, r.client.Client.Networks); err != nil {
-	// 	resp.Diagnostics.AddError(
-	// 		"Unable to wait for network resource to be available",
-	// 		err.Error(),
-	// 	)
-	// 	return
-	// }
+	_, err := r.client.Client.Networks.StopNetwork(stopParams)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to stop network resource",
+			err.Error(),
+		)
+		return
+	}
 
-	_, err := r.client.Client.Networks.DeleteNetwork(params)
+	_, err = waitForNetworkStop(ctx, stopParams.ProjectID, stopParams.NetworkID, r.client.Client.Networks)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to wait for network resource to be stopped",
+			err.Error(),
+		)
+		return
+	}
+
+	deleteParams := networks.NewDeleteNetworkParamsWithContext(ctx)
+	deleteParams.ProjectID = r.client.DefaultProjectID
+	deleteParams.NetworkID = state.ID.ValueString()
+
+	_, err = r.client.Client.Networks.DeleteNetwork(deleteParams)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to delete network resource",
@@ -318,7 +372,7 @@ func (r *NetworkResource) Delete(ctx context.Context, req resource.DeleteRequest
 		return
 	}
 
-	_, err = waitForNetworkDelete(ctx, params.ProjectID, params.NetworkID, r.client.Client.Networks)
+	_, err = waitForNetworkDelete(ctx, deleteParams.ProjectID, deleteParams.NetworkID, r.client.Client.Networks)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to wait for network resource to be deleted",
