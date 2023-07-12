@@ -31,6 +31,11 @@ resource "cudo_vm" "my-vm" {
    }
    memory_gib         = 2
    id                 = "%s"
+   networks = [
+    {
+      network_id         = "tf-test"
+    }
+  ]
  }`, name)
 
 	testAccVMInstanceDataSourceConfig := fmt.Sprintf(`
