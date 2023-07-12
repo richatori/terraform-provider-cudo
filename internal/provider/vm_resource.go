@@ -465,28 +465,6 @@ func (r *VMResource) Read(ctx context.Context, req resource.ReadRequest, resp *r
 		return
 	}
 
-	// state.DataCenterID =
-	// state.CPUModel =
-	// state.GPUs =
-	// state.GPUModel =
-	// state.ID =
-	// state.BootDisk =
-	// state.BootDiskImageID =
-	// state.MachineType =
-	// state.MaxPriceHr =
-	// state.MemoryGib =
-	// state.Password =
-	// state.PriceHr =
-	// state.SSHKeys =
-	// state.SSHKeySource =
-	// state.StartScript =
-	// state.VCPUs =
-	// state.NICs =
-	// state.InternalIPAddress =
-	// state.ExternalIPAddress =
-	// state.RenewableEnergy =
-	// state.SecurityGroupIDs =
-
 	state.DataCenterID = types.StringValue(res.Payload.VM.DatacenterID)
 	state.CPUModel = types.StringValue(res.Payload.VM.CPUModel)
 	state.GPUs = types.Int64Value(res.Payload.VM.GpuQuantity)
@@ -541,29 +519,6 @@ func (r *VMResource) Update(ctx context.Context, req resource.UpdateRequest, res
 		)
 		return
 	}
-
-	// state.DataCenterID =
-	// state.CPUModel =
-	// state.GPUs =
-	// state.GPUModel =
-	// state.ID =
-	// state.BootDisk =
-	// state.BootDiskImageID =
-	// state.MachineType =
-	// state.MaxPriceHr =
-	// state.MemoryGib =
-	// state.Password =
-	// state.PriceHr =
-	// state.ProjectID =
-	// state.SSHKeys =
-	// state.SSHKeySource =
-	// state.StartScript =
-	// state.VCPUs =
-	// state.NICs =
-	// state.InternalIPAddress =
-	// state.ExternalIPAddress =
-	// state.RenewableEnergy =
-	// state.SecurityGroupIDs =
 
 	state.DataCenterID = types.StringValue(res.Payload.VM.DatacenterID)
 	state.CPUModel = types.StringValue(res.Payload.VM.CPUModel)
