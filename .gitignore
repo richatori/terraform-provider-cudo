@@ -37,3 +37,4 @@ website/vendor
 
 examples/dev/main.tf
 examples/dev2/main.tf
+/examples/dev3/main.tf
