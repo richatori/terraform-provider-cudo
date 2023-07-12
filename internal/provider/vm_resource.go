@@ -261,8 +261,8 @@ func waitForVmAvailable(ctx context.Context, projectID string, vmID string, c vi
 	tflog.Debug(ctx, fmt.Sprintf("waiting for VM %s in project %s ", vmID, projectID))
 
 	stateConf := &helper.StateChangeConf{
-		Pending:    []string{"clea", "clon", "dsrz", "epil", "hold", "hotp", "init", "migr", "pend", "prol", "save", "shut", "snap", "unkn"},
-		Target:     []string{"boot", "done", "fail", "poff", "runn", "stop", "susp", "unde"},
+		Pending:    []string{"boot", "clea", "clon", "dsrz", "epil", "hold", "hotp", "init", "migr", "pend", "prol", "save", "shut", "snap", "unkn"},
+		Target:     []string{"done", "fail", "poff", "runn", "stop", "susp", "unde"},
 		Refresh:    refreshFunc,
 		Timeout:    10 * time.Minute,
 		Delay:      1 * time.Second,
