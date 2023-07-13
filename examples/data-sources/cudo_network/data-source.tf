@@ -1,3 +1,3 @@
 data "cudo_network" "my-net" {
-id = "my-network"
+  id = "my-network"
 }

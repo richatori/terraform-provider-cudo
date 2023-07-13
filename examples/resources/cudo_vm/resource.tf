@@ -7,13 +7,13 @@ resource "cudo_vm" "my-vm-max-price" {
     image_id = "debian-11"
   }
   max_price_hr = 0.003
-    networks = [
-      {
-        network_id         = "my-network"
-        assign_public_ip   = true
-        security_group_ids = ["my-security-group"]
-      }
-    ]
+  networks = [
+    {
+      network_id         = "my-network"
+      assign_public_ip   = true
+      security_group_ids = ["my-security-group"]
+    }
+  ]
 }
 
 # pick a specific data center and machine type
