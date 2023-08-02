@@ -13,6 +13,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -51,18 +53,27 @@ func (r *NetworkResource) Schema(ctx context.Context, req resource.SchemaRequest
 		MarkdownDescription: "Network resource",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 				MarkdownDescription: "Network ID",
 				Required:            true,
 				Validators: []validator.String{stringvalidator.RegexMatches(
 					regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
 			},
 			"data_center_id": schema.StringAttribute{
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 				MarkdownDescription: "The unique identifier of the datacenter where the network is located.",
 				Required:            true,
 				Validators: []validator.String{stringvalidator.RegexMatches(
 					regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
 			},
 			"ip_range": schema.StringAttribute{
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 				MarkdownDescription: "IP range of network in CIDR format e.g 192.168.0.0/24",
 				Required:            true,
 			},
@@ -298,39 +309,24 @@ func (r *NetworkResource) Read(ctx context.Context, req resource.ReadRequest, re
 }
 
 func (r *NetworkResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	var state *NetworkResourceModel
+	var plan NetworkResourceModel
 
-	// Read Terraform prior state data into the model
-	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
-
+	// Read Terraform plan data into the model
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	getParams := networks.NewGetNetworkParamsWithContext(ctx)
-	getParams.ID = state.ID.ValueString()
-	getParams.ProjectID = r.client.DefaultProjectID
-
-	resget, err := r.client.Client.Networks.GetNetwork(getParams)
-	if err != nil {
-		if apiErr, ok := err.(*networks.GetNetworkDefault); ok && apiErr.IsCode(404) {
-			resp.State.RemoveResource(ctx)
-			return
-		}
 		resp.Diagnostics.AddError(
-			"Unable to create network resource",
-			err.Error(),
+			"Error getting network plan",
+			"Error getting network plan",
 		)
 		return
 	}
 
-	state.ID = types.StringValue(resget.Payload.Network.ID)
-	state.DataCenterId = types.StringValue(resget.Payload.Network.DataCenterID)
-	state.IPRange = types.StringValue(resget.Payload.Network.IPRange)
-	state.Gateway = types.StringValue(resget.Payload.Network.Gateway)
-
-	// Save updated data into Terraform state
-	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+	// Read Terraform state data into the model
+	var state NetworkResourceModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 }
 
 func (r *NetworkResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {

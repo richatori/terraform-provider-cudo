@@ -14,7 +14,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -84,11 +90,17 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				MarkdownDescription: "Specification for boot disk",
 				Attributes: map[string]schema.Attribute{
 					"size_gib": schema.Int64Attribute{
+						PlanModifiers: []planmodifier.Int64{
+							int64planmodifier.RequiresReplace(),
+						},
 						Computed:            true,
 						Optional:            true,
 						MarkdownDescription: "Size of boot disk in Gib",
 					},
 					"image_id": schema.StringAttribute{
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.RequiresReplace(),
+						},
 						MarkdownDescription: "ID of OS image on boot disk",
 						Required:            true,
 						Validators:          []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
@@ -97,11 +109,17 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				Required: true,
 			},
 			"cpu_model": schema.StringAttribute{
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 				MarkdownDescription: "The model of the CPU.",
 				Optional:            true,
 				Computed:            true,
 			},
 			"data_center_id": schema.StringAttribute{
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 				MarkdownDescription: "The id of the datacenter where the VM instance is located.",
 				Optional:            true,
 				Computed:            true,
@@ -112,17 +130,26 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				Computed:            true,
 			},
 			"gpu_model": schema.StringAttribute{
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 				MarkdownDescription: "The model of the GPU.",
 				Optional:            true,
 				Computed:            true,
 			},
 			"gpus": schema.Int64Attribute{
+				PlanModifiers: []planmodifier.Int64{
+					int64planmodifier.RequiresReplace(),
+				},
 				MarkdownDescription: "Number of GPUs",
 				Optional:            true,
 				Computed:            true,
 				Default:             int64default.StaticInt64(0),
 			},
 			"id": schema.StringAttribute{
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 				MarkdownDescription: "ID for VM within project",
 				Required:            true,
 				Validators:          []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id e.g. my-vm")},
@@ -132,16 +159,25 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				Computed:            true,
 			},
 			"machine_type": schema.StringAttribute{
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 				MarkdownDescription: "VM machine type, from machine type data source",
 				Optional:            true,
 				Computed:            true,
 				Validators:          []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
 			},
 			"max_price_hr": schema.StringAttribute{
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 				MarkdownDescription: "The maximum price per hour for the VM instance.",
 				Optional:            true,
 			},
 			"memory_gib": schema.Int64Attribute{
+				PlanModifiers: []planmodifier.Int64{
+					int64planmodifier.RequiresReplace(),
+				},
 				MarkdownDescription: "Amount of VM memory in GiB",
 				Optional:            true,
 			},
@@ -151,10 +187,16 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"network_id": schema.StringAttribute{
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.RequiresReplace(),
+							},
 							MarkdownDescription: "ID of private network to attach the NIC to",
 							Required:            true,
 						},
 						"assign_public_ip": schema.BoolAttribute{
+							PlanModifiers: []planmodifier.Bool{
+								boolplanmodifier.RequiresReplace(),
+							},
 							MarkdownDescription: "Assign a public IP to the NIC",
 							Optional:            true,
 						},
@@ -175,6 +217,9 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				},
 			},
 			"password": schema.StringAttribute{
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 				MarkdownDescription: "Root password for linux, or Admin password for windows",
 				Optional:            true,
 				Sensitive:           true,
@@ -185,6 +230,9 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				Computed:            true,
 			},
 			"project_id": schema.StringAttribute{
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 				MarkdownDescription: "The project the VM instance is in.",
 				Optional:            true,
 			},
@@ -193,25 +241,40 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				Computed:            true,
 			},
 			"security_group_ids": schema.SetAttribute{
+				PlanModifiers: []planmodifier.Set{
+					setplanmodifier.RequiresReplace(),
+				},
 				ElementType:         types.StringType,
 				Optional:            true,
 				MarkdownDescription: "Security groups to assign to the VM when using public networking",
 			},
 			"ssh_key_source": schema.StringAttribute{
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 				MarkdownDescription: "Which SSH keys to add to the VM: project (default), user or custom",
 				Optional:            true,
 				Validators:          []validator.String{stringvalidator.OneOf("project", "user", "custom")},
 			},
 			"ssh_keys": schema.ListAttribute{
+				PlanModifiers: []planmodifier.List{
+					listplanmodifier.RequiresReplace(),
+				},
 				ElementType:         types.StringType,
 				MarkdownDescription: "List of SSH keys to add to the VM, ssh_key_source must be set to custom",
 				Optional:            true,
 			},
 			"start_script": schema.StringAttribute{
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 				MarkdownDescription: "A script to run when VM boots",
 				Optional:            true,
 			},
 			"vcpus": schema.Int64Attribute{
+				PlanModifiers: []planmodifier.Int64{
+					int64planmodifier.RequiresReplace(),
+				},
 				MarkdownDescription: "Number of VCPUs",
 				Optional:            true,
 				Validators:          []validator.Int64{int64validator.AtMost(100)},
@@ -492,58 +555,24 @@ func (r *VMResource) Read(ctx context.Context, req resource.ReadRequest, resp *r
 }
 
 func (r *VMResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	var state *VMResourceModel
+	var plan VMResourceModel
 
-	// Read Terraform prior state data into the model
-	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
-
+	// Read Terraform plan data into the model
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	params := virtual_machines.NewGetVMParamsWithContext(ctx)
-
-	params.ProjectID = r.client.DefaultProjectID
-	params.ID = state.ID.ValueString()
-
-	res, err := r.client.Client.VirtualMachines.GetVM(params)
-
-	if err != nil {
-		if apiErr, ok := err.(*virtual_machines.GetVMDefault); ok && apiErr.IsCode(404) {
-			resp.State.RemoveResource(ctx)
-			return
-		}
 		resp.Diagnostics.AddError(
-			"Unable to update VM resource",
-			err.Error(),
+			"Error getting vm plan",
+			"Error getting vm plan",
 		)
 		return
 	}
 
-	state.DataCenterID = types.StringValue(res.Payload.VM.DatacenterID)
-	state.CPUModel = types.StringValue(res.Payload.VM.CPUModel)
-	state.GPUs = types.Int64Value(res.Payload.VM.GpuQuantity)
-	state.BootDisk.SizeGib = types.Int64Value(res.Payload.VM.BootDiskSizeGib)
-	if res.Payload.VM.PublicImageID != "" {
-		state.BootDisk.ImageID = types.StringValue(res.Payload.VM.PublicImageID)
+	// Read Terraform state data into the model
+	var state VMResourceModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
 	}
-	if res.Payload.VM.PrivateImageID != "" {
-		state.BootDisk.ImageID = types.StringValue(res.Payload.VM.PrivateImageID)
-	}
-	state.MachineType = types.StringValue(res.Payload.VM.MachineType)
-	for i, nic := range state.Networks {
-		nic.ExternalIPAddress = types.StringValue(res.Payload.VM.Nics[i].ExternalIPAddress)
-		nic.InternalIPAddress = types.StringValue(res.Payload.VM.Nics[i].InternalIPAddress)
-	}
-	state.GPUModel = types.StringValue(res.Payload.VM.GpuModel)
-	state.ID = types.StringValue(res.Payload.VM.ID)
-	state.InternalIPAddress = types.StringValue(res.Payload.VM.InternalIPAddress)
-	state.ExternalIPAddress = types.StringValue(res.Payload.VM.ExternalIPAddress)
-	state.PriceHr = types.StringValue(fmt.Sprintf("%0.2f", res.Payload.VM.PriceHr))
-	state.RenewableEnergy = types.BoolValue(res.Payload.VM.RenewableEnergy)
-
-	// Save updated data into Terraform state
-	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
 func (r *VMResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {

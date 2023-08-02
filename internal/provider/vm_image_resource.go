@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/CudoVentures/terraform-provider-cudo/internal/client/networks"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/virtual_machines"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -51,6 +52,9 @@ func (r *VMImageResource) Schema(ctx context.Context, req resource.SchemaRequest
 		MarkdownDescription: "Image resource",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 				MarkdownDescription: "Image ID",
 				Required:            true,
 				Validators: []validator.String{stringvalidator.RegexMatches(
@@ -67,13 +71,12 @@ func (r *VMImageResource) Schema(ctx context.Context, req resource.SchemaRequest
 			"source": schema.SingleNestedAttribute{
 				Attributes: map[string]schema.Attribute{
 					"vm_id": schema.StringAttribute{
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.RequiresReplace(),
+						},
 						MarkdownDescription: "The ID of the VM with the disk to generate an image from.",
 						Required:            true,
 					},
-					// "snapshot_id": schema.StringAttribute{
-					// 	MarkdownDescription: "The ID of the snapshot of the VM disk to generate an image from.",
-					// 	Optional:            true,
-					// },
 				},
 				Required:            true,
 				MarkdownDescription: "The source vm disk or snapshot to generate the image from",
@@ -172,38 +175,24 @@ func (r *VMImageResource) Read(ctx context.Context, req resource.ReadRequest, re
 }
 
 func (r *VMImageResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	var state *VMImageResourceModel
+	var plan VMImageResourceModel
 
-	// Read Terraform prior state data into the model
-	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
-
+	// Read Terraform plan data into the model
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	getParams := virtual_machines.NewGetPrivateVMImageParamsWithContext(ctx)
-	getParams.ID = state.ID.ValueString()
-	getParams.ProjectID = r.client.DefaultProjectID
-
-	res, err := r.client.Client.VirtualMachines.GetPrivateVMImage(getParams)
-	if err != nil {
-		if apiErr, ok := err.(*networks.GetNetworkDefault); ok && apiErr.IsCode(404) {
-			resp.State.RemoveResource(ctx)
-			return
-		}
 		resp.Diagnostics.AddError(
-			"Unable to create network resource",
-			err.Error(),
+			"Error getting vm image plan",
+			"Error getting vm image plan",
 		)
 		return
 	}
 
-	state.ID = types.StringValue(res.Payload.Image.ID)
-	state.DataCenterId = types.StringValue(res.Payload.Image.DataCenterID)
-	state.SizeGib = types.Int64Value(int64(res.Payload.Image.SizeGib))
-
-	// Save updated data into Terraform state
-	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+	// Read Terraform state data into the model
+	var state NetworkResourceModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 }
 
 func (r *VMImageResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {

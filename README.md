@@ -44,6 +44,7 @@ provider_installation {
   direct {}
 }
 
+The [Vercel terraform provider](https://github.com/vercel/terraform-provider-vercel) is a useful reference as it uses the same plugin framework.
 ```
 
 ## Documentation
