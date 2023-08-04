@@ -298,6 +298,10 @@ func (r *SecurityGroupResource) Read(ctx context.Context, req resource.ReadReque
 	res, err := r.client.Client.Networks.GetSecurityGroup(params)
 
 	if err != nil {
+		if apiErr, ok := err.(*networks.GetSecurityGroupDefault); ok && apiErr.IsCode(404) {
+			resp.State.RemoveResource(ctx)
+			return
+		}
 		resp.Diagnostics.AddError(
 			"Unable to read security group resource",
 			err.Error(),
