@@ -15,18 +15,18 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// ListVMSnapshotsResponse list VM snapshots response
+// ListDiskSnapshotsResponse list disk snapshots response
 //
-// swagger:model ListVMSnapshotsResponse
-type ListVMSnapshotsResponse struct {
+// swagger:model ListDiskSnapshotsResponse
+type ListDiskSnapshotsResponse struct {
 
 	// snapshots
 	// Required: true
 	Snapshots []*Snapshot `json:"snapshots"`
 }
 
-// Validate validates this list VM snapshots response
-func (m *ListVMSnapshotsResponse) Validate(formats strfmt.Registry) error {
+// Validate validates this list disk snapshots response
+func (m *ListDiskSnapshotsResponse) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateSnapshots(formats); err != nil {
@@ -39,7 +39,7 @@ func (m *ListVMSnapshotsResponse) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *ListVMSnapshotsResponse) validateSnapshots(formats strfmt.Registry) error {
+func (m *ListDiskSnapshotsResponse) validateSnapshots(formats strfmt.Registry) error {
 
 	if err := validate.Required("snapshots", "body", m.Snapshots); err != nil {
 		return err
@@ -66,8 +66,8 @@ func (m *ListVMSnapshotsResponse) validateSnapshots(formats strfmt.Registry) err
 	return nil
 }
 
-// ContextValidate validate this list VM snapshots response based on the context it is used
-func (m *ListVMSnapshotsResponse) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this list disk snapshots response based on the context it is used
+func (m *ListDiskSnapshotsResponse) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateSnapshots(ctx, formats); err != nil {
@@ -80,7 +80,7 @@ func (m *ListVMSnapshotsResponse) ContextValidate(ctx context.Context, formats s
 	return nil
 }
 
-func (m *ListVMSnapshotsResponse) contextValidateSnapshots(ctx context.Context, formats strfmt.Registry) error {
+func (m *ListDiskSnapshotsResponse) contextValidateSnapshots(ctx context.Context, formats strfmt.Registry) error {
 
 	for i := 0; i < len(m.Snapshots); i++ {
 
@@ -101,7 +101,7 @@ func (m *ListVMSnapshotsResponse) contextValidateSnapshots(ctx context.Context, 
 }
 
 // MarshalBinary interface implementation
-func (m *ListVMSnapshotsResponse) MarshalBinary() ([]byte, error) {
+func (m *ListDiskSnapshotsResponse) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -109,8 +109,8 @@ func (m *ListVMSnapshotsResponse) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *ListVMSnapshotsResponse) UnmarshalBinary(b []byte) error {
-	var res ListVMSnapshotsResponse
+func (m *ListDiskSnapshotsResponse) UnmarshalBinary(b []byte) error {
+	var res ListDiskSnapshotsResponse
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

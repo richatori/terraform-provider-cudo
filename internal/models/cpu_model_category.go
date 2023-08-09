@@ -109,7 +109,6 @@ func (m *CPUModelCategory) ContextValidate(ctx context.Context, formats strfmt.R
 func (m *CPUModelCategory) contextValidateMinPriceHr(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.MinPriceHr != nil {
-
 		if err := m.MinPriceHr.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("minPriceHr")

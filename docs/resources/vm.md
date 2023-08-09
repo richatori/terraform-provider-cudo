@@ -111,5 +111,3 @@ Read-Only:
 
 - `external_ip_address` (String) The external IP address of the NIC.
 - `internal_ip_address` (String) The internal IP address of the NIC.
-
-

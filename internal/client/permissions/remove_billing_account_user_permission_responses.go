@@ -272,7 +272,6 @@ func (o *RemoveBillingAccountUserPermissionBody) ContextValidate(ctx context.Con
 func (o *RemoveBillingAccountUserPermissionBody) contextValidateRole(ctx context.Context, formats strfmt.Registry) error {
 
 	if o.Role != nil {
-
 		if err := o.Role.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("body" + "." + "role")

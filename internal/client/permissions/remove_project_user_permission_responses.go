@@ -272,7 +272,6 @@ func (o *RemoveProjectUserPermissionBody) ContextValidate(ctx context.Context, f
 func (o *RemoveProjectUserPermissionBody) contextValidateRole(ctx context.Context, formats strfmt.Registry) error {
 
 	if o.Role != nil {
-
 		if err := o.Role.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("body" + "." + "role")

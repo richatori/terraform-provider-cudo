@@ -14,18 +14,18 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// GetVMResponse get VM response
+// ResizeVMResponse resize VM response
 //
-// swagger:model GetVMResponse
-type GetVMResponse struct {
+// swagger:model ResizeVMResponse
+type ResizeVMResponse struct {
 
-	// VM
+	// vm
 	// Required: true
-	VM *VM `json:"VM"`
+	VM *VM `json:"vm"`
 }
 
-// Validate validates this get VM response
-func (m *GetVMResponse) Validate(formats strfmt.Registry) error {
+// Validate validates this resize VM response
+func (m *ResizeVMResponse) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateVM(formats); err != nil {
@@ -38,18 +38,18 @@ func (m *GetVMResponse) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *GetVMResponse) validateVM(formats strfmt.Registry) error {
+func (m *ResizeVMResponse) validateVM(formats strfmt.Registry) error {
 
-	if err := validate.Required("VM", "body", m.VM); err != nil {
+	if err := validate.Required("vm", "body", m.VM); err != nil {
 		return err
 	}
 
 	if m.VM != nil {
 		if err := m.VM.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("VM")
+				return ve.ValidateName("vm")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("VM")
+				return ce.ValidateName("vm")
 			}
 			return err
 		}
@@ -58,8 +58,8 @@ func (m *GetVMResponse) validateVM(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validate this get VM response based on the context it is used
-func (m *GetVMResponse) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this resize VM response based on the context it is used
+func (m *ResizeVMResponse) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateVM(ctx, formats); err != nil {
@@ -72,14 +72,14 @@ func (m *GetVMResponse) ContextValidate(ctx context.Context, formats strfmt.Regi
 	return nil
 }
 
-func (m *GetVMResponse) contextValidateVM(ctx context.Context, formats strfmt.Registry) error {
+func (m *ResizeVMResponse) contextValidateVM(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.VM != nil {
 		if err := m.VM.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("VM")
+				return ve.ValidateName("vm")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("VM")
+				return ce.ValidateName("vm")
 			}
 			return err
 		}
@@ -89,7 +89,7 @@ func (m *GetVMResponse) contextValidateVM(ctx context.Context, formats strfmt.Re
 }
 
 // MarshalBinary interface implementation
-func (m *GetVMResponse) MarshalBinary() ([]byte, error) {
+func (m *ResizeVMResponse) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -97,8 +97,8 @@ func (m *GetVMResponse) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *GetVMResponse) UnmarshalBinary(b []byte) error {
-	var res GetVMResponse
+func (m *ResizeVMResponse) UnmarshalBinary(b []byte) error {
+	var res ResizeVMResponse
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

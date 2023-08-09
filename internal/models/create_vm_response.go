@@ -90,11 +90,6 @@ func (m *CreateVMResponse) ContextValidate(ctx context.Context, formats strfmt.R
 func (m *CreateVMResponse) contextValidateVM(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.VM != nil {
-
-		if swag.IsZero(m.VM) { // not required
-			return nil
-		}
-
 		if err := m.VM.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("vm")

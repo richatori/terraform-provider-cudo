@@ -245,11 +245,6 @@ func (o *UpdateSecurityGroupBody) ContextValidate(ctx context.Context, formats s
 func (o *UpdateSecurityGroupBody) contextValidateSecurityGroup(ctx context.Context, formats strfmt.Registry) error {
 
 	if o.SecurityGroup != nil {
-
-		if swag.IsZero(o.SecurityGroup) { // not required
-			return nil
-		}
-
 		if err := o.SecurityGroup.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("body" + "." + "securityGroup")
@@ -356,11 +351,6 @@ func (o *UpdateSecurityGroupParamsBodySecurityGroup) contextValidateRules(ctx co
 	for i := 0; i < len(o.Rules); i++ {
 
 		if o.Rules[i] != nil {
-
-			if swag.IsZero(o.Rules[i]) { // not required
-				return nil
-			}
-
 			if err := o.Rules[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("body" + "." + "securityGroup" + "." + "rules" + "." + strconv.Itoa(i))

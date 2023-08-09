@@ -242,11 +242,6 @@ func (m *VM) contextValidateNics(ctx context.Context, formats strfmt.Registry) e
 	for i := 0; i < len(m.Nics); i++ {
 
 		if m.Nics[i] != nil {
-
-			if swag.IsZero(m.Nics[i]) { // not required
-				return nil
-			}
-
 			if err := m.Nics[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("nics" + "." + strconv.Itoa(i))
@@ -285,11 +280,6 @@ func (m *VM) contextValidateRules(ctx context.Context, formats strfmt.Registry) 
 	for i := 0; i < len(m.Rules); i++ {
 
 		if m.Rules[i] != nil {
-
-			if swag.IsZero(m.Rules[i]) { // not required
-				return nil
-			}
-
 			if err := m.Rules[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("rules" + "." + strconv.Itoa(i))

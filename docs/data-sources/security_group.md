@@ -42,5 +42,3 @@ Read-Only:
 - `ports` (String) Image size in GiB
 - `protocol` (String) Image size in GiB
 - `rule_type` (String) Image size in GiB
-
-

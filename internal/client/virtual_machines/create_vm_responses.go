@@ -410,11 +410,6 @@ func (o *CreateVMBody) ContextValidate(ctx context.Context, formats strfmt.Regis
 func (o *CreateVMBody) contextValidateBootDisk(ctx context.Context, formats strfmt.Registry) error {
 
 	if o.BootDisk != nil {
-
-		if swag.IsZero(o.BootDisk) { // not required
-			return nil
-		}
-
 		if err := o.BootDisk.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("body" + "." + "bootDisk")
@@ -431,11 +426,6 @@ func (o *CreateVMBody) contextValidateBootDisk(ctx context.Context, formats strf
 func (o *CreateVMBody) contextValidateMaxPriceHr(ctx context.Context, formats strfmt.Registry) error {
 
 	if o.MaxPriceHr != nil {
-
-		if swag.IsZero(o.MaxPriceHr) { // not required
-			return nil
-		}
-
 		if err := o.MaxPriceHr.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("body" + "." + "maxPriceHr")
@@ -454,11 +444,6 @@ func (o *CreateVMBody) contextValidateNics(ctx context.Context, formats strfmt.R
 	for i := 0; i < len(o.Nics); i++ {
 
 		if o.Nics[i] != nil {
-
-			if swag.IsZero(o.Nics[i]) { // not required
-				return nil
-			}
-
 			if err := o.Nics[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("body" + "." + "nics" + "." + strconv.Itoa(i))
@@ -477,11 +462,6 @@ func (o *CreateVMBody) contextValidateNics(ctx context.Context, formats strfmt.R
 func (o *CreateVMBody) contextValidateSSHKeySource(ctx context.Context, formats strfmt.Registry) error {
 
 	if o.SSHKeySource != nil {
-
-		if swag.IsZero(o.SSHKeySource) { // not required
-			return nil
-		}
-
 		if err := o.SSHKeySource.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("body" + "." + "sshKeySource")

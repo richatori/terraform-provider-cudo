@@ -78,11 +78,6 @@ func (m *Disk) ContextValidate(ctx context.Context, formats strfmt.Registry) err
 func (m *Disk) contextValidateStorageClass(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.StorageClass != nil {
-
-		if swag.IsZero(m.StorageClass) { // not required
-			return nil
-		}
-
 		if err := m.StorageClass.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("storageClass")

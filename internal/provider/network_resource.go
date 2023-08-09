@@ -137,7 +137,7 @@ func waitForNetworkAvailable(ctx context.Context, projectID string, networkID st
 		Pending:    []string{"clea", "clon", "dsrz", "epil", "hold", "hotp", "init", "migr", "pend", "prol", "save", "shut", "snap", "unkn"},
 		Target:     []string{"boot", "done", "fail", "poff", "runn", "stop", "susp", "unde"},
 		Refresh:    refreshFunc,
-		Timeout:    10 * time.Minute,
+		Timeout:    20 * time.Minute,
 		Delay:      1 * time.Second,
 		MinTimeout: 3 * time.Second,
 	}
@@ -181,7 +181,7 @@ func waitForNetworkStop(ctx context.Context, projectID string, networkID string,
 		Pending:    []string{"fail", "poff", "runn", "stop", "susp", "unde", "boot", "clea", "clon", "dsrz", "epil", "hold", "hotp", "init", "migr", "pend", "prol", "save", "shut", "snap", "unkn"},
 		Target:     []string{"done", "epil"},
 		Refresh:    refreshFunc,
-		Timeout:    10 * time.Minute,
+		Timeout:    20 * time.Minute,
 		MinTimeout: 3 * time.Second,
 	}
 
@@ -217,7 +217,7 @@ func waitForNetworkDelete(ctx context.Context, projectID string, networkID strin
 		Pending:    []string{"fail", "poff", "runn", "stop", "susp", "unde", "boot", "clea", "clon", "dsrz", "epil", "hold", "hotp", "init", "migr", "pend", "prol", "save", "shut", "snap", "unkn"},
 		Target:     []string{"done", "epil"},
 		Refresh:    refreshFunc,
-		Timeout:    10 * time.Minute,
+		Timeout:    20 * time.Minute,
 		MinTimeout: 3 * time.Second,
 	}
 

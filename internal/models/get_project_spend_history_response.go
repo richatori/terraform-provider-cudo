@@ -85,11 +85,6 @@ func (m *GetProjectSpendHistoryResponse) contextValidateProjectSpendHistory(ctx 
 	for i := 0; i < len(m.ProjectSpendHistory); i++ {
 
 		if m.ProjectSpendHistory[i] != nil {
-
-			if swag.IsZero(m.ProjectSpendHistory[i]) { // not required
-				return nil
-			}
-
 			if err := m.ProjectSpendHistory[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("projectSpendHistory" + "." + strconv.Itoa(i))

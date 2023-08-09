@@ -163,11 +163,6 @@ func (m *ListUserPermissionsResponse) contextValidateBillingAccountPermissions(c
 	for i := 0; i < len(m.BillingAccountPermissions); i++ {
 
 		if m.BillingAccountPermissions[i] != nil {
-
-			if swag.IsZero(m.BillingAccountPermissions[i]) { // not required
-				return nil
-			}
-
 			if err := m.BillingAccountPermissions[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("billingAccountPermissions" + "." + strconv.Itoa(i))
@@ -188,11 +183,6 @@ func (m *ListUserPermissionsResponse) contextValidateDataCenterPermissions(ctx c
 	for i := 0; i < len(m.DataCenterPermissions); i++ {
 
 		if m.DataCenterPermissions[i] != nil {
-
-			if swag.IsZero(m.DataCenterPermissions[i]) { // not required
-				return nil
-			}
-
 			if err := m.DataCenterPermissions[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("dataCenterPermissions" + "." + strconv.Itoa(i))
@@ -213,11 +203,6 @@ func (m *ListUserPermissionsResponse) contextValidateProjectPermissions(ctx cont
 	for i := 0; i < len(m.ProjectPermissions); i++ {
 
 		if m.ProjectPermissions[i] != nil {
-
-			if swag.IsZero(m.ProjectPermissions[i]) { // not required
-				return nil
-			}
-
 			if err := m.ProjectPermissions[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("projectPermissions" + "." + strconv.Itoa(i))

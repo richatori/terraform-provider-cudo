@@ -72,11 +72,6 @@ func (m *CreatePrivateVMImageResponse) ContextValidate(ctx context.Context, form
 func (m *CreatePrivateVMImageResponse) contextValidateImage(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Image != nil {
-
-		if swag.IsZero(m.Image) { // not required
-			return nil
-		}
-
 		if err := m.Image.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("image")

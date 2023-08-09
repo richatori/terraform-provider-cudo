@@ -555,68 +555,6 @@
         }
       }
     },
-    "/v1/projects/{id}/spend": {
-      "get": {
-        "tags": [
-          "Projects"
-        ],
-        "summary": "Spend history",
-        "operationId": "GetProjectSpendHistory",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/GetProjectSpendHistoryResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/Status"
-            }
-          }
-        }
-      }
-    },
-    "/v1/projects/{id}/spend/current": {
-      "get": {
-        "tags": [
-          "Projects"
-        ],
-        "summary": "Spend",
-        "operationId": "GetProjectCurrentSpend",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/ProjectSpend"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/Status"
-            }
-          }
-        }
-      }
-    },
     "/v1/projects/{project.id}": {
       "patch": {
         "tags": [
@@ -750,6 +688,186 @@
             "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/CountVMsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/disks/{id}/revert": {
+      "post": {
+        "tags": [
+          "Virtual Machines"
+        ],
+        "summary": "Revert Disk to Snapshot",
+        "operationId": "RevertDisk",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "snapshotId",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "vmId",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/RevertDiskResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/disks/{id}/snapshots": {
+      "get": {
+        "tags": [
+          "Virtual Machines"
+        ],
+        "summary": "List Disk Snapshots",
+        "operationId": "ListDiskSnapshots",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListDiskSnapshotsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Virtual Machines"
+        ],
+        "summary": "Create Disk Snapshot",
+        "operationId": "CreateDiskSnapshot",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "snapshotId",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "vmId",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CreateDiskSnapshotResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Virtual Machines"
+        ],
+        "summary": "Delete Disk Snapshots",
+        "operationId": "DeleteDiskSnapshot",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "snapshotId",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "vmId",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DeleteDiskSnapshotResponse"
             }
           },
           "default": {
@@ -1386,43 +1504,6 @@
         }
       }
     },
-    "/v1/projects/{projectId}/spend/{spendId}/details": {
-      "get": {
-        "tags": [
-          "Projects"
-        ],
-        "summary": "Spend details",
-        "operationId": "GetProjectSpendDetails",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "projectId",
-            "in": "path",
-            "required": true
-          },
-          {
-            "type": "string",
-            "name": "spendId",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/GetProjectSpendDetailsResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/Status"
-            }
-          }
-        }
-      }
-    },
     "/v1/projects/{projectId}/vm": {
       "post": {
         "tags": [
@@ -1546,11 +1627,6 @@
             "name": "projectId",
             "in": "path",
             "required": true
-          },
-          {
-            "type": "string",
-            "name": "status",
-            "in": "query"
           },
           {
             "type": "string",
@@ -1727,13 +1803,13 @@
         }
       }
     },
-    "/v1/projects/{projectId}/vms/{id}/revert": {
+    "/v1/projects/{projectId}/vms/{id}/resize": {
       "post": {
         "tags": [
           "Virtual Machines"
         ],
-        "summary": "Revert VM to Snapshot",
-        "operationId": "RevertVM",
+        "summary": "Resize vCPU and memory of VM",
+        "operationId": "ResizeVM",
         "parameters": [
           {
             "type": "string",
@@ -1748,136 +1824,23 @@
             "required": true
           },
           {
-            "type": "string",
-            "name": "snapshotId",
-            "in": "query",
-            "required": true
+            "type": "integer",
+            "format": "int64",
+            "name": "vcpus",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "memoryGib",
+            "in": "query"
           }
         ],
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/RevertVMResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/Status"
-            }
-          }
-        }
-      }
-    },
-    "/v1/projects/{projectId}/vms/{id}/snapshots": {
-      "get": {
-        "tags": [
-          "Virtual Machines"
-        ],
-        "summary": "List VM Snapshots",
-        "operationId": "ListVMSnapshots",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "projectId",
-            "in": "path",
-            "required": true
-          },
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/ListVMSnapshotsResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/Status"
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "Virtual Machines"
-        ],
-        "summary": "Create VM Snapshot",
-        "operationId": "CreateVMSnapshot",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "projectId",
-            "in": "path",
-            "required": true
-          },
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true
-          },
-          {
-            "type": "string",
-            "name": "snapshotId",
-            "in": "query",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/CreateVMSnapshotResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/Status"
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Virtual Machines"
-        ],
-        "summary": "Delete VM Snapshots",
-        "operationId": "DeleteVMSnapshot",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "projectId",
-            "in": "path",
-            "required": true
-          },
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true
-          },
-          {
-            "type": "string",
-            "name": "snapshotId",
-            "in": "query",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/DeleteVMSnapshotResponse"
+              "$ref": "#/definitions/ResizeVMResponse"
             }
           },
           "default": {
@@ -2511,6 +2474,9 @@
         }
       }
     },
+    "CreateDiskSnapshotResponse": {
+      "type": "object"
+    },
     "CreateNetworkResponse": {
       "type": "object"
     },
@@ -2563,9 +2529,6 @@
           "$ref": "#/definitions/VM"
         }
       }
-    },
-    "CreateVMSnapshotResponse": {
-      "type": "object"
     },
     "DataCenter": {
       "type": "object",
@@ -2624,6 +2587,9 @@
         }
       }
     },
+    "DeleteDiskSnapshotResponse": {
+      "type": "object"
+    },
     "DeleteNetworkResponse": {
       "type": "object"
     },
@@ -2631,9 +2597,6 @@
       "type": "object"
     },
     "DeleteSecurityGroupResponse": {
-      "type": "object"
-    },
-    "DeleteVMSnapshotResponse": {
       "type": "object"
     },
     "Disk": {
@@ -2679,40 +2642,6 @@
       "properties": {
         "image": {
           "$ref": "#/definitions/v1.PrivateImage"
-        }
-      }
-    },
-    "GetProjectSpendDetailsResponse": {
-      "type": "object",
-      "required": [
-        "spend",
-        "orders"
-      ],
-      "properties": {
-        "orders": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/Order"
-          }
-        },
-        "spend": {
-          "$ref": "#/definitions/ProjectSpend"
-        }
-      }
-    },
-    "GetProjectSpendHistoryResponse": {
-      "type": "object",
-      "required": [
-        "projectSpendHistory"
-      ],
-      "properties": {
-        "projectSpendHistory": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/ProjectSpend"
-          }
         }
       }
     },
@@ -2900,6 +2829,21 @@
         "totalCount": {
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "ListDiskSnapshotsResponse": {
+      "type": "object",
+      "required": [
+        "snapshots"
+      ],
+      "properties": {
+        "snapshots": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Snapshot"
+          }
         }
       }
     },
@@ -3269,21 +3213,6 @@
         }
       }
     },
-    "ListVMSnapshotsResponse": {
-      "type": "object",
-      "required": [
-        "snapshots"
-      ],
-      "properties": {
-        "snapshots": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/Snapshot"
-          }
-        }
-      }
-    },
     "ListVMsResponse": {
       "type": "object",
       "properties": {
@@ -3355,49 +3284,6 @@
         }
       }
     },
-    "Order": {
-      "type": "object",
-      "required": [
-        "uid",
-        "orderId",
-        "spend",
-        "startTime",
-        "endTime",
-        "description",
-        "quantity",
-        "priceHr"
-      ],
-      "properties": {
-        "description": {
-          "type": "string"
-        },
-        "endTime": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "orderId": {
-          "type": "string"
-        },
-        "priceHr": {
-          "type": "number",
-          "format": "float"
-        },
-        "quantity": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "spend": {
-          "$ref": "#/definitions/Decimal"
-        },
-        "startTime": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "uid": {
-          "type": "string"
-        }
-      }
-    },
     "Profile": {
       "type": "object",
       "properties": {
@@ -3439,28 +3325,6 @@
         }
       }
     },
-    "ProjectSpend": {
-      "type": "object",
-      "properties": {
-        "endTime": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "projectId": {
-          "type": "string"
-        },
-        "spend": {
-          "$ref": "#/definitions/Decimal"
-        },
-        "startTime": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "uid": {
-          "type": "string"
-        }
-      }
-    },
     "Protocol": {
       "type": "string",
       "default": "PROTOCOL_UNKNOWN",
@@ -3488,7 +3352,18 @@
         }
       }
     },
-    "RevertVMResponse": {
+    "ResizeVMResponse": {
+      "type": "object",
+      "required": [
+        "vm"
+      ],
+      "properties": {
+        "vm": {
+          "$ref": "#/definitions/VM"
+        }
+      }
+    },
+    "RevertDiskResponse": {
       "type": "object"
     },
     "Role": {

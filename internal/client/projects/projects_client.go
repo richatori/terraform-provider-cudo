@@ -34,12 +34,6 @@ type ClientService interface {
 
 	GetProject(params *GetProjectParams, opts ...ClientOption) (*GetProjectOK, error)
 
-	GetProjectCurrentSpend(params *GetProjectCurrentSpendParams, opts ...ClientOption) (*GetProjectCurrentSpendOK, error)
-
-	GetProjectSpendDetails(params *GetProjectSpendDetailsParams, opts ...ClientOption) (*GetProjectSpendDetailsOK, error)
-
-	GetProjectSpendHistory(params *GetProjectSpendHistoryParams, opts ...ClientOption) (*GetProjectSpendHistoryOK, error)
-
 	ListProjectSSHKeys(params *ListProjectSSHKeysParams, opts ...ClientOption) (*ListProjectSSHKeysOK, error)
 
 	ListProjects(params *ListProjectsParams, opts ...ClientOption) (*ListProjectsOK, error)
@@ -157,117 +151,6 @@ func (a *Client) GetProject(params *GetProjectParams, opts ...ClientOption) (*Ge
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*GetProjectDefault)
-	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
-}
-
-/*
-GetProjectCurrentSpend spends
-*/
-func (a *Client) GetProjectCurrentSpend(params *GetProjectCurrentSpendParams, opts ...ClientOption) (*GetProjectCurrentSpendOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewGetProjectCurrentSpendParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "GetProjectCurrentSpend",
-		Method:             "GET",
-		PathPattern:        "/v1/projects/{id}/spend/current",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &GetProjectCurrentSpendReader{formats: a.formats},
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*GetProjectCurrentSpendOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	unexpectedSuccess := result.(*GetProjectCurrentSpendDefault)
-	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
-}
-
-/*
-GetProjectSpendDetails spends details
-*/
-func (a *Client) GetProjectSpendDetails(params *GetProjectSpendDetailsParams, opts ...ClientOption) (*GetProjectSpendDetailsOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewGetProjectSpendDetailsParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "GetProjectSpendDetails",
-		Method:             "GET",
-		PathPattern:        "/v1/projects/{projectId}/spend/{spendId}/details",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &GetProjectSpendDetailsReader{formats: a.formats},
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*GetProjectSpendDetailsOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	unexpectedSuccess := result.(*GetProjectSpendDetailsDefault)
-	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
-}
-
-/*
-GetProjectSpendHistory spends history
-*/
-func (a *Client) GetProjectSpendHistory(params *GetProjectSpendHistoryParams, opts ...ClientOption) (*GetProjectSpendHistoryOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewGetProjectSpendHistoryParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "GetProjectSpendHistory",
-		Method:             "GET",
-		PathPattern:        "/v1/projects/{id}/spend",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &GetProjectSpendHistoryReader{formats: a.formats},
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*GetProjectSpendHistoryOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	unexpectedSuccess := result.(*GetProjectSpendHistoryDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

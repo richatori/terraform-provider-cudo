@@ -40,5 +40,3 @@ resource "cudo_vm_image" "my-image" {
 Required:
 
 - `vm_id` (String) The ID of the VM with the disk to generate an image from.
-
-

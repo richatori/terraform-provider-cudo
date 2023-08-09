@@ -114,11 +114,6 @@ func (m *Rule) ContextValidate(ctx context.Context, formats strfmt.Registry) err
 func (m *Rule) contextValidateProtocol(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Protocol != nil {
-
-		if swag.IsZero(m.Protocol) { // not required
-			return nil
-		}
-
 		if err := m.Protocol.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("protocol")
@@ -135,11 +130,6 @@ func (m *Rule) contextValidateProtocol(ctx context.Context, formats strfmt.Regis
 func (m *Rule) contextValidateRuleType(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.RuleType != nil {
-
-		if swag.IsZero(m.RuleType) { // not required
-			return nil
-		}
-
 		if err := m.RuleType.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("ruleType")

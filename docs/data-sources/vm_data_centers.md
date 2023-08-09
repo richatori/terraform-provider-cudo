@@ -31,5 +31,3 @@ Read-Only:
 
 - `id` (String) Data center identifier
 - `region_id` (String) Region identifier
-
-

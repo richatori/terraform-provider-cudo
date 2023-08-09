@@ -117,11 +117,6 @@ func (m *GetProjectSpendDetailsResponse) contextValidateOrders(ctx context.Conte
 	for i := 0; i < len(m.Orders); i++ {
 
 		if m.Orders[i] != nil {
-
-			if swag.IsZero(m.Orders[i]) { // not required
-				return nil
-			}
-
 			if err := m.Orders[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("orders" + "." + strconv.Itoa(i))
@@ -140,7 +135,6 @@ func (m *GetProjectSpendDetailsResponse) contextValidateOrders(ctx context.Conte
 func (m *GetProjectSpendDetailsResponse) contextValidateSpend(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Spend != nil {
-
 		if err := m.Spend.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("spend")

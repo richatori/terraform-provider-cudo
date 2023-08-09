@@ -63,5 +63,3 @@ Optional:
 Read-Only:
 
 - `id` (String) The unique identifier of the rule
-
-

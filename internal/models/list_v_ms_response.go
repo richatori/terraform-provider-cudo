@@ -82,11 +82,6 @@ func (m *ListVMsResponse) contextValidateVMs(ctx context.Context, formats strfmt
 	for i := 0; i < len(m.VMs); i++ {
 
 		if m.VMs[i] != nil {
-
-			if swag.IsZero(m.VMs[i]) { // not required
-				return nil
-			}
-
 			if err := m.VMs[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("VMs" + "." + strconv.Itoa(i))

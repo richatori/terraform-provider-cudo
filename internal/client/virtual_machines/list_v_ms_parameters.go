@@ -67,9 +67,6 @@ type ListVMsParams struct {
 	// ProjectID.
 	ProjectID string
 
-	// Status.
-	Status *string
-
 	timeout    time.Duration
 	Context    context.Context
 	HTTPClient *http.Client
@@ -145,17 +142,6 @@ func (o *ListVMsParams) SetProjectID(projectID string) {
 	o.ProjectID = projectID
 }
 
-// WithStatus adds the status to the list v ms params
-func (o *ListVMsParams) WithStatus(status *string) *ListVMsParams {
-	o.SetStatus(status)
-	return o
-}
-
-// SetStatus adds the status to the list v ms params
-func (o *ListVMsParams) SetStatus(status *string) {
-	o.Status = status
-}
-
 // WriteToRequest writes these params to a swagger request
 func (o *ListVMsParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
@@ -184,23 +170,6 @@ func (o *ListVMsParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Regis
 	// path param projectId
 	if err := r.SetPathParam("projectId", o.ProjectID); err != nil {
 		return err
-	}
-
-	if o.Status != nil {
-
-		// query param status
-		var qrStatus string
-
-		if o.Status != nil {
-			qrStatus = *o.Status
-		}
-		qStatus := qrStatus
-		if qStatus != "" {
-
-			if err := r.SetQueryParam("status", qStatus); err != nil {
-				return err
-			}
-		}
 	}
 
 	if len(res) > 0 {

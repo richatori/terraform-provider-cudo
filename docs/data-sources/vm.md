@@ -42,5 +42,3 @@ data "cudo_vm" "my-vm" {
 - `memory_gib` (Number) The amount of memory allocated to the VM instance.
 - `price_hr` (Number) The price per hour for the VM instance.
 - `vcpus` (Number)
-
-

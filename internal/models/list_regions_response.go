@@ -85,11 +85,6 @@ func (m *ListRegionsResponse) contextValidateRegions(ctx context.Context, format
 	for i := 0; i < len(m.Regions); i++ {
 
 		if m.Regions[i] != nil {
-
-			if swag.IsZero(m.Regions[i]) { // not required
-				return nil
-			}
-
 			if err := m.Regions[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("regions" + "." + strconv.Itoa(i))

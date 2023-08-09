@@ -32,5 +32,3 @@ data "cudo_network" "my-net" {
 - `gateway` (String) IP of the gateway for the network
 - `internal_ip_address` (String) Internal IP of the network router
 - `ip_range` (String) IP Range in CIDR format e.g 192.168.0.0/24
-
-

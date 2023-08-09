@@ -147,7 +147,6 @@ func (m *UserPermission) ContextValidate(ctx context.Context, formats strfmt.Reg
 func (m *UserPermission) contextValidatePermissionRole(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.PermissionRole != nil {
-
 		if err := m.PermissionRole.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("permissionRole")

@@ -75,7 +75,6 @@ func (m *GetSecurityGroupResponse) ContextValidate(ctx context.Context, formats 
 func (m *GetSecurityGroupResponse) contextValidateSecurityGroup(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.SecurityGroup != nil {
-
 		if err := m.SecurityGroup.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("securityGroup")

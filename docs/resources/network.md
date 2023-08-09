@@ -34,5 +34,3 @@ resource "cudo_network" "network" {
 - `external_ip_address` (String) External IP of the network router
 - `gateway` (String) Internal IP of the network gateway
 - `internal_ip_address` (String) Internal IP of the network router
-
-
