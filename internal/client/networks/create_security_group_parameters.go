@@ -61,8 +61,8 @@ CreateSecurityGroupParams contains all the parameters to send to the API endpoin
 */
 type CreateSecurityGroupParams struct {
 
-	// Body.
-	Body CreateSecurityGroupBody
+	// SecurityGroup.
+	SecurityGroup CreateSecurityGroupBody
 
 	// SecurityGroupProjectID.
 	SecurityGroupProjectID string
@@ -120,15 +120,15 @@ func (o *CreateSecurityGroupParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
-// WithBody adds the body to the create security group params
-func (o *CreateSecurityGroupParams) WithBody(body CreateSecurityGroupBody) *CreateSecurityGroupParams {
-	o.SetBody(body)
+// WithSecurityGroup adds the securityGroup to the create security group params
+func (o *CreateSecurityGroupParams) WithSecurityGroup(securityGroup CreateSecurityGroupBody) *CreateSecurityGroupParams {
+	o.SetSecurityGroup(securityGroup)
 	return o
 }
 
-// SetBody adds the body to the create security group params
-func (o *CreateSecurityGroupParams) SetBody(body CreateSecurityGroupBody) {
-	o.Body = body
+// SetSecurityGroup adds the securityGroup to the create security group params
+func (o *CreateSecurityGroupParams) SetSecurityGroup(securityGroup CreateSecurityGroupBody) {
+	o.SecurityGroup = securityGroup
 }
 
 // WithSecurityGroupProjectID adds the securityGroupProjectID to the create security group params
@@ -149,7 +149,7 @@ func (o *CreateSecurityGroupParams) WriteToRequest(r runtime.ClientRequest, reg 
 		return err
 	}
 	var res []error
-	if err := r.SetBodyParam(o.Body); err != nil {
+	if err := r.SetBodyParam(o.SecurityGroup); err != nil {
 		return err
 	}
 

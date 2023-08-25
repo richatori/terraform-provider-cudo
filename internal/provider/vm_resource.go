@@ -411,7 +411,8 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 
 	var bootDisk models.Disk
 	if !state.BootDisk.SizeGib.IsNull() {
-		bootDisk.SizeGib = int32(state.BootDisk.SizeGib.ValueInt64())
+		sizeGib := int32(state.BootDisk.SizeGib.ValueInt64())
+		bootDisk.SizeGib = &sizeGib
 	}
 	nics := make([]*models.CreateVMRequestNIC, len(state.Networks))
 
@@ -460,18 +461,31 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 
 	_, err := r.client.Client.VirtualMachines.CreateVM(params)
 	if err != nil {
-		resp.Diagnostics.AddError(
-			"Unable to create VM resource",
-			err.Error(),
-		)
+		if apiErr, ok := err.(*virtual_machines.CreateVMDefault); ok {
+			if apiErr.Code() == 504 {
+				resp.Diagnostics.AddError(
+					"Error creating VM resource",
+					"Could not create VM: server unavailable",
+				)
+			}
+			resp.Diagnostics.AddError(
+				"Error creating VM resource",
+				"Could not create VM, unexpected api error: "+apiErr.Payload.Message,
+			)
+		} else {
+			resp.Diagnostics.AddError(
+				"Error creating VM resource",
+				"Could not create VM, unexpected error: "+err.Error(),
+			)
+		}
 		return
 	}
 
 	vm, err := waitForVmAvailable(ctx, params.ProjectID, state.ID.ValueString(), r.client.Client.VirtualMachines)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Unable to create VM resource",
-			err.Error(),
+			"Error creating VM resource",
+			"Could not wait for VM resource to become available: "+err.Error(),
 		)
 		return
 	}

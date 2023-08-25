@@ -15,6 +15,7 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
 )
@@ -191,15 +192,26 @@ swagger:model UpdateSecurityGroupBody
 */
 type UpdateSecurityGroupBody struct {
 
-	// security group
-	SecurityGroup *UpdateSecurityGroupParamsBodySecurityGroup `json:"securityGroup,omitempty"`
+	// data center Id
+	// Required: true
+	DataCenterID *string `json:"dataCenterId"`
+
+	// description
+	Description string `json:"description,omitempty"`
+
+	// rules
+	Rules []*models.Rule `json:"rules"`
 }
 
 // Validate validates this update security group body
 func (o *UpdateSecurityGroupBody) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := o.validateSecurityGroup(formats); err != nil {
+	if err := o.validateDataCenterID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := o.validateRules(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -209,20 +221,36 @@ func (o *UpdateSecurityGroupBody) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (o *UpdateSecurityGroupBody) validateSecurityGroup(formats strfmt.Registry) error {
-	if swag.IsZero(o.SecurityGroup) { // not required
+func (o *UpdateSecurityGroupBody) validateDataCenterID(formats strfmt.Registry) error {
+
+	if err := validate.Required("securityGroup"+"."+"dataCenterId", "body", o.DataCenterID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (o *UpdateSecurityGroupBody) validateRules(formats strfmt.Registry) error {
+	if swag.IsZero(o.Rules) { // not required
 		return nil
 	}
 
-	if o.SecurityGroup != nil {
-		if err := o.SecurityGroup.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("body" + "." + "securityGroup")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("body" + "." + "securityGroup")
-			}
-			return err
+	for i := 0; i < len(o.Rules); i++ {
+		if swag.IsZero(o.Rules[i]) { // not required
+			continue
 		}
+
+		if o.Rules[i] != nil {
+			if err := o.Rules[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("securityGroup" + "." + "rules" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("securityGroup" + "." + "rules" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
 	}
 
 	return nil
@@ -232,7 +260,7 @@ func (o *UpdateSecurityGroupBody) validateSecurityGroup(formats strfmt.Registry)
 func (o *UpdateSecurityGroupBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
-	if err := o.contextValidateSecurityGroup(ctx, formats); err != nil {
+	if err := o.contextValidateRules(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -242,17 +270,21 @@ func (o *UpdateSecurityGroupBody) ContextValidate(ctx context.Context, formats s
 	return nil
 }
 
-func (o *UpdateSecurityGroupBody) contextValidateSecurityGroup(ctx context.Context, formats strfmt.Registry) error {
+func (o *UpdateSecurityGroupBody) contextValidateRules(ctx context.Context, formats strfmt.Registry) error {
 
-	if o.SecurityGroup != nil {
-		if err := o.SecurityGroup.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("body" + "." + "securityGroup")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("body" + "." + "securityGroup")
+	for i := 0; i < len(o.Rules); i++ {
+
+		if o.Rules[i] != nil {
+			if err := o.Rules[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("securityGroup" + "." + "rules" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("securityGroup" + "." + "rules" + "." + strconv.Itoa(i))
+				}
+				return err
 			}
-			return err
 		}
+
 	}
 
 	return nil
@@ -269,114 +301,6 @@ func (o *UpdateSecurityGroupBody) MarshalBinary() ([]byte, error) {
 // UnmarshalBinary interface implementation
 func (o *UpdateSecurityGroupBody) UnmarshalBinary(b []byte) error {
 	var res UpdateSecurityGroupBody
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*o = res
-	return nil
-}
-
-/*
-UpdateSecurityGroupParamsBodySecurityGroup update security group params body security group
-swagger:model UpdateSecurityGroupParamsBodySecurityGroup
-*/
-type UpdateSecurityGroupParamsBodySecurityGroup struct {
-
-	// data center Id
-	DataCenterID string `json:"dataCenterId,omitempty"`
-
-	// description
-	Description string `json:"description,omitempty"`
-
-	// rules
-	Rules []*models.Rule `json:"rules"`
-}
-
-// Validate validates this update security group params body security group
-func (o *UpdateSecurityGroupParamsBodySecurityGroup) Validate(formats strfmt.Registry) error {
-	var res []error
-
-	if err := o.validateRules(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (o *UpdateSecurityGroupParamsBodySecurityGroup) validateRules(formats strfmt.Registry) error {
-	if swag.IsZero(o.Rules) { // not required
-		return nil
-	}
-
-	for i := 0; i < len(o.Rules); i++ {
-		if swag.IsZero(o.Rules[i]) { // not required
-			continue
-		}
-
-		if o.Rules[i] != nil {
-			if err := o.Rules[i].Validate(formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("body" + "." + "securityGroup" + "." + "rules" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("body" + "." + "securityGroup" + "." + "rules" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
-	return nil
-}
-
-// ContextValidate validate this update security group params body security group based on the context it is used
-func (o *UpdateSecurityGroupParamsBodySecurityGroup) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	var res []error
-
-	if err := o.contextValidateRules(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (o *UpdateSecurityGroupParamsBodySecurityGroup) contextValidateRules(ctx context.Context, formats strfmt.Registry) error {
-
-	for i := 0; i < len(o.Rules); i++ {
-
-		if o.Rules[i] != nil {
-			if err := o.Rules[i].ContextValidate(ctx, formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("body" + "." + "securityGroup" + "." + "rules" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("body" + "." + "securityGroup" + "." + "rules" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (o *UpdateSecurityGroupParamsBodySecurityGroup) MarshalBinary() ([]byte, error) {
-	if o == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(o)
-}
-
-// UnmarshalBinary interface implementation
-func (o *UpdateSecurityGroupParamsBodySecurityGroup) UnmarshalBinary(b []byte) error {
-	var res UpdateSecurityGroupParamsBodySecurityGroup
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

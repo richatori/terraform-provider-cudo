@@ -179,7 +179,7 @@ func waitForNetworkStop(ctx context.Context, projectID string, networkID string,
 
 	stateConf := &helper.StateChangeConf{
 		Pending:    []string{"fail", "poff", "runn", "stop", "susp", "unde", "boot", "clea", "clon", "dsrz", "epil", "hold", "hotp", "init", "migr", "pend", "prol", "save", "shut", "snap", "unkn"},
-		Target:     []string{"done", "epil"},
+		Target:     []string{"done"},
 		Refresh:    refreshFunc,
 		Timeout:    20 * time.Minute,
 		MinTimeout: 3 * time.Second,
@@ -215,7 +215,7 @@ func waitForNetworkDelete(ctx context.Context, projectID string, networkID strin
 
 	stateConf := &helper.StateChangeConf{
 		Pending:    []string{"fail", "poff", "runn", "stop", "susp", "unde", "boot", "clea", "clon", "dsrz", "epil", "hold", "hotp", "init", "migr", "pend", "prol", "save", "shut", "snap", "unkn"},
-		Target:     []string{"done", "epil"},
+		Target:     []string{"done"},
 		Refresh:    refreshFunc,
 		Timeout:    20 * time.Minute,
 		MinTimeout: 3 * time.Second,

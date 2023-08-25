@@ -197,6 +197,10 @@ type CreateNetworkBody struct {
 	// Required: true
 	DataCenterID *string `json:"dataCenterId"`
 
+	// id
+	// Required: true
+	ID *string `json:"id"`
+
 	// network Id
 	// Required: true
 	NetworkID *string `json:"networkId"`
@@ -214,6 +218,10 @@ func (o *CreateNetworkBody) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := o.validateDataCenterID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := o.validateID(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -243,6 +251,15 @@ func (o *CreateNetworkBody) validateCidrPrefix(formats strfmt.Registry) error {
 func (o *CreateNetworkBody) validateDataCenterID(formats strfmt.Registry) error {
 
 	if err := validate.Required("body"+"."+"dataCenterId", "body", o.DataCenterID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (o *CreateNetworkBody) validateID(formats strfmt.Registry) error {
+
+	if err := validate.Required("body"+"."+"id", "body", o.ID); err != nil {
 		return err
 	}
 

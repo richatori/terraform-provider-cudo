@@ -61,8 +61,8 @@ UpdateSecurityGroupParams contains all the parameters to send to the API endpoin
 */
 type UpdateSecurityGroupParams struct {
 
-	// Body.
-	Body UpdateSecurityGroupBody
+	// SecurityGroup.
+	SecurityGroup UpdateSecurityGroupBody
 
 	// SecurityGroupID.
 	SecurityGroupID string
@@ -123,15 +123,15 @@ func (o *UpdateSecurityGroupParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
-// WithBody adds the body to the update security group params
-func (o *UpdateSecurityGroupParams) WithBody(body UpdateSecurityGroupBody) *UpdateSecurityGroupParams {
-	o.SetBody(body)
+// WithSecurityGroup adds the securityGroup to the update security group params
+func (o *UpdateSecurityGroupParams) WithSecurityGroup(securityGroup UpdateSecurityGroupBody) *UpdateSecurityGroupParams {
+	o.SetSecurityGroup(securityGroup)
 	return o
 }
 
-// SetBody adds the body to the update security group params
-func (o *UpdateSecurityGroupParams) SetBody(body UpdateSecurityGroupBody) {
-	o.Body = body
+// SetSecurityGroup adds the securityGroup to the update security group params
+func (o *UpdateSecurityGroupParams) SetSecurityGroup(securityGroup UpdateSecurityGroupBody) {
+	o.SecurityGroup = securityGroup
 }
 
 // WithSecurityGroupID adds the securityGroupID to the update security group params
@@ -163,7 +163,7 @@ func (o *UpdateSecurityGroupParams) WriteToRequest(r runtime.ClientRequest, reg 
 		return err
 	}
 	var res []error
-	if err := r.SetBodyParam(o.Body); err != nil {
+	if err := r.SetBodyParam(o.SecurityGroup); err != nil {
 		return err
 	}
 

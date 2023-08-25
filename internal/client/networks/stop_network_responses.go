@@ -86,11 +86,11 @@ func (o *StopNetworkOK) Code() int {
 }
 
 func (o *StopNetworkOK) Error() string {
-	return fmt.Sprintf("[POST /v1/projects/{projectId}/networks/{networkId}/stop][%d] stopNetworkOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[POST /v1/projects/{projectId}/networks/{id}/stop][%d] stopNetworkOK  %+v", 200, o.Payload)
 }
 
 func (o *StopNetworkOK) String() string {
-	return fmt.Sprintf("[POST /v1/projects/{projectId}/networks/{networkId}/stop][%d] stopNetworkOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[POST /v1/projects/{projectId}/networks/{id}/stop][%d] stopNetworkOK  %+v", 200, o.Payload)
 }
 
 func (o *StopNetworkOK) GetPayload() models.StopNetworkResponse {
@@ -156,11 +156,11 @@ func (o *StopNetworkDefault) Code() int {
 }
 
 func (o *StopNetworkDefault) Error() string {
-	return fmt.Sprintf("[POST /v1/projects/{projectId}/networks/{networkId}/stop][%d] StopNetwork default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[POST /v1/projects/{projectId}/networks/{id}/stop][%d] StopNetwork default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *StopNetworkDefault) String() string {
-	return fmt.Sprintf("[POST /v1/projects/{projectId}/networks/{networkId}/stop][%d] StopNetwork default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[POST /v1/projects/{projectId}/networks/{id}/stop][%d] StopNetwork default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *StopNetworkDefault) GetPayload() *models.Status {

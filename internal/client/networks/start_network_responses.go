@@ -86,11 +86,11 @@ func (o *StartNetworkOK) Code() int {
 }
 
 func (o *StartNetworkOK) Error() string {
-	return fmt.Sprintf("[POST /v1/projects/{projectId}/networks/{networkId}/start][%d] startNetworkOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[POST /v1/projects/{projectId}/networks/{id}/start][%d] startNetworkOK  %+v", 200, o.Payload)
 }
 
 func (o *StartNetworkOK) String() string {
-	return fmt.Sprintf("[POST /v1/projects/{projectId}/networks/{networkId}/start][%d] startNetworkOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[POST /v1/projects/{projectId}/networks/{id}/start][%d] startNetworkOK  %+v", 200, o.Payload)
 }
 
 func (o *StartNetworkOK) GetPayload() models.StartNetworkResponse {
@@ -156,11 +156,11 @@ func (o *StartNetworkDefault) Code() int {
 }
 
 func (o *StartNetworkDefault) Error() string {
-	return fmt.Sprintf("[POST /v1/projects/{projectId}/networks/{networkId}/start][%d] StartNetwork default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[POST /v1/projects/{projectId}/networks/{id}/start][%d] StartNetwork default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *StartNetworkDefault) String() string {
-	return fmt.Sprintf("[POST /v1/projects/{projectId}/networks/{networkId}/start][%d] StartNetwork default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[POST /v1/projects/{projectId}/networks/{id}/start][%d] StartNetwork default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *StartNetworkDefault) GetPayload() *models.Status {

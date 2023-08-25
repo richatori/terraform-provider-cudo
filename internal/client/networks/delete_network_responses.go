@@ -86,11 +86,11 @@ func (o *DeleteNetworkOK) Code() int {
 }
 
 func (o *DeleteNetworkOK) Error() string {
-	return fmt.Sprintf("[DELETE /v1/projects/{projectId}/networks/{networkId}][%d] deleteNetworkOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[DELETE /v1/projects/{projectId}/networks/{id}][%d] deleteNetworkOK  %+v", 200, o.Payload)
 }
 
 func (o *DeleteNetworkOK) String() string {
-	return fmt.Sprintf("[DELETE /v1/projects/{projectId}/networks/{networkId}][%d] deleteNetworkOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[DELETE /v1/projects/{projectId}/networks/{id}][%d] deleteNetworkOK  %+v", 200, o.Payload)
 }
 
 func (o *DeleteNetworkOK) GetPayload() models.DeleteNetworkResponse {
@@ -156,11 +156,11 @@ func (o *DeleteNetworkDefault) Code() int {
 }
 
 func (o *DeleteNetworkDefault) Error() string {
-	return fmt.Sprintf("[DELETE /v1/projects/{projectId}/networks/{networkId}][%d] DeleteNetwork default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[DELETE /v1/projects/{projectId}/networks/{id}][%d] DeleteNetwork default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *DeleteNetworkDefault) String() string {
-	return fmt.Sprintf("[DELETE /v1/projects/{projectId}/networks/{networkId}][%d] DeleteNetwork default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[DELETE /v1/projects/{projectId}/networks/{id}][%d] DeleteNetwork default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *DeleteNetworkDefault) GetPayload() *models.Status {

@@ -32,13 +32,9 @@ type ClientService interface {
 
 	CountVMs(params *CountVMsParams, opts ...ClientOption) (*CountVMsOK, error)
 
-	CreateDiskSnapshot(params *CreateDiskSnapshotParams, opts ...ClientOption) (*CreateDiskSnapshotOK, error)
-
 	CreatePrivateVMImage(params *CreatePrivateVMImageParams, opts ...ClientOption) (*CreatePrivateVMImageOK, error)
 
 	CreateVM(params *CreateVMParams, opts ...ClientOption) (*CreateVMOK, error)
-
-	DeleteDiskSnapshot(params *DeleteDiskSnapshotParams, opts ...ClientOption) (*DeleteDiskSnapshotOK, error)
 
 	DeletePrivateVMImage(params *DeletePrivateVMImageParams, opts ...ClientOption) (*DeletePrivateVMImageOK, error)
 
@@ -46,13 +42,13 @@ type ClientService interface {
 
 	GetVM(params *GetVMParams, opts ...ClientOption) (*GetVMOK, error)
 
-	ListDiskSnapshots(params *ListDiskSnapshotsParams, opts ...ClientOption) (*ListDiskSnapshotsOK, error)
-
 	ListPrivateVMImages(params *ListPrivateVMImagesParams, opts ...ClientOption) (*ListPrivateVMImagesOK, error)
 
 	ListPublicVMImages(params *ListPublicVMImagesParams, opts ...ClientOption) (*ListPublicVMImagesOK, error)
 
 	ListVMDataCenters(params *ListVMDataCentersParams, opts ...ClientOption) (*ListVMDataCentersOK, error)
+
+	ListVMDisks(params *ListVMDisksParams, opts ...ClientOption) (*ListVMDisksOK, error)
 
 	ListVMMachineTypes(params *ListVMMachineTypesParams, opts ...ClientOption) (*ListVMMachineTypesOK, error)
 
@@ -63,8 +59,6 @@ type ClientService interface {
 	RebootVM(params *RebootVMParams, opts ...ClientOption) (*RebootVMOK, error)
 
 	ResizeVM(params *ResizeVMParams, opts ...ClientOption) (*ResizeVMOK, error)
-
-	RevertDisk(params *RevertDiskParams, opts ...ClientOption) (*RevertDiskOK, error)
 
 	StartVM(params *StartVMParams, opts ...ClientOption) (*StartVMOK, error)
 
@@ -152,43 +146,6 @@ func (a *Client) CountVMs(params *CountVMsParams, opts ...ClientOption) (*CountV
 }
 
 /*
-CreateDiskSnapshot creates disk snapshot
-*/
-func (a *Client) CreateDiskSnapshot(params *CreateDiskSnapshotParams, opts ...ClientOption) (*CreateDiskSnapshotOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewCreateDiskSnapshotParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "CreateDiskSnapshot",
-		Method:             "POST",
-		PathPattern:        "/v1/projects/{projectId}/disks/{id}/snapshots",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &CreateDiskSnapshotReader{formats: a.formats},
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*CreateDiskSnapshotOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	unexpectedSuccess := result.(*CreateDiskSnapshotDefault)
-	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
-}
-
-/*
 CreatePrivateVMImage creates private VM image
 */
 func (a *Client) CreatePrivateVMImage(params *CreatePrivateVMImageParams, opts ...ClientOption) (*CreatePrivateVMImageOK, error) {
@@ -259,43 +216,6 @@ func (a *Client) CreateVM(params *CreateVMParams, opts ...ClientOption) (*Create
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*CreateVMDefault)
-	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
-}
-
-/*
-DeleteDiskSnapshot deletes disk snapshots
-*/
-func (a *Client) DeleteDiskSnapshot(params *DeleteDiskSnapshotParams, opts ...ClientOption) (*DeleteDiskSnapshotOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewDeleteDiskSnapshotParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "DeleteDiskSnapshot",
-		Method:             "DELETE",
-		PathPattern:        "/v1/projects/{projectId}/disks/{id}/snapshots",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &DeleteDiskSnapshotReader{formats: a.formats},
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*DeleteDiskSnapshotOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	unexpectedSuccess := result.(*DeleteDiskSnapshotDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
@@ -411,43 +331,6 @@ func (a *Client) GetVM(params *GetVMParams, opts ...ClientOption) (*GetVMOK, err
 }
 
 /*
-ListDiskSnapshots lists disk snapshots
-*/
-func (a *Client) ListDiskSnapshots(params *ListDiskSnapshotsParams, opts ...ClientOption) (*ListDiskSnapshotsOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewListDiskSnapshotsParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "ListDiskSnapshots",
-		Method:             "GET",
-		PathPattern:        "/v1/projects/{projectId}/disks/{id}/snapshots",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &ListDiskSnapshotsReader{formats: a.formats},
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*ListDiskSnapshotsOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	unexpectedSuccess := result.(*ListDiskSnapshotsDefault)
-	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
-}
-
-/*
 ListPrivateVMImages lists private VM images
 */
 func (a *Client) ListPrivateVMImages(params *ListPrivateVMImagesParams, opts ...ClientOption) (*ListPrivateVMImagesOK, error) {
@@ -555,6 +438,43 @@ func (a *Client) ListVMDataCenters(params *ListVMDataCentersParams, opts ...Clie
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*ListVMDataCentersDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+ListVMDisks lists disks attached to VM
+*/
+func (a *Client) ListVMDisks(params *ListVMDisksParams, opts ...ClientOption) (*ListVMDisksOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewListVMDisksParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "ListVMDisks",
+		Method:             "GET",
+		PathPattern:        "/v1/projects/{projectId}/vms/{id}/disks",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &ListVMDisksReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ListVMDisksOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*ListVMDisksDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
@@ -740,43 +660,6 @@ func (a *Client) ResizeVM(params *ResizeVMParams, opts ...ClientOption) (*Resize
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*ResizeVMDefault)
-	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
-}
-
-/*
-RevertDisk reverts disk to snapshot
-*/
-func (a *Client) RevertDisk(params *RevertDiskParams, opts ...ClientOption) (*RevertDiskOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewRevertDiskParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "RevertDisk",
-		Method:             "POST",
-		PathPattern:        "/v1/projects/{projectId}/disks/{id}/revert",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &RevertDiskReader{formats: a.formats},
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*RevertDiskOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	unexpectedSuccess := result.(*RevertDiskDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

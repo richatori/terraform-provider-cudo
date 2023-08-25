@@ -61,6 +61,9 @@ StopNetworkParams contains all the parameters to send to the API endpoint
 */
 type StopNetworkParams struct {
 
+	// ID.
+	ID string
+
 	// NetworkID.
 	NetworkID string
 
@@ -120,6 +123,17 @@ func (o *StopNetworkParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
+// WithID adds the id to the stop network params
+func (o *StopNetworkParams) WithID(id string) *StopNetworkParams {
+	o.SetID(id)
+	return o
+}
+
+// SetID adds the id to the stop network params
+func (o *StopNetworkParams) SetID(id string) {
+	o.ID = id
+}
+
 // WithNetworkID adds the networkID to the stop network params
 func (o *StopNetworkParams) WithNetworkID(networkID string) *StopNetworkParams {
 	o.SetNetworkID(networkID)
@@ -150,9 +164,19 @@ func (o *StopNetworkParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.R
 	}
 	var res []error
 
-	// path param networkId
-	if err := r.SetPathParam("networkId", o.NetworkID); err != nil {
+	// path param id
+	if err := r.SetPathParam("id", o.ID); err != nil {
 		return err
+	}
+
+	// query param networkId
+	qrNetworkID := o.NetworkID
+	qNetworkID := qrNetworkID
+	if qNetworkID != "" {
+
+		if err := r.SetQueryParam("networkId", qNetworkID); err != nil {
+			return err
+		}
 	}
 
 	// path param projectId

@@ -257,13 +257,12 @@ func (r *SecurityGroupResource) Create(ctx context.Context, req resource.CreateR
 	}
 
 	params := networks.NewCreateSecurityGroupParamsWithContext(ctx)
-	params.Body = networks.CreateSecurityGroupBody{
-		SecurityGroup: &networks.CreateSecurityGroupParamsBodySecurityGroup{
-			DataCenterID: state.DataCenterID.ValueString(),
-			Description:  state.Description.ValueString(), //allows up to 255 characters, commas, periods, & spaces has regex
-			ID:           state.Id.ValueString(),          // security group id
-			Rules:        getRuleParams(state.Rules),
-		}}
+	params.SecurityGroup = networks.CreateSecurityGroupBody{
+		DataCenterID: state.DataCenterID.ValueStringPointer(),
+		Description:  state.Description.ValueString(), //allows up to 255 characters, commas, periods, & spaces has regex
+		ID:           state.Id.ValueStringPointer(),   // security group id
+		Rules:        getRuleParams(state.Rules),
+	}
 	params.SecurityGroupProjectID = r.client.DefaultProjectID
 
 	res, err := r.client.Client.Networks.CreateSecurityGroup(params)
@@ -330,12 +329,11 @@ func (r *SecurityGroupResource) Update(ctx context.Context, req resource.UpdateR
 	}
 
 	params := networks.NewUpdateSecurityGroupParamsWithContext(ctx)
-	params.Body = networks.UpdateSecurityGroupBody{
-		SecurityGroup: &networks.UpdateSecurityGroupParamsBodySecurityGroup{
-			DataCenterID: state.DataCenterID.ValueString(),
-			Description:  state.Description.ValueString(), //allows up to 255 characters, commas, periods, & spaces has regex
-			Rules:        getRuleParams(state.Rules),
-		}}
+	params.SecurityGroup = networks.UpdateSecurityGroupBody{
+		DataCenterID: state.DataCenterID.ValueStringPointer(),
+		Description:  state.Description.ValueString(), //allows up to 255 characters, commas, periods, & spaces has regex
+		Rules:        getRuleParams(state.Rules),
+	}
 	params.SecurityGroupID = state.Id.ValueString()
 	params.SecurityGroupProjectID = r.client.DefaultProjectID
 

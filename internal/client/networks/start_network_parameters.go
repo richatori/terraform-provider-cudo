@@ -61,6 +61,9 @@ StartNetworkParams contains all the parameters to send to the API endpoint
 */
 type StartNetworkParams struct {
 
+	// ID.
+	ID string
+
 	// NetworkID.
 	NetworkID string
 
@@ -120,6 +123,17 @@ func (o *StartNetworkParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
+// WithID adds the id to the start network params
+func (o *StartNetworkParams) WithID(id string) *StartNetworkParams {
+	o.SetID(id)
+	return o
+}
+
+// SetID adds the id to the start network params
+func (o *StartNetworkParams) SetID(id string) {
+	o.ID = id
+}
+
 // WithNetworkID adds the networkID to the start network params
 func (o *StartNetworkParams) WithNetworkID(networkID string) *StartNetworkParams {
 	o.SetNetworkID(networkID)
@@ -150,9 +164,19 @@ func (o *StartNetworkParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.
 	}
 	var res []error
 
-	// path param networkId
-	if err := r.SetPathParam("networkId", o.NetworkID); err != nil {
+	// path param id
+	if err := r.SetPathParam("id", o.ID); err != nil {
 		return err
+	}
+
+	// query param networkId
+	qrNetworkID := o.NetworkID
+	qNetworkID := qrNetworkID
+	if qNetworkID != "" {
+
+		if err := r.SetQueryParam("networkId", qNetworkID); err != nil {
+			return err
+		}
 	}
 
 	// path param projectId
