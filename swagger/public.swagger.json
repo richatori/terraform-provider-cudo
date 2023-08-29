@@ -1854,6 +1854,12 @@
                 "startScript": {
                   "type": "string"
                 },
+                "storageDiskIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
                 "vcpus": {
                   "type": "integer",
                   "format": "int32"
@@ -4003,6 +4009,9 @@
         "activeState": {
           "type": "string"
         },
+        "bootDisk": {
+          "$ref": "#/definitions/Disk"
+        },
         "bootDiskSizeGib": {
           "type": "integer",
           "format": "int64"
@@ -4105,6 +4114,13 @@
         },
         "shortState": {
           "type": "string"
+        },
+        "storageDisks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Disk"
+          }
         },
         "vcpus": {
           "type": "integer",

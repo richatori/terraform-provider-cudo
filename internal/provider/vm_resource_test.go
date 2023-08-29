@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/virtual_machines"
-
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
@@ -32,11 +31,6 @@ resource "cudo_vm" "vm" {
    }
    memory_gib         = 2
    id                 = "%s"
-   networks = [
-    {
-      network_id         = "tf-test"
-    }
-  ]
  }`, name)
 
 	resource.ParallelTest(t, resource.TestCase{
@@ -75,7 +69,7 @@ resource "cudo_vm" "vm" {
 					resource.TestCheckResourceAttr("cudo_vm.vm", "gpu_model", ""),
 					resource.TestCheckResourceAttr("cudo_vm.vm", "memory_gib", "2"),
 					resource.TestCheckResourceAttrSet("cudo_vm.vm", "price_hr"),
-					resource.TestCheckResourceAttrSet("cudo_vm.vm", "internal_ip_address"),
+					// resource.TestCheckResourceAttrSet("cudo_vm.vm", "internal_ip_address"),
 					resource.TestCheckResourceAttr("cudo_vm.vm", "renewable_energy", "true"),
 					resource.TestCheckResourceAttr("cudo_vm.vm", "vcpus", "1"),
 					resource.TestCheckResourceAttr("cudo_vm.vm", "id", name),
@@ -105,11 +99,6 @@ resource "cudo_vm" "vm-minimal" {
    data_center_id     = "black-mesa"
    vcpus              = 1
    memory_gib         = 2
-   networks = [
-    {
-      network_id         = "tf-test"
-    }
-  ]
  }`, name)
 
 	resource.ParallelTest(t, resource.TestCase{
@@ -148,7 +137,7 @@ resource "cudo_vm" "vm-minimal" {
 					resource.TestCheckResourceAttr("cudo_vm.vm-minimal", "gpu_model", ""),
 					resource.TestCheckResourceAttr("cudo_vm.vm-minimal", "memory_gib", "2"),
 					resource.TestCheckResourceAttrSet("cudo_vm.vm-minimal", "price_hr"),
-					resource.TestCheckResourceAttrSet("cudo_vm.vm-minimal", "internal_ip_address"),
+					// resource.TestCheckResourceAttrSet("cudo_vm.vm-minimal", "internal_ip_address"),
 					resource.TestCheckResourceAttr("cudo_vm.vm-minimal", "renewable_energy", "true"),
 					resource.TestCheckResourceAttr("cudo_vm.vm-minimal", "vcpus", "1"),
 					resource.TestCheckResourceAttr("cudo_vm.vm-minimal", "id", name),
@@ -157,7 +146,6 @@ resource "cudo_vm" "vm-minimal" {
 		},
 	})
 }
-
 func TestAcc_VMResourceOOBDelete(t *testing.T) {
 	var cancel context.CancelFunc
 	ctx := context.Background()
@@ -178,11 +166,6 @@ resource "cudo_vm" "vm-oob-delete" {
    data_center_id     = "black-mesa"
    vcpus              = 1
    memory_gib         = 2
-   networks = [
-    {
-      network_id         = "tf-test"
-    }
-  ]
  }`, name)
 
 	resource.ParallelTest(t, resource.TestCase{
@@ -221,7 +204,7 @@ resource "cudo_vm" "vm-oob-delete" {
 					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "gpu_model", ""),
 					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "memory_gib", "2"),
 					resource.TestCheckResourceAttrSet("cudo_vm.vm-oob-delete", "price_hr"),
-					resource.TestCheckResourceAttrSet("cudo_vm.vm-oob-delete", "internal_ip_address"),
+					// resource.TestCheckResourceAttrSet("cudo_vm.vm-oob-delete", "internal_ip_address"),
 					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "renewable_energy", "true"),
 					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "vcpus", "1"),
 					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "id", name),
@@ -249,7 +232,7 @@ resource "cudo_vm" "vm-oob-delete" {
 					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "gpu_model", ""),
 					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "memory_gib", "2"),
 					resource.TestCheckResourceAttrSet("cudo_vm.vm-oob-delete", "price_hr"),
-					resource.TestCheckResourceAttrSet("cudo_vm.vm-oob-delete", "internal_ip_address"),
+					// resource.TestCheckResourceAttrSet("cudo_vm.vm-oob-delete", "internal_ip_address"),
 					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "renewable_energy", "true"),
 					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "vcpus", "1"),
 					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "id", name),

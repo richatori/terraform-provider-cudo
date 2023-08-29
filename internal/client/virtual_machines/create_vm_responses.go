@@ -238,6 +238,9 @@ type CreateVMBody struct {
 	// start script
 	StartScript string `json:"startScript,omitempty"`
 
+	// storage disk ids
+	StorageDiskIds []string `json:"storageDiskIds"`
+
 	// vcpus
 	Vcpus int32 `json:"vcpus,omitempty"`
 
