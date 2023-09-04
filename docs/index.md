@@ -25,7 +25,7 @@ provider "cudo" {
 ### Optional
 
 - `api_key` (String) Your API key
-- `billing_account_id` (String) Which billinag account id to create resources in
+- `billing_account_id` (String) Which billing account id to create resources in
 - `disable_tls` (Boolean) Whether to connect the API endpoint using TLS
 - `project_id` (String) Which project id to use
 - `remote_addr` (String) API endpoint

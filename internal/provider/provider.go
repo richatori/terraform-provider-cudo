@@ -58,7 +58,7 @@ func (p *CudoProvider) Schema(ctx context.Context, req provider.SchemaRequest, r
 				Optional:            true,
 			},
 			"billing_account_id": schema.StringAttribute{
-				MarkdownDescription: "Which billinag account id to create resources in",
+				MarkdownDescription: "Which billing account id to create resources in",
 				Optional:            true,
 			},
 			"project_id": schema.StringAttribute{
