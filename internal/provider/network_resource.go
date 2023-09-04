@@ -242,7 +242,7 @@ func (r *NetworkResource) Create(ctx context.Context, req resource.CreateRequest
 	params.Body = networks.CreateNetworkBody{
 		CidrPrefix:   state.IPRange.ValueStringPointer(),
 		DataCenterID: state.DataCenterId.ValueStringPointer(),
-		NetworkID:    state.ID.ValueStringPointer(),
+		ID:           state.ID.ValueStringPointer(),
 		VrouterSize:  models.VRouterSizeVROUTERINSTANCESMALL.Pointer(),
 	}
 	_, err := r.client.Client.Networks.CreateNetwork(params)
@@ -335,7 +335,7 @@ func (r *NetworkResource) Delete(ctx context.Context, req resource.DeleteRequest
 
 	stopParams := networks.NewStopNetworkParamsWithContext(ctx)
 	stopParams.ProjectID = r.client.DefaultProjectID
-	stopParams.NetworkID = state.ID.ValueString()
+	stopParams.ID = state.ID.ValueString()
 
 	_, err := r.client.Client.Networks.StopNetwork(stopParams)
 	if err != nil {
@@ -346,7 +346,7 @@ func (r *NetworkResource) Delete(ctx context.Context, req resource.DeleteRequest
 		return
 	}
 
-	_, err = waitForNetworkStop(ctx, stopParams.ProjectID, stopParams.NetworkID, r.client.Client.Networks)
+	_, err = waitForNetworkStop(ctx, stopParams.ProjectID, stopParams.ID, r.client.Client.Networks)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to wait for network resource to be stopped",
@@ -357,7 +357,7 @@ func (r *NetworkResource) Delete(ctx context.Context, req resource.DeleteRequest
 
 	deleteParams := networks.NewDeleteNetworkParamsWithContext(ctx)
 	deleteParams.ProjectID = r.client.DefaultProjectID
-	deleteParams.NetworkID = state.ID.ValueString()
+	deleteParams.ID = state.ID.ValueString()
 
 	_, err = r.client.Client.Networks.DeleteNetwork(deleteParams)
 	if err != nil {
@@ -368,7 +368,7 @@ func (r *NetworkResource) Delete(ctx context.Context, req resource.DeleteRequest
 		return
 	}
 
-	_, err = waitForNetworkDelete(ctx, deleteParams.ProjectID, deleteParams.NetworkID, r.client.Client.Networks)
+	_, err = waitForNetworkDelete(ctx, deleteParams.ProjectID, deleteParams.ID, r.client.Client.Networks)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to wait for network resource to be deleted",
