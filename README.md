@@ -1,4 +1,4 @@
-# Cudo Compute Terraform Provider
+# Cudo Compute Terraform provider
 
 This repository is built on the [Terraform Plugin Framework](https://github.com/hashicorp/terraform-plugin-framework). 
 
@@ -7,7 +7,7 @@ This repository is built on the [Terraform Plugin Framework](https://github.com/
 - [Terraform](https://www.terraform.io/downloads.html) >= 1.0
 - [Go](https://golang.org/doc/install) >= 1.19
 
-## Building The Provider
+## Building the provider
 
 1. Clone the repository
 1. Enter the repository directory
@@ -21,7 +21,7 @@ go install
 
 See docs directory
 
-## Developing the Provider
+## Developing the provider
 
 If you wish to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine (see [Requirements](#requirements) above).
 
@@ -48,6 +48,7 @@ The [Vercel terraform provider](https://github.com/vercel/terraform-provider-ver
 ```
 
 ## Documentation
+
 To generate or update documentation, run `make docs`.
 
 or to change the name:
@@ -55,6 +56,7 @@ or to change the name:
 go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs generate --rendered-provider-name Cudo
 
 ## Testing
+
 In order to run the full suite of Acceptance tests, run `make testacc`.
 
 *Note:* Acceptance tests create real resources, and often cost money to run.
@@ -71,4 +73,3 @@ To make a release:
 git tag v0.2.1
 git push origin v0.2.1
 ```
-
