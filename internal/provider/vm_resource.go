@@ -9,6 +9,7 @@ import (
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/virtual_machines"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/helper"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
+	"github.com/hashicorp/go-retryablehttp"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -335,11 +336,15 @@ func waitForVmAvailable(ctx context.Context, projectID string, vmID string, c vi
 	if res, err := stateConf.WaitForState(ctx); err != nil {
 		return nil, fmt.Errorf("error waiting for VM %s in project %s to become available: %w", vmID, projectID, err)
 	} else if vm, ok := res.(*virtual_machines.GetVMOK); ok {
-		tflog.Trace(ctx, fmt.Sprintf("completed waiting for VM %s in project %s (%s)", vmID, projectID, vm.Payload.VM.ShortState))
+		var shortState string
+		if vm != nil && vm.Payload != nil && vm.Payload.VM != nil {
+			shortState = vm.Payload.VM.ShortState
+		}
+		tflog.Trace(ctx, fmt.Sprintf("completed waiting for VM %s in project %s (%s)", vmID, projectID, shortState))
 		return vm, nil
+	} else {
+		return nil, fmt.Errorf("error waiting for VM: %v", res)
 	}
-
-	return nil, nil
 }
 
 func waitForVmDelete(ctx context.Context, projectID string, vmID string, c virtual_machines.ClientService) (*virtual_machines.GetVMOK, error) {
@@ -371,11 +376,18 @@ func waitForVmDelete(ctx context.Context, projectID string, vmID string, c virtu
 		MinTimeout: 3 * time.Second,
 	}
 
-	if _, err := stateConf.WaitForState(ctx); err != nil {
+	if res, err := stateConf.WaitForState(ctx); err != nil {
 		return nil, fmt.Errorf("error waiting for VM %s in project %s to become done: %w", vmID, projectID, err)
+	} else if vm, ok := res.(*virtual_machines.GetVMOK); ok {
+		var shortState string
+		if vm != nil && vm.Payload != nil && vm.Payload.VM != nil {
+			shortState = vm.Payload.VM.ShortState
+		}
+		tflog.Trace(ctx, fmt.Sprintf("completed waiting for VM %s in project %s (%s)", vmID, projectID, shortState))
+		return vm, nil
+	} else {
+		return nil, fmt.Errorf("error waiting for VM: %v", res)
 	}
-
-	return nil, nil
 }
 
 func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
@@ -403,7 +415,9 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		}
 	}
 
-	params := virtual_machines.NewCreateVMParamsWithContext(ctx)
+	retryClient := retryablehttp.NewClient()
+	retryClient.RetryMax = 10
+	params := virtual_machines.NewCreateVMParamsWithContext(ctx).WithHTTPClient(retryClient.StandardClient())
 	params.ProjectID = r.client.DefaultProjectID
 	if !state.ProjectID.IsNull() {
 		params.ProjectID = state.ProjectID.ValueString()
@@ -462,23 +476,14 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 	_, err := r.client.Client.VirtualMachines.CreateVM(params)
 	if err != nil {
 		if apiErr, ok := err.(*virtual_machines.CreateVMDefault); ok {
-			if apiErr.Code() == 504 {
+			if apiErr.Code() != 409 {
 				resp.Diagnostics.AddError(
 					"Error creating VM resource",
-					"Could not create VM: server unavailable",
+					"Could not create VM, unexpected error: "+err.Error(),
 				)
+				return
 			}
-			resp.Diagnostics.AddError(
-				"Error creating VM resource",
-				"Could not create VM, unexpected api error: "+apiErr.Payload.Message,
-			)
-		} else {
-			resp.Diagnostics.AddError(
-				"Error creating VM resource",
-				"Could not create VM, unexpected error: "+err.Error(),
-			)
 		}
-		return
 	}
 
 	vm, err := waitForVmAvailable(ctx, params.ProjectID, state.ID.ValueString(), r.client.Client.VirtualMachines)
