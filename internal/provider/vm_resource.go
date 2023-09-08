@@ -328,7 +328,7 @@ func waitForVmAvailable(ctx context.Context, projectID string, vmID string, c vi
 		Pending:    []string{"boot", "clea", "clon", "dsrz", "epil", "hold", "hotp", "init", "migr", "pend", "prol", "save", "shut", "snap", "unkn"},
 		Target:     []string{"done", "fail", "poff", "runn", "stop", "susp", "unde"},
 		Refresh:    refreshFunc,
-		Timeout:    20 * time.Minute,
+		Timeout:    2 * time.Hour,
 		Delay:      1 * time.Second,
 		MinTimeout: 3 * time.Second,
 	}
@@ -372,7 +372,7 @@ func waitForVmDelete(ctx context.Context, projectID string, vmID string, c virtu
 		Pending:    []string{"fail", "poff", "runn", "stop", "susp", "unde", "boot", "clea", "clon", "dsrz", "epil", "hold", "hotp", "init", "migr", "pend", "prol", "save", "shut", "snap", "unkn"},
 		Target:     []string{"done"},
 		Refresh:    refreshFunc,
-		Timeout:    20 * time.Minute,
+		Timeout:    2 * time.Hour,
 		MinTimeout: 3 * time.Second,
 	}
 
