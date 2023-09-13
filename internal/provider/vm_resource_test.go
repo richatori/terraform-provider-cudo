@@ -31,6 +31,11 @@ resource "cudo_vm" "vm" {
    }
    memory_gib         = 2
    id                 = "%s"
+   networks = [
+    {
+      network_id         = "tf-test"
+    }
+  ]
  }`, name)
 
 	resource.ParallelTest(t, resource.TestCase{
@@ -99,6 +104,11 @@ resource "cudo_vm" "vm-minimal" {
    data_center_id     = "black-mesa"
    vcpus              = 1
    memory_gib         = 2
+   networks = [
+    {
+      network_id         = "tf-test"
+    }
+  ]
  }`, name)
 
 	resource.ParallelTest(t, resource.TestCase{
@@ -166,6 +176,11 @@ resource "cudo_vm" "vm-oob-delete" {
    data_center_id     = "black-mesa"
    vcpus              = 1
    memory_gib         = 2
+   networks = [
+    {
+      network_id         = "tf-test"
+    }
+  ]
  }`, name)
 
 	resource.ParallelTest(t, resource.TestCase{
