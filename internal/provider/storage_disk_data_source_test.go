@@ -18,7 +18,7 @@ func TestAcc_StorageDiskDataSource(t *testing.T) {
 		ctx, cancel = context.WithDeadline(ctx, deadline)
 		defer cancel()
 	}
-	name := "tf-ds-test-" + testRunID
+	name := "storage-data-source-" + testRunID
 
 	resourcesConfig := fmt.Sprintf(`
 resource "cudo_storage_disk" "disk" {
