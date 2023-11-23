@@ -43,6 +43,10 @@ type HostConfigCategory struct {
 	// Required: true
 	ID *string `json:"id"`
 
+	// ipv4 price hr
+	// Required: true
+	IPV4PriceHr *Decimal `json:"ipv4PriceHr"`
+
 	// machine type
 	// Required: true
 	MachineType *string `json:"machineType"`
@@ -109,6 +113,10 @@ func (m *HostConfigCategory) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateIPV4PriceHr(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -218,6 +226,26 @@ func (m *HostConfigCategory) validateID(formats strfmt.Registry) error {
 
 	if err := validate.Required("id", "body", m.ID); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (m *HostConfigCategory) validateIPV4PriceHr(formats strfmt.Registry) error {
+
+	if err := validate.Required("ipv4PriceHr", "body", m.IPV4PriceHr); err != nil {
+		return err
+	}
+
+	if m.IPV4PriceHr != nil {
+		if err := m.IPV4PriceHr.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("ipv4PriceHr")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("ipv4PriceHr")
+			}
+			return err
+		}
 	}
 
 	return nil
@@ -409,6 +437,10 @@ func (m *HostConfigCategory) ContextValidate(ctx context.Context, formats strfmt
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateIPV4PriceHr(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateMemoryGibPriceHr(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -450,6 +482,7 @@ func (m *HostConfigCategory) ContextValidate(ctx context.Context, formats strfmt
 func (m *HostConfigCategory) contextValidateGpuPriceHr(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.GpuPriceHr != nil {
+
 		if err := m.GpuPriceHr.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("gpuPriceHr")
@@ -463,9 +496,27 @@ func (m *HostConfigCategory) contextValidateGpuPriceHr(ctx context.Context, form
 	return nil
 }
 
+func (m *HostConfigCategory) contextValidateIPV4PriceHr(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.IPV4PriceHr != nil {
+
+		if err := m.IPV4PriceHr.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("ipv4PriceHr")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("ipv4PriceHr")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *HostConfigCategory) contextValidateMemoryGibPriceHr(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.MemoryGibPriceHr != nil {
+
 		if err := m.MemoryGibPriceHr.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("memoryGibPriceHr")
@@ -482,6 +533,7 @@ func (m *HostConfigCategory) contextValidateMemoryGibPriceHr(ctx context.Context
 func (m *HostConfigCategory) contextValidateStorageGibPriceHr(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.StorageGibPriceHr != nil {
+
 		if err := m.StorageGibPriceHr.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("storageGibPriceHr")
@@ -498,6 +550,7 @@ func (m *HostConfigCategory) contextValidateStorageGibPriceHr(ctx context.Contex
 func (m *HostConfigCategory) contextValidateTotalGpuPriceHr(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.TotalGpuPriceHr != nil {
+
 		if err := m.TotalGpuPriceHr.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("totalGpuPriceHr")
@@ -514,6 +567,7 @@ func (m *HostConfigCategory) contextValidateTotalGpuPriceHr(ctx context.Context,
 func (m *HostConfigCategory) contextValidateTotalMemoryPriceHr(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.TotalMemoryPriceHr != nil {
+
 		if err := m.TotalMemoryPriceHr.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("totalMemoryPriceHr")
@@ -530,6 +584,7 @@ func (m *HostConfigCategory) contextValidateTotalMemoryPriceHr(ctx context.Conte
 func (m *HostConfigCategory) contextValidateTotalPriceHr(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.TotalPriceHr != nil {
+
 		if err := m.TotalPriceHr.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("totalPriceHr")
@@ -546,6 +601,7 @@ func (m *HostConfigCategory) contextValidateTotalPriceHr(ctx context.Context, fo
 func (m *HostConfigCategory) contextValidateTotalStoragePriceHr(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.TotalStoragePriceHr != nil {
+
 		if err := m.TotalStoragePriceHr.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("totalStoragePriceHr")
@@ -562,6 +618,7 @@ func (m *HostConfigCategory) contextValidateTotalStoragePriceHr(ctx context.Cont
 func (m *HostConfigCategory) contextValidateTotalVcpuPriceHr(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.TotalVcpuPriceHr != nil {
+
 		if err := m.TotalVcpuPriceHr.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("totalVcpuPriceHr")
@@ -578,6 +635,7 @@ func (m *HostConfigCategory) contextValidateTotalVcpuPriceHr(ctx context.Context
 func (m *HostConfigCategory) contextValidateVcpuPriceHr(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.VcpuPriceHr != nil {
+
 		if err := m.VcpuPriceHr.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("vcpuPriceHr")

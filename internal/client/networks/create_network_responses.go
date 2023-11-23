@@ -311,6 +311,11 @@ func (o *CreateNetworkBody) ContextValidate(ctx context.Context, formats strfmt.
 func (o *CreateNetworkBody) contextValidateVrouterSize(ctx context.Context, formats strfmt.Registry) error {
 
 	if o.VrouterSize != nil {
+
+		if swag.IsZero(o.VrouterSize) { // not required
+			return nil
+		}
+
 		if err := o.VrouterSize.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("body" + "." + "vrouterSize")

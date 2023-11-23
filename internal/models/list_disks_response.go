@@ -12,6 +12,7 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // ListDisksResponse list disks response
@@ -21,6 +22,18 @@ type ListDisksResponse struct {
 
 	// disks
 	Disks []*Disk `json:"disks"`
+
+	// page number
+	// Required: true
+	PageNumber *int32 `json:"pageNumber"`
+
+	// page size
+	// Required: true
+	PageSize *int32 `json:"pageSize"`
+
+	// total count
+	// Required: true
+	TotalCount *int32 `json:"totalCount"`
 }
 
 // Validate validates this list disks response
@@ -28,6 +41,18 @@ func (m *ListDisksResponse) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateDisks(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validatePageNumber(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validatePageSize(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateTotalCount(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -63,6 +88,33 @@ func (m *ListDisksResponse) validateDisks(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *ListDisksResponse) validatePageNumber(formats strfmt.Registry) error {
+
+	if err := validate.Required("pageNumber", "body", m.PageNumber); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *ListDisksResponse) validatePageSize(formats strfmt.Registry) error {
+
+	if err := validate.Required("pageSize", "body", m.PageSize); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *ListDisksResponse) validateTotalCount(formats strfmt.Registry) error {
+
+	if err := validate.Required("totalCount", "body", m.TotalCount); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // ContextValidate validate this list disks response based on the context it is used
 func (m *ListDisksResponse) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
@@ -82,6 +134,11 @@ func (m *ListDisksResponse) contextValidateDisks(ctx context.Context, formats st
 	for i := 0; i < len(m.Disks); i++ {
 
 		if m.Disks[i] != nil {
+
+			if swag.IsZero(m.Disks[i]) { // not required
+				return nil
+			}
+
 			if err := m.Disks[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("disks" + "." + strconv.Itoa(i))

@@ -245,6 +245,11 @@ func (o *CreateStorageDiskBody) ContextValidate(ctx context.Context, formats str
 func (o *CreateStorageDiskBody) contextValidateDisk(ctx context.Context, formats strfmt.Registry) error {
 
 	if o.Disk != nil {
+
+		if swag.IsZero(o.Disk) { // not required
+			return nil
+		}
+
 		if err := o.Disk.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("body" + "." + "disk")

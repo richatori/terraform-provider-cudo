@@ -23,6 +23,9 @@ type VM struct {
 	// active state
 	ActiveState string `json:"activeState,omitempty"`
 
+	// boot disk
+	BootDisk *Disk `json:"bootDisk,omitempty"`
+
 	// boot disk size gib
 	BootDiskSizeGib int64 `json:"bootDiskSizeGib,omitempty"`
 
@@ -70,6 +73,9 @@ type VM struct {
 	// memory
 	Memory int64 `json:"memory,omitempty"`
 
+	// metadata
+	Metadata map[string]string `json:"metadata,omitempty"`
+
 	// nics
 	Nics []*VMNIC `json:"nics"`
 
@@ -111,6 +117,9 @@ type VM struct {
 	// short state
 	ShortState string `json:"shortState,omitempty"`
 
+	// storage disks
+	StorageDisks []*Disk `json:"storageDisks"`
+
 	// vcpus
 	Vcpus int64 `json:"vcpus,omitempty"`
 }
@@ -118,6 +127,10 @@ type VM struct {
 // Validate validates this VM
 func (m *VM) Validate(formats strfmt.Registry) error {
 	var res []error
+
+	if err := m.validateBootDisk(formats); err != nil {
+		res = append(res, err)
+	}
 
 	if err := m.validateNics(formats); err != nil {
 		res = append(res, err)
@@ -127,9 +140,32 @@ func (m *VM) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateStorageDisks(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *VM) validateBootDisk(formats strfmt.Registry) error {
+	if swag.IsZero(m.BootDisk) { // not required
+		return nil
+	}
+
+	if m.BootDisk != nil {
+		if err := m.BootDisk.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("bootDisk")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("bootDisk")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -185,9 +221,39 @@ func (m *VM) validateRules(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *VM) validateStorageDisks(formats strfmt.Registry) error {
+	if swag.IsZero(m.StorageDisks) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.StorageDisks); i++ {
+		if swag.IsZero(m.StorageDisks[i]) { // not required
+			continue
+		}
+
+		if m.StorageDisks[i] != nil {
+			if err := m.StorageDisks[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("storageDisks" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("storageDisks" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
 // ContextValidate validate this VM based on the context it is used
 func (m *VM) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
+
+	if err := m.contextValidateBootDisk(ctx, formats); err != nil {
+		res = append(res, err)
+	}
 
 	if err := m.contextValidateCreateBy(ctx, formats); err != nil {
 		res = append(res, err)
@@ -213,9 +279,34 @@ func (m *VM) ContextValidate(ctx context.Context, formats strfmt.Registry) error
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateStorageDisks(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *VM) contextValidateBootDisk(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.BootDisk != nil {
+
+		if swag.IsZero(m.BootDisk) { // not required
+			return nil
+		}
+
+		if err := m.BootDisk.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("bootDisk")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("bootDisk")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -242,6 +333,11 @@ func (m *VM) contextValidateNics(ctx context.Context, formats strfmt.Registry) e
 	for i := 0; i < len(m.Nics); i++ {
 
 		if m.Nics[i] != nil {
+
+			if swag.IsZero(m.Nics[i]) { // not required
+				return nil
+			}
+
 			if err := m.Nics[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("nics" + "." + strconv.Itoa(i))
@@ -280,11 +376,41 @@ func (m *VM) contextValidateRules(ctx context.Context, formats strfmt.Registry) 
 	for i := 0; i < len(m.Rules); i++ {
 
 		if m.Rules[i] != nil {
+
+			if swag.IsZero(m.Rules[i]) { // not required
+				return nil
+			}
+
 			if err := m.Rules[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("rules" + "." + strconv.Itoa(i))
 				} else if ce, ok := err.(*errors.CompositeError); ok {
 					return ce.ValidateName("rules" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (m *VM) contextValidateStorageDisks(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.StorageDisks); i++ {
+
+		if m.StorageDisks[i] != nil {
+
+			if swag.IsZero(m.StorageDisks[i]) { // not required
+				return nil
+			}
+
+			if err := m.StorageDisks[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("storageDisks" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("storageDisks" + "." + strconv.Itoa(i))
 				}
 				return err
 			}

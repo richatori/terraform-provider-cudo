@@ -22,7 +22,7 @@ type ListVMDataCentersResponse struct {
 
 	// data centers
 	// Required: true
-	DataCenters []*DataCenter `json:"dataCenters"`
+	DataCenters []*VMDataCenter `json:"dataCenters"`
 }
 
 // Validate validates this list VM data centers response
@@ -85,6 +85,11 @@ func (m *ListVMDataCentersResponse) contextValidateDataCenters(ctx context.Conte
 	for i := 0; i < len(m.DataCenters); i++ {
 
 		if m.DataCenters[i] != nil {
+
+			if swag.IsZero(m.DataCenters[i]) { // not required
+				return nil
+			}
+
 			if err := m.DataCenters[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("dataCenters" + "." + strconv.Itoa(i))

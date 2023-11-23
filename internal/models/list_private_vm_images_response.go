@@ -134,6 +134,11 @@ func (m *ListPrivateVMImagesResponse) contextValidateImages(ctx context.Context,
 	for i := 0; i < len(m.Images); i++ {
 
 		if m.Images[i] != nil {
+
+			if swag.IsZero(m.Images[i]) { // not required
+				return nil
+			}
+
 			if err := m.Images[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("images" + "." + strconv.Itoa(i))

@@ -62,6 +62,9 @@ ListDisksParams contains all the parameters to send to the API endpoint
 */
 type ListDisksParams struct {
 
+	// DataCenterID.
+	DataCenterID *string
+
 	// PageNumber.
 	//
 	// Format: int32
@@ -128,6 +131,17 @@ func (o *ListDisksParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
+// WithDataCenterID adds the dataCenterID to the list disks params
+func (o *ListDisksParams) WithDataCenterID(dataCenterID *string) *ListDisksParams {
+	o.SetDataCenterID(dataCenterID)
+	return o
+}
+
+// SetDataCenterID adds the dataCenterId to the list disks params
+func (o *ListDisksParams) SetDataCenterID(dataCenterID *string) {
+	o.DataCenterID = dataCenterID
+}
+
 // WithPageNumber adds the pageNumber to the list disks params
 func (o *ListDisksParams) WithPageNumber(pageNumber *int32) *ListDisksParams {
 	o.SetPageNumber(pageNumber)
@@ -168,6 +182,23 @@ func (o *ListDisksParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Reg
 		return err
 	}
 	var res []error
+
+	if o.DataCenterID != nil {
+
+		// query param dataCenterId
+		var qrDataCenterID string
+
+		if o.DataCenterID != nil {
+			qrDataCenterID = *o.DataCenterID
+		}
+		qDataCenterID := qrDataCenterID
+		if qDataCenterID != "" {
+
+			if err := r.SetQueryParam("dataCenterId", qDataCenterID); err != nil {
+				return err
+			}
+		}
+	}
 
 	if o.PageNumber != nil {
 
