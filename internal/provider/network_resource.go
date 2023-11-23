@@ -186,7 +186,7 @@ func waitForNetworkStop(ctx context.Context, projectID string, networkID string,
 	}
 
 	if _, err := stateConf.WaitForState(ctx); err != nil {
-		return nil, fmt.Errorf("error waiting for network %s in project %s to be deleted: %w", networkID, projectID, err)
+		return nil, fmt.Errorf("error waiting for network %s in project %s to be stopped: %w", networkID, projectID, err)
 	}
 
 	return nil, nil
@@ -205,6 +205,10 @@ func waitForNetworkDelete(ctx context.Context, projectID string, networkID strin
 			}
 			tflog.Error(ctx, fmt.Sprintf("error getting network %s in project %s: %v", networkID, projectID, err))
 			return nil, "", err
+		}
+		if res.Payload.Network.ShortState == "" {
+			tflog.Debug(ctx, fmt.Sprintf("Network %s in project %s is stopped: ", networkID, projectID))
+			return res, "stop", nil
 		}
 
 		tflog.Trace(ctx, fmt.Sprintf("pending network %s in project %s state: %s", networkID, projectID, res.Payload.Network.ShortState))
