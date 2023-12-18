@@ -292,6 +292,11 @@ func (o *CreateSecurityGroupBody) contextValidateRules(ctx context.Context, form
 	for i := 0; i < len(o.Rules); i++ {
 
 		if o.Rules[i] != nil {
+
+			if swag.IsZero(o.Rules[i]) { // not required
+				return nil
+			}
+
 			if err := o.Rules[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("securityGroup" + "." + "rules" + "." + strconv.Itoa(i))

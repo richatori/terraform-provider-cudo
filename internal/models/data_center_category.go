@@ -126,6 +126,7 @@ func (m *DataCenterCategory) ContextValidate(ctx context.Context, formats strfmt
 func (m *DataCenterCategory) contextValidateMinPriceHr(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.MinPriceHr != nil {
+
 		if err := m.MinPriceHr.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("minPriceHr")

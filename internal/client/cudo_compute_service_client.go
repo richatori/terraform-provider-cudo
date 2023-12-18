@@ -13,6 +13,7 @@ import (
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/api_keys"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/disks"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/networks"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/client/object_storage"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/permissions"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/projects"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/search"
@@ -66,6 +67,7 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *CudoComput
 	cli.APIKeys = api_keys.New(transport, formats)
 	cli.Disks = disks.New(transport, formats)
 	cli.Networks = networks.New(transport, formats)
+	cli.ObjectStorage = object_storage.New(transport, formats)
 	cli.Permissions = permissions.New(transport, formats)
 	cli.Projects = projects.New(transport, formats)
 	cli.Search = search.New(transport, formats)
@@ -122,6 +124,8 @@ type CudoComputeService struct {
 
 	Networks networks.ClientService
 
+	ObjectStorage object_storage.ClientService
+
 	Permissions permissions.ClientService
 
 	Projects projects.ClientService
@@ -143,6 +147,7 @@ func (c *CudoComputeService) SetTransport(transport runtime.ClientTransport) {
 	c.APIKeys.SetTransport(transport)
 	c.Disks.SetTransport(transport)
 	c.Networks.SetTransport(transport)
+	c.ObjectStorage.SetTransport(transport)
 	c.Permissions.SetTransport(transport)
 	c.Projects.SetTransport(transport)
 	c.Search.SetTransport(transport)

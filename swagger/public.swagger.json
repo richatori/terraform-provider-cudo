@@ -397,6 +397,63 @@
         }
       }
     },
+    "/v1/data-centers/{dataCenterId}/remove-user-permission": {
+      "post": {
+        "tags": [
+          "Permissions"
+        ],
+        "summary": "Remove data center user",
+        "operationId": "RemoveDataCenterUserPermission",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "dataCenterId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "userId",
+                "role"
+              ],
+              "properties": {
+                "billingAccountId": {
+                  "type": "string"
+                },
+                "projectId": {
+                  "type": "string"
+                },
+                "role": {
+                  "$ref": "#/definitions/Role"
+                },
+                "userId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
     "/v1/project/{projectId}/ssh-keys": {
       "get": {
         "tags": [
@@ -802,6 +859,11 @@
             "type": "integer",
             "format": "int32",
             "name": "pageSize",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "dataCenterId",
             "in": "query"
           }
         ],
@@ -1714,6 +1776,420 @@
         }
       }
     },
+    "/v1/projects/{projectId}/object-storage/activate": {
+      "post": {
+        "tags": [
+          "Object Storage"
+        ],
+        "summary": "Allow the use of S3 compatible storage in a project",
+        "operationId": "Activate",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "dataCenterId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/object-storage/buckets": {
+      "get": {
+        "tags": [
+          "Object Storage"
+        ],
+        "summary": "List buckets",
+        "operationId": "ListObjectStorageBuckets",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "pageNumber",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "pageSize",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListObjectStorageBucketsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/object-storage/buckets/{id}": {
+      "get": {
+        "tags": [
+          "Object Storage"
+        ],
+        "summary": "Get details for a bucket",
+        "operationId": "GetObjectStorageBucket",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ObjectStorageBucket"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/object-storage/session-key": {
+      "get": {
+        "tags": [
+          "Object Storage"
+        ],
+        "summary": "Generate temporary key for storage bucket access",
+        "operationId": "GetObjectStorageSessionKey",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "dataCenterId",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/GetObjectStorageSessionKeyResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/object-storage/users": {
+      "get": {
+        "tags": [
+          "Object Storage"
+        ],
+        "summary": "List storage users",
+        "operationId": "ListObjectStorageUsers",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "pageNumber",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "pageSize",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListObjectStorageUsersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Object Storage"
+        ],
+        "summary": "Create user that stores keys for storage buckets",
+        "operationId": "CreateObjectStorageUser",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ObjectStorageUser"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/object-storage/users/{id}": {
+      "post": {
+        "tags": [
+          "Object Storage"
+        ],
+        "summary": "Generate access key for storage buckets",
+        "operationId": "GenerateObjectStorageKey",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ObjectStorageKey"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Object Storage"
+        ],
+        "summary": "Delete object storage user",
+        "operationId": "DeleteObjectStorageUser",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DeleteObjectStorageUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/object-storage/users/{id}/keys": {
+      "get": {
+        "tags": [
+          "Object Storage"
+        ],
+        "summary": "List storage user keys",
+        "operationId": "ListObjectStorageKeys",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "pageNumber",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "pageSize",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListObjectStorageKeysResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Object Storage"
+        ],
+        "summary": "Delete object storage user",
+        "operationId": "DeleteObjectStorageKey",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "accessKey",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DeleteObjectStorageKeyResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      }
+    },
     "/v1/projects/{projectId}/remove-user-permission": {
       "post": {
         "tags": [
@@ -1830,6 +2306,12 @@
                 "memoryGib": {
                   "type": "integer",
                   "format": "int32"
+                },
+                "metadata": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
                 },
                 "nics": {
                   "type": "array",
@@ -2028,6 +2510,52 @@
             "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/ListVMDisksResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Virtual Machines"
+        ],
+        "summary": "Resize a VM's disk",
+        "operationId": "ResizeVMDisk",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "diskId",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "sizeGib",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ResizeVMDiskResponse"
             }
           },
           "default": {
@@ -2657,6 +3185,11 @@
             "type": "string",
             "name": "dataCenterId",
             "in": "query"
+          },
+          {
+            "type": "boolean",
+            "name": "publicIpv4",
+            "in": "query"
           }
         ],
         "responses": {
@@ -2836,29 +3369,6 @@
         }
       }
     },
-    "DataCenter": {
-      "type": "object",
-      "required": [
-        "id",
-        "regionId",
-        "supplierName",
-        "renewableEnergy"
-      ],
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "regionId": {
-          "type": "string"
-        },
-        "renewableEnergy": {
-          "type": "boolean"
-        },
-        "supplierName": {
-          "type": "string"
-        }
-      }
-    },
     "DataCenterCategory": {
       "type": "object",
       "required": [
@@ -2899,6 +3409,12 @@
     "DeleteNetworkResponse": {
       "type": "object"
     },
+    "DeleteObjectStorageKeyResponse": {
+      "type": "object"
+    },
+    "DeleteObjectStorageUserResponse": {
+      "type": "object"
+    },
     "DeletePrivateVMImageResponse": {
       "type": "object"
     },
@@ -2928,7 +3444,7 @@
           "readOnly": true
         },
         "diskState": {
-          "type": "string",
+          "$ref": "#/definitions/DiskState",
           "readOnly": true
         },
         "diskType": {
@@ -2955,11 +3471,48 @@
           "format": "int32"
         },
         "storageClass": {
-          "$ref": "#/definitions/StorageClass"
+          "$ref": "#/definitions/Disk.StorageClass"
         },
         "vmId": {
           "type": "string",
           "readOnly": true
+        }
+      }
+    },
+    "Disk.StorageClass": {
+      "type": "string",
+      "default": "STORAGE_CLASS_UNKNOWN",
+      "enum": [
+        "STORAGE_CLASS_UNKNOWN",
+        "STORAGE_CLASS_LOCAL",
+        "STORAGE_CLASS_NETWORK"
+      ]
+    },
+    "DiskState": {
+      "type": "string",
+      "default": "DISK_STATE_INIT",
+      "enum": [
+        "DISK_STATE_INIT",
+        "DISK_STATE_READY",
+        "DISK_STATE_USED",
+        "DISK_STATE_DISABLED",
+        "DISK_STATE_LOCKED",
+        "DISK_STATE_ERROR",
+        "DISK_STATE_CLONE",
+        "DISK_STATE_DELETE"
+      ]
+    },
+    "DiskStoragePriceHr": {
+      "type": "object",
+      "properties": {
+        "diskGibPriceHr": {
+          "$ref": "#/definitions/Decimal"
+        },
+        "snapshotGibPriceHr": {
+          "$ref": "#/definitions/Decimal"
+        },
+        "storageClass": {
+          "$ref": "#/definitions/VMDataCenter.StorageClass"
         }
       }
     },
@@ -3007,6 +3560,26 @@
       "properties": {
         "network": {
           "$ref": "#/definitions/Network"
+        }
+      }
+    },
+    "GetObjectStorageSessionKeyResponse": {
+      "type": "object",
+      "properties": {
+        "accessKey": {
+          "type": "string"
+        },
+        "endpoint": {
+          "type": "string"
+        },
+        "secretKey": {
+          "type": "string"
+        },
+        "sessionName": {
+          "type": "string"
+        },
+        "sessionToken": {
+          "type": "string"
         }
       }
     },
@@ -3078,7 +3651,8 @@
         "totalPriceHr",
         "countVmAvailable",
         "machineType",
-        "renewableEnergy"
+        "renewableEnergy",
+        "ipv4PriceHr"
       ],
       "properties": {
         "countVmAvailable": {
@@ -3099,6 +3673,9 @@
         },
         "id": {
           "type": "string"
+        },
+        "ipv4PriceHr": {
+          "$ref": "#/definitions/Decimal"
         },
         "machineType": {
           "type": "string"
@@ -3222,6 +3799,11 @@
     },
     "ListDisksResponse": {
       "type": "object",
+      "required": [
+        "totalCount",
+        "pageNumber",
+        "pageSize"
+      ],
       "properties": {
         "disks": {
           "type": "array",
@@ -3229,6 +3811,18 @@
             "type": "object",
             "$ref": "#/definitions/Disk"
           }
+        },
+        "pageNumber": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -3259,6 +3853,96 @@
         "totalCount": {
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "ListObjectStorageBucketsResponse": {
+      "type": "object",
+      "required": [
+        "buckets",
+        "totalCount",
+        "pageNumber",
+        "pageSize"
+      ],
+      "properties": {
+        "buckets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/ObjectStorageBucket"
+          }
+        },
+        "pageNumber": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ListObjectStorageKeysResponse": {
+      "type": "object",
+      "required": [
+        "keys",
+        "totalCount",
+        "pageNumber",
+        "pageSize"
+      ],
+      "properties": {
+        "keys": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/ObjectStorageKey"
+          }
+        },
+        "pageNumber": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ListObjectStorageUsersResponse": {
+      "type": "object",
+      "required": [
+        "users",
+        "totalCount",
+        "pageNumber",
+        "pageSize"
+      ],
+      "properties": {
+        "pageNumber": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "users": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/ObjectStorageUser"
+          }
         }
       }
     },
@@ -3482,7 +4166,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/DataCenter"
+            "$ref": "#/definitions/VMDataCenter"
           }
         }
       }
@@ -3533,6 +4217,9 @@
         "pageSize": {
           "type": "integer",
           "format": "int32"
+        },
+        "publicIpv4": {
+          "type": "boolean"
         },
         "regionId": {
           "type": "string"
@@ -3664,12 +4351,6 @@
         "ipRange": {
           "type": "string"
         },
-        "oneLcmState": {
-          "type": "string"
-        },
-        "oneState": {
-          "type": "string"
-        },
         "priceHr": {
           "$ref": "#/definitions/Decimal"
         },
@@ -3678,6 +4359,86 @@
         },
         "size": {
           "$ref": "#/definitions/VRouterSize"
+        }
+      }
+    },
+    "NetworkPriceHr": {
+      "type": "object",
+      "properties": {
+        "priceHr": {
+          "$ref": "#/definitions/Decimal"
+        },
+        "size": {
+          "$ref": "#/definitions/VRouterSize"
+        }
+      }
+    },
+    "ObjectStorageBucket": {
+      "type": "object",
+      "properties": {
+        "billableBytes": {
+          "type": "string",
+          "format": "int64"
+        },
+        "dataCenterId": {
+          "type": "string"
+        },
+        "endpoint": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "objectCount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "projectId": {
+          "type": "string"
+        },
+        "sizeBytes": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ObjectStorageKey": {
+      "type": "object",
+      "properties": {
+        "accessKey": {
+          "type": "string"
+        },
+        "createBy": {
+          "type": "string"
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "id": {
+          "type": "string"
+        },
+        "secretKey": {
+          "type": "string"
+        }
+      }
+    },
+    "ObjectStorageUser": {
+      "type": "object",
+      "properties": {
+        "createBy": {
+          "type": "string"
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "id": {
+          "type": "string"
+        },
+        "keyCount": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -3748,6 +4509,9 @@
           "type": "string"
         }
       }
+    },
+    "ResizeVMDiskResponse": {
+      "type": "object"
     },
     "ResizeVMResponse": {
       "type": "object",
@@ -3950,15 +4714,6 @@
     "StopVMResponse": {
       "type": "object"
     },
-    "StorageClass": {
-      "type": "string",
-      "default": "STORAGE_CLASS_UNKNOWN",
-      "enum": [
-        "STORAGE_CLASS_UNKNOWN",
-        "STORAGE_CLASS_LOCAL",
-        "STORAGE_CLASS_NETWORK"
-      ]
-    },
     "TerminateVMResponse": {
       "type": "object"
     },
@@ -4062,6 +4817,12 @@
           "type": "integer",
           "format": "int64"
         },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "nics": {
           "type": "array",
           "items": {
@@ -4150,6 +4911,55 @@
           }
         }
       }
+    },
+    "VMDataCenter": {
+      "type": "object",
+      "required": [
+        "id",
+        "regionId",
+        "supplierName",
+        "renewableEnergy"
+      ],
+      "properties": {
+        "diskPoolPricing": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/DiskStoragePriceHr"
+          }
+        },
+        "id": {
+          "type": "string"
+        },
+        "ipv4PriceHr": {
+          "$ref": "#/definitions/Decimal"
+        },
+        "networkPricing": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/NetworkPriceHr"
+          }
+        },
+        "regionId": {
+          "type": "string"
+        },
+        "renewableEnergy": {
+          "type": "boolean"
+        },
+        "supplierName": {
+          "type": "string"
+        }
+      }
+    },
+    "VMDataCenter.StorageClass": {
+      "type": "string",
+      "default": "STORAGE_CLASS_UNKNOWN",
+      "enum": [
+        "STORAGE_CLASS_UNKNOWN",
+        "STORAGE_CLASS_LOCAL",
+        "STORAGE_CLASS_NETWORK"
+      ]
     },
     "VMMonitoringItem": {
       "type": "object",

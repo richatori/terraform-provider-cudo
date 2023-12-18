@@ -75,6 +75,7 @@ func (m *ResizeVMResponse) ContextValidate(ctx context.Context, formats strfmt.R
 func (m *ResizeVMResponse) contextValidateVM(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.VM != nil {
+
 		if err := m.VM.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("vm")

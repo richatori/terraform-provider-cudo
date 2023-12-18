@@ -73,6 +73,9 @@ type VM struct {
 	// memory
 	Memory int64 `json:"memory,omitempty"`
 
+	// metadata
+	Metadata map[string]string `json:"metadata,omitempty"`
+
 	// nics
 	Nics []*VMNIC `json:"nics"`
 
@@ -289,6 +292,9 @@ func (m *VM) ContextValidate(ctx context.Context, formats strfmt.Registry) error
 func (m *VM) contextValidateBootDisk(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.BootDisk != nil {
+		if swag.IsZero(m.BootDisk) { // not required
+			return nil
+		}
 		if err := m.BootDisk.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("bootDisk")
@@ -325,6 +331,11 @@ func (m *VM) contextValidateNics(ctx context.Context, formats strfmt.Registry) e
 	for i := 0; i < len(m.Nics); i++ {
 
 		if m.Nics[i] != nil {
+
+			if swag.IsZero(m.Nics[i]) { // not required
+				return nil
+			}
+
 			if err := m.Nics[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("nics" + "." + strconv.Itoa(i))
@@ -363,6 +374,11 @@ func (m *VM) contextValidateRules(ctx context.Context, formats strfmt.Registry) 
 	for i := 0; i < len(m.Rules); i++ {
 
 		if m.Rules[i] != nil {
+
+			if swag.IsZero(m.Rules[i]) { // not required
+				return nil
+			}
+
 			if err := m.Rules[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("rules" + "." + strconv.Itoa(i))
@@ -383,6 +399,9 @@ func (m *VM) contextValidateStorageDisks(ctx context.Context, formats strfmt.Reg
 	for i := 0; i < len(m.StorageDisks); i++ {
 
 		if m.StorageDisks[i] != nil {
+			if swag.IsZero(m.StorageDisks[i]) { // not required
+				return nil
+			}
 			if err := m.StorageDisks[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("storageDisks" + "." + strconv.Itoa(i))

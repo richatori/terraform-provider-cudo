@@ -30,7 +30,7 @@ type Disk struct {
 
 	// disk state
 	// Read Only: true
-	DiskState string `json:"diskState,omitempty"`
+	DiskState *DiskState `json:"diskState,omitempty"`
 
 	// disk type
 	// Read Only: true
@@ -57,7 +57,7 @@ type Disk struct {
 	SizeGib *int32 `json:"sizeGib"`
 
 	// storage class
-	StorageClass *StorageClass `json:"storageClass,omitempty"`
+	StorageClass *DiskStorageClass `json:"storageClass,omitempty"`
 
 	// vm Id
 	// Read Only: true
@@ -69,6 +69,10 @@ func (m *Disk) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateCreateTime(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateDiskState(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -101,6 +105,25 @@ func (m *Disk) validateCreateTime(formats strfmt.Registry) error {
 
 	if err := validate.FormatOf("createTime", "body", "date-time", m.CreateTime.String(), formats); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (m *Disk) validateDiskState(formats strfmt.Registry) error {
+	if swag.IsZero(m.DiskState) { // not required
+		return nil
+	}
+
+	if m.DiskState != nil {
+		if err := m.DiskState.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("diskState")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("diskState")
+			}
+			return err
+		}
 	}
 
 	return nil
@@ -228,8 +251,20 @@ func (m *Disk) contextValidateDataCenterID(ctx context.Context, formats strfmt.R
 
 func (m *Disk) contextValidateDiskState(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "diskState", "body", string(m.DiskState)); err != nil {
-		return err
+	if m.DiskState != nil {
+
+		if swag.IsZero(m.DiskState) { // not required
+			return nil
+		}
+
+		if err := m.DiskState.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("diskState")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("diskState")
+			}
+			return err
+		}
 	}
 
 	return nil
@@ -238,6 +273,11 @@ func (m *Disk) contextValidateDiskState(ctx context.Context, formats strfmt.Regi
 func (m *Disk) contextValidateDiskType(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.DiskType != nil {
+
+		if swag.IsZero(m.DiskType) { // not required
+			return nil
+		}
+
 		if err := m.DiskType.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("diskType")
@@ -281,6 +321,11 @@ func (m *Disk) contextValidatePublicImageID(ctx context.Context, formats strfmt.
 func (m *Disk) contextValidateStorageClass(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.StorageClass != nil {
+
+		if swag.IsZero(m.StorageClass) { // not required
+			return nil
+		}
+
 		if err := m.StorageClass.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("storageClass")

@@ -42,12 +42,6 @@ type Network struct {
 	// ip range
 	IPRange string `json:"ipRange,omitempty"`
 
-	// one lcm state
-	OneLcmState string `json:"oneLcmState,omitempty"`
-
-	// one state
-	OneState string `json:"oneState,omitempty"`
-
 	// price hr
 	PriceHr *Decimal `json:"priceHr,omitempty"`
 
@@ -135,6 +129,11 @@ func (m *Network) ContextValidate(ctx context.Context, formats strfmt.Registry) 
 func (m *Network) contextValidatePriceHr(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.PriceHr != nil {
+
+		if swag.IsZero(m.PriceHr) { // not required
+			return nil
+		}
+
 		if err := m.PriceHr.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("priceHr")
@@ -151,6 +150,11 @@ func (m *Network) contextValidatePriceHr(ctx context.Context, formats strfmt.Reg
 func (m *Network) contextValidateSize(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Size != nil {
+
+		if swag.IsZero(m.Size) { // not required
+			return nil
+		}
+
 		if err := m.Size.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("size")

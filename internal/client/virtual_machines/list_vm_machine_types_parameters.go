@@ -94,6 +94,9 @@ type ListVMMachineTypesParams struct {
 	// Format: int32
 	PageSize *int32
 
+	// PublicIPV4.
+	PublicIPV4 *bool
+
 	// RegionID.
 	RegionID *string
 
@@ -246,6 +249,17 @@ func (o *ListVMMachineTypesParams) WithPageSize(pageSize *int32) *ListVMMachineT
 // SetPageSize adds the pageSize to the list VM machine types params
 func (o *ListVMMachineTypesParams) SetPageSize(pageSize *int32) {
 	o.PageSize = pageSize
+}
+
+// WithPublicIPV4 adds the publicIPV4 to the list VM machine types params
+func (o *ListVMMachineTypesParams) WithPublicIPV4(publicIPV4 *bool) *ListVMMachineTypesParams {
+	o.SetPublicIPV4(publicIPV4)
+	return o
+}
+
+// SetPublicIPV4 adds the publicIpv4 to the list VM machine types params
+func (o *ListVMMachineTypesParams) SetPublicIPV4(publicIPV4 *bool) {
+	o.PublicIPV4 = publicIPV4
 }
 
 // WithRegionID adds the regionID to the list VM machine types params
@@ -413,6 +427,23 @@ func (o *ListVMMachineTypesParams) WriteToRequest(r runtime.ClientRequest, reg s
 		if qPageSize != "" {
 
 			if err := r.SetQueryParam("pageSize", qPageSize); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.PublicIPV4 != nil {
+
+		// query param publicIpv4
+		var qrPublicIPV4 bool
+
+		if o.PublicIPV4 != nil {
+			qrPublicIPV4 = *o.PublicIPV4
+		}
+		qPublicIPV4 := swag.FormatBool(qrPublicIPV4)
+		if qPublicIPV4 != "" {
+
+			if err := r.SetQueryParam("publicIpv4", qPublicIPV4); err != nil {
 				return err
 			}
 		}

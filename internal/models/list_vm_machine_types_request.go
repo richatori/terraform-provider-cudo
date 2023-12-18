@@ -44,6 +44,9 @@ type ListVMMachineTypesRequest struct {
 	// page size
 	PageSize int32 `json:"pageSize,omitempty"`
 
+	// public Ipv4
+	PublicIPV4 bool `json:"publicIpv4,omitempty"`
+
 	// region Id
 	RegionID string `json:"regionId,omitempty"`
 

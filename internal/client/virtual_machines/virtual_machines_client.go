@@ -60,6 +60,8 @@ type ClientService interface {
 
 	ResizeVM(params *ResizeVMParams, opts ...ClientOption) (*ResizeVMOK, error)
 
+	ResizeVMDisk(params *ResizeVMDiskParams, opts ...ClientOption) (*ResizeVMDiskOK, error)
+
 	StartVM(params *StartVMParams, opts ...ClientOption) (*StartVMOK, error)
 
 	StopVM(params *StopVMParams, opts ...ClientOption) (*StopVMOK, error)
@@ -660,6 +662,43 @@ func (a *Client) ResizeVM(params *ResizeVMParams, opts ...ClientOption) (*Resize
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*ResizeVMDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+ResizeVMDisk resizes a VM s disk
+*/
+func (a *Client) ResizeVMDisk(params *ResizeVMDiskParams, opts ...ClientOption) (*ResizeVMDiskOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewResizeVMDiskParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "ResizeVMDisk",
+		Method:             "PATCH",
+		PathPattern:        "/v1/projects/{projectId}/vms/{id}/disks",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &ResizeVMDiskReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ResizeVMDiskOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*ResizeVMDiskDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

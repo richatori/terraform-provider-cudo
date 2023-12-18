@@ -110,6 +110,11 @@ func (m *GetDiskResponse) ContextValidate(ctx context.Context, formats strfmt.Re
 func (m *GetDiskResponse) contextValidateDisk(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Disk != nil {
+
+		if swag.IsZero(m.Disk) { // not required
+			return nil
+		}
+
 		if err := m.Disk.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("disk")
@@ -128,6 +133,11 @@ func (m *GetDiskResponse) contextValidateSnapshots(ctx context.Context, formats 
 	for i := 0; i < len(m.Snapshots); i++ {
 
 		if m.Snapshots[i] != nil {
+
+			if swag.IsZero(m.Snapshots[i]) { // not required
+				return nil
+			}
+
 			if err := m.Snapshots[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("snapshots" + "." + strconv.Itoa(i))

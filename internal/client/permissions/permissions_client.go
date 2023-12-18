@@ -38,6 +38,8 @@ type ClientService interface {
 
 	RemoveBillingAccountUserPermission(params *RemoveBillingAccountUserPermissionParams, opts ...ClientOption) (*RemoveBillingAccountUserPermissionOK, error)
 
+	RemoveDataCenterUserPermission(params *RemoveDataCenterUserPermissionParams, opts ...ClientOption) (*RemoveDataCenterUserPermissionOK, error)
+
 	RemoveProjectUserPermission(params *RemoveProjectUserPermissionParams, opts ...ClientOption) (*RemoveProjectUserPermissionOK, error)
 
 	SetTransport(transport runtime.ClientTransport)
@@ -225,6 +227,43 @@ func (a *Client) RemoveBillingAccountUserPermission(params *RemoveBillingAccount
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*RemoveBillingAccountUserPermissionDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+RemoveDataCenterUserPermission removes data center user
+*/
+func (a *Client) RemoveDataCenterUserPermission(params *RemoveDataCenterUserPermissionParams, opts ...ClientOption) (*RemoveDataCenterUserPermissionOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewRemoveDataCenterUserPermissionParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "RemoveDataCenterUserPermission",
+		Method:             "POST",
+		PathPattern:        "/v1/data-centers/{dataCenterId}/remove-user-permission",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &RemoveDataCenterUserPermissionReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*RemoveDataCenterUserPermissionOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*RemoveDataCenterUserPermissionDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

@@ -302,6 +302,11 @@ func (m *ListVMMachineTypesResponse) contextValidateCPUModels(ctx context.Contex
 	for i := 0; i < len(m.CPUModels); i++ {
 
 		if m.CPUModels[i] != nil {
+
+			if swag.IsZero(m.CPUModels[i]) { // not required
+				return nil
+			}
+
 			if err := m.CPUModels[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("cpuModels" + "." + strconv.Itoa(i))
@@ -322,6 +327,11 @@ func (m *ListVMMachineTypesResponse) contextValidateDataCenters(ctx context.Cont
 	for i := 0; i < len(m.DataCenters); i++ {
 
 		if m.DataCenters[i] != nil {
+
+			if swag.IsZero(m.DataCenters[i]) { // not required
+				return nil
+			}
+
 			if err := m.DataCenters[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("dataCenters" + "." + strconv.Itoa(i))
@@ -342,6 +352,11 @@ func (m *ListVMMachineTypesResponse) contextValidateGpuModels(ctx context.Contex
 	for i := 0; i < len(m.GpuModels); i++ {
 
 		if m.GpuModels[i] != nil {
+
+			if swag.IsZero(m.GpuModels[i]) { // not required
+				return nil
+			}
+
 			if err := m.GpuModels[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("gpuModels" + "." + strconv.Itoa(i))
@@ -362,6 +377,11 @@ func (m *ListVMMachineTypesResponse) contextValidateHostConfigs(ctx context.Cont
 	for i := 0; i < len(m.HostConfigs); i++ {
 
 		if m.HostConfigs[i] != nil {
+
+			if swag.IsZero(m.HostConfigs[i]) { // not required
+				return nil
+			}
+
 			if err := m.HostConfigs[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("hostConfigs" + "." + strconv.Itoa(i))
@@ -380,6 +400,7 @@ func (m *ListVMMachineTypesResponse) contextValidateHostConfigs(ctx context.Cont
 func (m *ListVMMachineTypesResponse) contextValidateRequest(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Request != nil {
+
 		if err := m.Request.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("request")
