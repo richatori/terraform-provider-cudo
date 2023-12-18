@@ -42,27 +42,28 @@ type VMResource struct {
 
 // VMResourceModel describes the resource data model.
 type VMResourceModel struct {
-	BootDisk          *VMBootDiskResourceModel `tfsdk:"boot_disk"`
-	DataCenterID      types.String             `tfsdk:"data_center_id"`
-	CPUModel          types.String             `tfsdk:"cpu_model"`
-	GPUs              types.Int64              `tfsdk:"gpus"`
-	GPUModel          types.String             `tfsdk:"gpu_model"`
-	ID                types.String             `tfsdk:"id"`
-	MachineType       types.String             `tfsdk:"machine_type"`
-	MaxPriceHr        types.String             `tfsdk:"max_price_hr"`
-	MemoryGib         types.Int64              `tfsdk:"memory_gib"`
-	Password          types.String             `tfsdk:"password"`
-	PriceHr           types.String             `tfsdk:"price_hr"`
-	ProjectID         types.String             `tfsdk:"project_id"`
-	SSHKeys           []types.String           `tfsdk:"ssh_keys"`
-	SSHKeySource      types.String             `tfsdk:"ssh_key_source"`
-	StartScript       types.String             `tfsdk:"start_script"`
-	VCPUs             types.Int64              `tfsdk:"vcpus"`
-	Networks          []*VMNICResourceModel    `tfsdk:"networks"`
-	InternalIPAddress types.String             `tfsdk:"internal_ip_address"`
-	ExternalIPAddress types.String             `tfsdk:"external_ip_address"`
-	RenewableEnergy   types.Bool               `tfsdk:"renewable_energy"`
-	SecurityGroupIDs  types.Set                `tfsdk:"security_group_ids"`
+	BootDisk          *VMBootDiskResourceModel      `tfsdk:"boot_disk"`
+	DataCenterID      types.String                  `tfsdk:"data_center_id"`
+	CPUModel          types.String                  `tfsdk:"cpu_model"`
+	GPUs              types.Int64                   `tfsdk:"gpus"`
+	GPUModel          types.String                  `tfsdk:"gpu_model"`
+	ID                types.String                  `tfsdk:"id"`
+	MachineType       types.String                  `tfsdk:"machine_type"`
+	MaxPriceHr        types.String                  `tfsdk:"max_price_hr"`
+	MemoryGib         types.Int64                   `tfsdk:"memory_gib"`
+	Password          types.String                  `tfsdk:"password"`
+	PriceHr           types.String                  `tfsdk:"price_hr"`
+	ProjectID         types.String                  `tfsdk:"project_id"`
+	SSHKeys           []types.String                `tfsdk:"ssh_keys"`
+	SSHKeySource      types.String                  `tfsdk:"ssh_key_source"`
+	StartScript       types.String                  `tfsdk:"start_script"`
+	StorageDisks      []*VMStorageDiskResourceModel `tfsdk:"storage_disks"`
+	VCPUs             types.Int64                   `tfsdk:"vcpus"`
+	Networks          []*VMNICResourceModel         `tfsdk:"networks"`
+	InternalIPAddress types.String                  `tfsdk:"internal_ip_address"`
+	ExternalIPAddress types.String                  `tfsdk:"external_ip_address"`
+	RenewableEnergy   types.Bool                    `tfsdk:"renewable_energy"`
+	SecurityGroupIDs  types.Set                     `tfsdk:"security_group_ids"`
 }
 
 type VMBootDiskResourceModel struct {
@@ -76,6 +77,10 @@ type VMNICResourceModel struct {
 	InternalIPAddress types.String `tfsdk:"internal_ip_address"`
 	ExternalIPAddress types.String `tfsdk:"external_ip_address"`
 	SecurityGroupIDs  types.Set    `tfsdk:"security_group_ids"`
+}
+
+type VMStorageDiskResourceModel struct {
+	DiskID types.String `tfsdk:"disk_id"`
 }
 
 func (r *VMResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -180,6 +185,7 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 					int64planmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: "Amount of VM memory in GiB",
+				Computed:            true,
 				Optional:            true,
 			},
 			"networks": schema.ListNestedAttribute{
@@ -272,11 +278,28 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				MarkdownDescription: "A script to run when VM boots",
 				Optional:            true,
 			},
+			"storage_disks": schema.ListNestedAttribute{
+				MarkdownDescription: "Specification for storage disks",
+				Optional:            true,
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"disk_id": schema.StringAttribute{
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.RequiresReplace(),
+							},
+							MarkdownDescription: "ID of storage disk to attach to vm",
+							Required:            true,
+							Validators:          []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
+						},
+					},
+				},
+			},
 			"vcpus": schema.Int64Attribute{
 				PlanModifiers: []planmodifier.Int64{
 					int64planmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: "Number of VCPUs",
+				Computed:            true,
 				Optional:            true,
 				Validators:          []validator.Int64{int64validator.AtMost(100)},
 			},
@@ -428,6 +451,11 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		sizeGib := int32(state.BootDisk.SizeGib.ValueInt64())
 		bootDisk.SizeGib = &sizeGib
 	}
+	storageDiskIds := make([]string, len(state.StorageDisks))
+	for i, storageDisk := range state.StorageDisks {
+		storageDiskIds[i] = storageDisk.DiskID.ValueString()
+	}
+
 	nics := make([]*models.CreateVMRequestNIC, len(state.Networks))
 
 	for i, nic := range state.Networks {
@@ -471,6 +499,7 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		SSHKeySource:     models.SSHKeySource(sshKeySource).Pointer(),
 		CustomSSHKeys:    customKeys,
 		StartScript:      state.StartScript.ValueString(),
+		StorageDiskIds:   storageDiskIds,
 	}
 
 	_, err := r.client.Client.VirtualMachines.CreateVM(params)
@@ -503,8 +532,26 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		state.BootDisk.ImageID = types.StringValue(vm.Payload.VM.PublicImageID)
 	}
 	if vm.Payload.VM.PrivateImageID != "" {
-		state.BootDisk.ImageID = types.StringValue(vm.Payload.VM.PrivateImageID)
+		state.BootDisk.ImageID = types.StringValue(vm.Payload.VM.BootDisk.PrivateImageID)
+		// backwards compatibilty
+		if state.BootDisk.ImageID.String() == "" {
+			state.BootDisk.ImageID = types.StringValue(vm.Payload.VM.PrivateImageID)
+		}
 	}
+
+	for _, stateDisk := range state.StorageDisks {
+		found := false
+		for _, resDisk := range vm.Payload.VM.StorageDisks {
+			if stateDisk.DiskID.ValueString() == *resDisk.ID {
+				stateDisk.DiskID = types.StringValue(*resDisk.ID)
+				found = true
+			}
+		}
+		if !found {
+			stateDisk.DiskID = types.StringNull()
+		}
+	}
+
 	state.MachineType = types.StringValue(vm.Payload.VM.MachineType)
 	for i, nic := range state.Networks {
 		nic.ExternalIPAddress = types.StringValue(vm.Payload.VM.Nics[i].ExternalIPAddress)
@@ -516,6 +563,8 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 	state.ExternalIPAddress = types.StringValue(vm.Payload.VM.ExternalIPAddress)
 	state.PriceHr = types.StringValue(fmt.Sprintf("%0.2f", vm.Payload.VM.PriceHr))
 	state.RenewableEnergy = types.BoolValue(vm.Payload.VM.RenewableEnergy)
+	state.VCPUs = types.Int64Value(vm.Payload.VM.Vcpus)
+	state.MemoryGib = types.Int64Value(vm.Payload.VM.Memory)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
@@ -532,6 +581,9 @@ func (r *VMResource) Read(ctx context.Context, req resource.ReadRequest, resp *r
 
 	params := virtual_machines.NewGetVMParamsWithContext(ctx)
 	params.ProjectID = r.client.DefaultProjectID
+	if !state.ProjectID.IsNull() {
+		params.ProjectID = state.ProjectID.ValueString()
+	}
 	params.ID = state.ID.ValueString()
 
 	res, err := r.client.Client.VirtualMachines.GetVM(params)
@@ -555,7 +607,23 @@ func (r *VMResource) Read(ctx context.Context, req resource.ReadRequest, resp *r
 		state.BootDisk.ImageID = types.StringValue(res.Payload.VM.PublicImageID)
 	}
 	if res.Payload.VM.PrivateImageID != "" {
-		state.BootDisk.ImageID = types.StringValue(res.Payload.VM.PrivateImageID)
+		state.BootDisk.ImageID = types.StringValue(res.Payload.VM.BootDisk.PrivateImageID)
+		// backwards compatibilty
+		if state.BootDisk.ImageID.String() == "" {
+			state.BootDisk.ImageID = types.StringValue(res.Payload.VM.PrivateImageID)
+		}
+	}
+	for _, stateDisk := range state.StorageDisks {
+		found := false
+		for _, resDisk := range res.Payload.VM.StorageDisks {
+			if stateDisk.DiskID.ValueString() == *resDisk.ID {
+				stateDisk.DiskID = types.StringValue(*resDisk.ID)
+				found = true
+			}
+		}
+		if !found {
+			stateDisk.DiskID = types.StringNull()
+		}
 	}
 	state.MachineType = types.StringValue(res.Payload.VM.MachineType)
 	for i, nic := range state.Networks {
@@ -568,6 +636,8 @@ func (r *VMResource) Read(ctx context.Context, req resource.ReadRequest, resp *r
 	state.ExternalIPAddress = types.StringValue(res.Payload.VM.ExternalIPAddress)
 	state.PriceHr = types.StringValue(fmt.Sprintf("%0.2f", res.Payload.VM.PriceHr))
 	state.RenewableEnergy = types.BoolValue(res.Payload.VM.RenewableEnergy)
+	state.VCPUs = types.Int64Value(res.Payload.VM.Vcpus)
+	state.MemoryGib = types.Int64Value(res.Payload.VM.Memory)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
@@ -600,6 +670,9 @@ func (r *VMResource) Delete(ctx context.Context, req resource.DeleteRequest, res
 
 	params := virtual_machines.NewTerminateVMParamsWithContext(ctx)
 	params.ProjectID = r.client.DefaultProjectID
+	if !state.ProjectID.IsNull() {
+		params.ProjectID = state.ProjectID.ValueString()
+	}
 	params.ID = state.ID.ValueString()
 
 	if _, err := waitForVmAvailable(ctx, params.ProjectID, params.ID, r.client.Client.VirtualMachines); err != nil {

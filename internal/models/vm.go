@@ -292,11 +292,9 @@ func (m *VM) ContextValidate(ctx context.Context, formats strfmt.Registry) error
 func (m *VM) contextValidateBootDisk(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.BootDisk != nil {
-
 		if swag.IsZero(m.BootDisk) { // not required
 			return nil
 		}
-
 		if err := m.BootDisk.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("bootDisk")
@@ -401,11 +399,9 @@ func (m *VM) contextValidateStorageDisks(ctx context.Context, formats strfmt.Reg
 	for i := 0; i < len(m.StorageDisks); i++ {
 
 		if m.StorageDisks[i] != nil {
-
 			if swag.IsZero(m.StorageDisks[i]) { // not required
 				return nil
 			}
-
 			if err := m.StorageDisks[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("storageDisks" + "." + strconv.Itoa(i))

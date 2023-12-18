@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/virtual_machines"
-
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
@@ -157,7 +156,6 @@ resource "cudo_vm" "vm-minimal" {
 		},
 	})
 }
-
 func TestAcc_VMResourceOOBDelete(t *testing.T) {
 	var cancel context.CancelFunc
 	ctx := context.Background()
